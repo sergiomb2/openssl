@@ -21,7 +21,7 @@
 Summary: The OpenSSL toolkit
 Name: openssl
 Version: 0.9.8b
-Release: 12%{?dist}
+Release: 13%{?dist}
 Source: openssl-%{version}-usa.tar.bz2
 Source1: hobble-openssl
 Source2: Makefile.certificate
@@ -81,6 +81,7 @@ protocols.
 Summary: Files for development of applications which will use OpenSSL
 Group: Development/Libraries
 Requires: %{name} = %{version}-%{release}, krb5-devel, zlib-devel
+Requires: pkgconfig
 
 %description devel
 OpenSSL is a toolkit for supporting cryptography. The openssl-devel
@@ -166,6 +167,9 @@ sslarch="linux-generic32 -DB_ENDIAN -DNO_ASM -fno-regmove"
 %endif
 %ifarch s390x
 sslarch="linux-generic64 -DB_ENDIAN -DNO_ASM"
+%endif
+%ifarch %{arm}
+sslarch=linux-generic32
 %endif
 # ia64, x86_64, ppc, ppc64 are OK by default
 # Configure the build tree.  Override OpenSSL defaults with known-good defaults
@@ -270,6 +274,9 @@ EOF
 cat %{SOURCE3} RHNS-blurb.txt %{SOURCE4} > ca-bundle.crt
 install -m644 ca-bundle.crt $RPM_BUILD_ROOT%{_sysconfdir}/pki/tls/certs/
 ln -s certs/ca-bundle.crt $RPM_BUILD_ROOT%{_sysconfdir}/pki/tls/cert.pem
+# Reference timestamps to prevent multilib conflicts
+touch -r %{SOURCE3} $RPM_BUILD_ROOT%{_sysconfdir}/pki/tls/certs/ca-bundle.crt
+touch -r %{SOURCE3} $RPM_BUILD_ROOT%{_sysconfdir}/pki/tls/openssl.cnf
 
 # Fix libdir.
 pushd $RPM_BUILD_ROOT/%{_libdir}/pkgconfig
@@ -369,6 +376,11 @@ rm -rf $RPM_BUILD_ROOT/%{_bindir}/openssl_fips_fingerprint
 %postun -p /sbin/ldconfig
 
 %changelog
+* Wed Jul 25 2007 Tomas Mraz <tmraz@redhat.com> 0.9.8b-13
+- allow building on ARM architectures (#245417)
+- use reference timestamps to prevent multilib conflicts (#218064)
+- -devel package must require pkgconfig (#241031)
+
 * Mon Dec 11 2006 Tomas Mraz <tmraz@redhat.com> 0.9.8b-12
 - detect duplicates in add_dir properly (#206346)
 
