@@ -21,7 +21,7 @@
 Summary: The OpenSSL toolkit
 Name: openssl
 Version: 0.9.8b
-Release: 13%{?dist}
+Release: 14%{?dist}
 Source: openssl-%{version}-usa.tar.bz2
 Source1: hobble-openssl
 Source2: Makefile.certificate
@@ -63,8 +63,11 @@ Patch60: openssl-0.9.8b-cve-2006-4343.patch
 Patch61: openssl-0.9.8b-aliasing-bug.patch
 Patch62: openssl-0.9.8b-x509-name-cmp.patch
 Patch63: openssl-0.9.8b-x509-add-dir.patch
+Patch64: openssl-0.9.8b-test-use-localhost.patch
+Patch65: openssl-0.9.8b-cve-2007-3108.patch
+Patch66: openssl-0.9.7a-ssl-strict-matching.patch
 
-License: BSDish
+License: OpenSSL
 Group: System Environment/Libraries
 URL: http://www.openssl.org/
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
@@ -136,6 +139,9 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch61 -p1 -b .aliasing-bug
 %patch62 -p1 -b .name-cmp
 %patch63 -p1 -b .add-dir
+%patch64 -p1 -b .use-localhost
+%patch65 -p1 -b .no-branch
+%patch66 -p1 -b .strict-matching
 
 # Modify the various perl scripts to reference perl in the right location.
 perl util/perlpath.pl `dirname %{__perl}`
@@ -376,6 +382,11 @@ rm -rf $RPM_BUILD_ROOT/%{_bindir}/openssl_fips_fingerprint
 %postun -p /sbin/ldconfig
 
 %changelog
+* Fri Aug  3 2007 Tomas Mraz <tmraz@redhat.com> 0.9.8b-14
+- use localhost in testsuite, hopefully fixes slow build in koji
+- CVE-2007-3108 - fix side channel attack on private keys (#250577)
+- make ssl session cache id matching strict (#233599)
+
 * Wed Jul 25 2007 Tomas Mraz <tmraz@redhat.com> 0.9.8b-13
 - allow building on ARM architectures (#245417)
 - use reference timestamps to prevent multilib conflicts (#218064)
