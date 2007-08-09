@@ -1,1 +1,0 @@
-Testing Fedora SPARC ACL group.
