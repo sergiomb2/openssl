@@ -66,6 +66,8 @@ Patch63: openssl-0.9.8b-x509-add-dir.patch
 Patch64: openssl-0.9.8b-test-use-localhost.patch
 Patch65: openssl-0.9.8b-cve-2007-3108.patch
 Patch66: openssl-0.9.7a-ssl-strict-matching.patch
+Patch67: openssl-0.9.8b-cve-2007-4995.patch
+Patch68: openssl-0.9.8b-cve-2007-5135.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -142,6 +144,8 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch64 -p1 -b .use-localhost
 %patch65 -p1 -b .no-branch
 %patch66 -p1 -b .strict-matching
+%patch67 -p1 -b .dtls-fixes
+%patch68 -p1 -b .shciphers
 
 # Modify the various perl scripts to reference perl in the right location.
 perl util/perlpath.pl `dirname %{__perl}`
@@ -164,7 +168,7 @@ fi
 sslarch=linux-sparcv9
 sslflags=no-asm
 %endif
-%ifarch alpha
+%ifarch alpha alphaev56 alphaev6 alphaev67
 sslarch=linux-alpha-gcc
 %endif
 %ifarch s390
@@ -382,6 +386,11 @@ rm -rf $RPM_BUILD_ROOT/%{_bindir}/openssl_fips_fingerprint
 %postun -p /sbin/ldconfig
 
 %changelog
+* Fri Oct 12 2007 Tomas Mraz <tmraz@redhat.com> 0.9.8b-16
+- fix CVE-2007-5135 - off-by-one in SSL_get_shared_ciphers (#309801)
+- fix CVE-2007-4995 - out of order DTLS fragments buffer overflow (#321191)
+- add alpha sub-archs (#296031)
+
 * Tue Aug 21 2007 Tomas Mraz <tmraz@redhat.com> 0.9.8b-15
 - rebuild
 
