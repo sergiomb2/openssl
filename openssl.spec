@@ -21,7 +21,7 @@
 Summary: The OpenSSL toolkit
 Name: openssl
 Version: 0.9.8b
-Release: 16%{?dist}
+Release: 17%{?dist}
 Source: openssl-%{version}-usa.tar.bz2
 Source1: hobble-openssl
 Source2: Makefile.certificate
@@ -386,6 +386,9 @@ rm -rf $RPM_BUILD_ROOT/%{_bindir}/openssl_fips_fingerprint
 %postun -p /sbin/ldconfig
 
 %changelog
+* Mon Oct 15 2007 Joe Orton <jorton@redhat.com> 0.9.8b-17
+- update to new CA bundle from mozilla.org
+
 * Fri Oct 12 2007 Tomas Mraz <tmraz@redhat.com> 0.9.8b-16
 - fix CVE-2007-5135 - off-by-one in SSL_get_shared_ciphers (#309801)
 - fix CVE-2007-4995 - out of order DTLS fragments buffer overflow (#321191)
