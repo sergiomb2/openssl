@@ -6,7 +6,8 @@
 # 0.9.7a soversion = 4
 # 0.9.7ef soversion = 5
 # 0.9.8ab soversion = 6
-%define soversion 6
+# 0.9.8g soversion = 7
+%define soversion 7
 
 # Number of threads to spawn when testing some threading fixes.
 %define thread_test_threads %{?threads:%{threads}}%{!?threads:1}
@@ -20,8 +21,8 @@
 
 Summary: The OpenSSL toolkit
 Name: openssl
-Version: 0.9.8b
-Release: 17%{?dist}
+Version: 0.9.8g
+Release: 1%{?dist}
 Source: openssl-%{version}-usa.tar.bz2
 Source1: hobble-openssl
 Source2: Makefile.certificate
@@ -33,41 +34,25 @@ Source8: openssl-thread-test.c
 Source9: opensslconf-new.h
 Source10: opensslconf-new-warning.h
 # Build changes
-Patch0: openssl-0.9.8a-redhat.patch
+Patch0: openssl-0.9.8g-redhat.patch
 Patch1: openssl-0.9.8a-defaults.patch
 Patch2: openssl-0.9.8a-link-krb5.patch
-Patch3: openssl-0.9.8b-soversion.patch
+Patch3: openssl-0.9.8g-soversion.patch
 Patch4: openssl-0.9.8a-enginesdir.patch
 Patch5: openssl-0.9.8a-no-rpath.patch
-Patch24: openssl-0.9.8a-padlock.patch
+Patch6: openssl-0.9.8b-test-use-localhost.patch
+# Bug fixes
+Patch21: openssl-0.9.8b-aliasing-bug.patch
+Patch22: openssl-0.9.8b-x509-name-cmp.patch
 # Functionality changes
 Patch32: openssl-0.9.7-beta6-ia64.patch
 Patch33: openssl-0.9.7f-ca-dir.patch
 Patch34: openssl-0.9.6-x509.patch
 Patch35: openssl-0.9.7-beta5-version-add-engines.patch
-Patch36: openssl-0.9.8a-use-poll.patch
 Patch38: openssl-0.9.8a-reuse-cipher-change.patch
-Patch39: openssl-0.9.8b-ipv6-apps.patch
-Patch40: openssl-0.9.8b-enc-bufsize.patch
+Patch39: openssl-0.9.8g-ipv6-apps.patch
 # Backported fixes including security fixes
-Patch51: openssl-0.9.8b-block-padding.patch
-Patch52: openssl-0.9.8b-pkcs12-fix.patch
-Patch53: openssl-0.9.8b-bn-threadsafety.patch
-Patch54: openssl-0.9.8b-aes-cachecol.patch
-Patch55: openssl-0.9.8b-pkcs7-leak.patch
-Patch56: openssl-0.9.8b-cve-2006-4339.patch
-Patch57: openssl-0.9.8b-cve-2006-2937.patch
-Patch58: openssl-0.9.8b-cve-2006-2940.patch
-Patch59: openssl-0.9.8b-cve-2006-3738.patch
-Patch60: openssl-0.9.8b-cve-2006-4343.patch
-Patch61: openssl-0.9.8b-aliasing-bug.patch
-Patch62: openssl-0.9.8b-x509-name-cmp.patch
-Patch63: openssl-0.9.8b-x509-add-dir.patch
-Patch64: openssl-0.9.8b-test-use-localhost.patch
-Patch65: openssl-0.9.8b-cve-2007-3108.patch
-Patch66: openssl-0.9.7a-ssl-strict-matching.patch
-Patch67: openssl-0.9.8b-cve-2007-4995.patch
-Patch68: openssl-0.9.8b-cve-2007-5135.patch
+# None yet
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -116,36 +101,17 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch3 -p1 -b .soversion
 %patch4 -p1 -b .enginesdir
 %patch5 -p1 -b .no-rpath
+%patch6 -p1 -b .use-localhost
 
-%patch24 -p1 -b .padlock
+%patch21 -p1 -b .aliasing-bug
+%patch22 -p1 -b .name-cmp
 
 %patch32 -p1 -b .ia64
 #patch33 is applied after make test
 %patch34 -p1 -b .x509
 %patch35 -p1 -b .version-add-engines
-%patch36 -p1 -b .use-poll
 %patch38 -p1 -b .cipher-change
 %patch39 -p1 -b .ipv6-apps
-%patch40 -p1 -b .enc-bufsize
-
-%patch51 -p1 -b .block-padding
-%patch52 -p1 -b .pkcs12-fix
-%patch53 -p1 -b .bn-threadsafety
-%patch54 -p1 -b .cachecol
-%patch55 -p1 -b .pkcs7-leak
-%patch56 -p1 -b .short-padding
-%patch57 -p1 -b .asn1-error
-%patch58 -p0 -b .parasitic
-%patch59 -p0 -b .shared-ciphers
-%patch60 -p0 -b .client-dos
-%patch61 -p1 -b .aliasing-bug
-%patch62 -p1 -b .name-cmp
-%patch63 -p1 -b .add-dir
-%patch64 -p1 -b .use-localhost
-%patch65 -p1 -b .no-branch
-%patch66 -p1 -b .strict-matching
-%patch67 -p1 -b .dtls-fixes
-%patch68 -p1 -b .shciphers
 
 # Modify the various perl scripts to reference perl in the right location.
 perl util/perlpath.pl `dirname %{__perl}`
@@ -386,6 +352,9 @@ rm -rf $RPM_BUILD_ROOT/%{_bindir}/openssl_fips_fingerprint
 %postun -p /sbin/ldconfig
 
 %changelog
+* Mon Nov  3 2007 Tomas Mraz <tmraz@redhat.com> 0.9.8g-1
+- update to latest upstream release, SONAME bumped to 7
+
 * Mon Oct 15 2007 Joe Orton <jorton@redhat.com> 0.9.8b-17
 - update to new CA bundle from mozilla.org
 
