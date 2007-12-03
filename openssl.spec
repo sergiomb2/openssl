@@ -22,7 +22,7 @@
 Summary: The OpenSSL toolkit
 Name: openssl
 Version: 0.9.8g
-Release: 1%{?dist}
+Release: 2%{?dist}
 Source: openssl-%{version}-usa.tar.bz2
 Source1: hobble-openssl
 Source2: Makefile.certificate
@@ -52,7 +52,8 @@ Patch35: openssl-0.9.7-beta5-version-add-engines.patch
 Patch38: openssl-0.9.8a-reuse-cipher-change.patch
 Patch39: openssl-0.9.8g-ipv6-apps.patch
 # Backported fixes including security fixes
-# None yet
+Patch50: openssl-0.9.8g-speed-bug.patch
+Patch51: openssl-0.9.8g-bn-mul-bug.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -112,6 +113,8 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch35 -p1 -b .version-add-engines
 %patch38 -p1 -b .cipher-change
 %patch39 -p1 -b .ipv6-apps
+%patch50 -p1 -b .speed-bug
+%patch51 -p1 -b .bn-mul-bug
 
 # Modify the various perl scripts to reference perl in the right location.
 perl util/perlpath.pl `dirname %{__perl}`
@@ -153,7 +156,8 @@ sslarch=linux-generic32
 # RPM_OPT_FLAGS, so we can skip specifiying them here.
 ./Configure \
 	--prefix=%{_prefix} --openssldir=%{_sysconfdir}/pki/tls ${sslflags} \
-	zlib no-idea no-mdc2 no-rc5 no-ec no-ecdh no-ecdsa shared \
+	zlib enable-camellia enable-seed enable-tlsext enable-rfc3779 \
+	no-idea no-mdc2 no-rc5 no-ec no-ecdh no-ecdsa shared \
 	--with-krb5-flavor=MIT --enginesdir=%{_libdir}/openssl/engines \
 	-I%{_prefix}/kerberos/include -L%{_prefix}/kerberos/%{_lib} \
 	${sslarch}
@@ -352,6 +356,10 @@ rm -rf $RPM_BUILD_ROOT/%{_bindir}/openssl_fips_fingerprint
 %postun -p /sbin/ldconfig
 
 %changelog
+* Tue Dec  4 2007 Tomas Mraz <tmraz@redhat.com> 0.9.8g-2
+- enable some new crypto algorithms and features
+- add some more important bug fixes from openssl CVS
+
 * Mon Dec  3 2007 Tomas Mraz <tmraz@redhat.com> 0.9.8g-1
 - update to latest upstream release, SONAME bumped to 7
 
