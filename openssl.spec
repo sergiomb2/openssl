@@ -352,7 +352,7 @@ rm -rf $RPM_BUILD_ROOT/%{_bindir}/openssl_fips_fingerprint
 %postun -p /sbin/ldconfig
 
 %changelog
-* Mon Nov  3 2007 Tomas Mraz <tmraz@redhat.com> 0.9.8g-1
+* Mon Dec  3 2007 Tomas Mraz <tmraz@redhat.com> 0.9.8g-1
 - update to latest upstream release, SONAME bumped to 7
 
 * Mon Oct 15 2007 Joe Orton <jorton@redhat.com> 0.9.8b-17
