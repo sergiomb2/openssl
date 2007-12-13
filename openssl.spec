@@ -22,7 +22,7 @@
 Summary: The OpenSSL toolkit
 Name: openssl
 Version: 0.9.8g
-Release: 2%{?dist}
+Release: 3%{?dist}
 Source: openssl-%{version}-usa.tar.bz2
 Source1: hobble-openssl
 Source2: Makefile.certificate
@@ -44,6 +44,8 @@ Patch6: openssl-0.9.8b-test-use-localhost.patch
 # Bug fixes
 Patch21: openssl-0.9.8b-aliasing-bug.patch
 Patch22: openssl-0.9.8b-x509-name-cmp.patch
+Patch23: openssl-0.9.8g-default-paths.patch
+Patch24: openssl-0.9.8g-no-extssl.patch
 # Functionality changes
 Patch32: openssl-0.9.7-beta6-ia64.patch
 Patch33: openssl-0.9.7f-ca-dir.patch
@@ -106,6 +108,8 @@ from other formats to the formats used by the OpenSSL toolkit.
 
 %patch21 -p1 -b .aliasing-bug
 %patch22 -p1 -b .name-cmp
+%patch23 -p1 -b .default-paths
+%patch24 -p1 -b .no-extssl
 
 %patch32 -p1 -b .ia64
 #patch33 is applied after make test
@@ -356,6 +360,10 @@ rm -rf $RPM_BUILD_ROOT/%{_bindir}/openssl_fips_fingerprint
 %postun -p /sbin/ldconfig
 
 %changelog
+* Thu Dec 13 2007 Tomas Mraz <tmraz@redhat.com> 0.9.8g-3
+- set default paths when no explicit paths are set (#418771)
+- do not add tls extensions to client hello for SSLv3 (#422081)
+
 * Tue Dec  4 2007 Tomas Mraz <tmraz@redhat.com> 0.9.8g-2
 - enable some new crypto algorithms and features
 - add some more important bug fixes from openssl CVS
