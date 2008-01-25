@@ -22,7 +22,9 @@
 Summary: The OpenSSL toolkit
 Name: openssl
 Version: 0.9.8g
-Release: 3%{?dist}
+Release: 4%{?dist}
+# We remove certain patented algorithms from the openssl source tarball
+# with the hobble-openssl script which is included below.
 Source: openssl-%{version}-usa.tar.bz2
 Source1: hobble-openssl
 Source2: Makefile.certificate
@@ -41,6 +43,7 @@ Patch3: openssl-0.9.8g-soversion.patch
 Patch4: openssl-0.9.8a-enginesdir.patch
 Patch5: openssl-0.9.8a-no-rpath.patch
 Patch6: openssl-0.9.8b-test-use-localhost.patch
+Patch7: openssl-0.9.8g-shlib-version.patch
 # Bug fixes
 Patch21: openssl-0.9.8b-aliasing-bug.patch
 Patch22: openssl-0.9.8b-x509-name-cmp.patch
@@ -105,6 +108,7 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch4 -p1 -b .enginesdir
 %patch5 -p1 -b .no-rpath
 %patch6 -p1 -b .use-localhost
+%patch7 -p1 -b .shlib-version
 
 %patch21 -p1 -b .aliasing-bug
 %patch22 -p1 -b .name-cmp
@@ -193,6 +197,10 @@ make -C test apps tests
 # Patch33 must be patched after tests otherwise they will fail
 patch -p1 -b -z .ca-dir < %{PATCH33}
 
+if ! iconv -f UTF-8 -t ASCII//TRANSLIT CHANGES >/dev/null 2>&1 ; then
+	iconv -f ISO-8859-1 -t UTF-8 -o CHANGES.utf8 CHANGES && \
+		mv -f CHANGES.utf8 CHANGES
+fi
 %install
 [ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
 # Install OpenSSL.
@@ -266,7 +274,7 @@ touch -r %{SOURCE3} $RPM_BUILD_ROOT%{_sysconfdir}/pki/tls/openssl.cnf
 pushd $RPM_BUILD_ROOT/%{_libdir}/pkgconfig
 for i in *.pc ; do
 	sed 's,^libdir=${exec_prefix}/lib,libdir=${exec_prefix}/%{_lib},g' \
-	    $i >$i.tmp && \
+		$i >$i.tmp && \
 	cat $i.tmp >$i && \
 	rm -f $i.tmp
 done
@@ -283,11 +291,11 @@ basearch=i386
 # can have both a 32- and 64-bit version of the library, and they each need
 # their own correct-but-different versions of opensslconf.h to be usable.
 install -m644 %{SOURCE10} \
-   $RPM_BUILD_ROOT/%{_prefix}/include/openssl/opensslconf-${basearch}.h
+	$RPM_BUILD_ROOT/%{_prefix}/include/openssl/opensslconf-${basearch}.h
 cat $RPM_BUILD_ROOT/%{_prefix}/include/openssl/opensslconf.h >> \
-   $RPM_BUILD_ROOT/%{_prefix}/include/openssl/opensslconf-${basearch}.h
+	$RPM_BUILD_ROOT/%{_prefix}/include/openssl/opensslconf-${basearch}.h
 install -m644 %{SOURCE9} \
-   $RPM_BUILD_ROOT/%{_prefix}/include/openssl/opensslconf.h
+	$RPM_BUILD_ROOT/%{_prefix}/include/openssl/opensslconf.h
 %endif
 
 %ifarch %{optimize_arches}
@@ -360,6 +368,10 @@ rm -rf $RPM_BUILD_ROOT/%{_bindir}/openssl_fips_fingerprint
 %postun -p /sbin/ldconfig
 
 %changelog
+* Thu Jan 24 2008 Tomas Mraz <tmraz@redhat.com> 0.9.8g-4
+- merge review fixes (#226220)
+- adjust the SHLIB_VERSION_NUMBER to reflect library name (#429846)
+
 * Thu Dec 13 2007 Tomas Mraz <tmraz@redhat.com> 0.9.8g-3
 - set default paths when no explicit paths are set (#418771)
 - do not add tls extensions to client hello for SSLv3 (#422081)
@@ -816,7 +828,7 @@ rm -rf $RPM_BUILD_ROOT/%{_bindir}/openssl_fips_fingerprint
 - add backport of Ben Laurie's patches for OpenSSL 0.9.6d
 
 * Wed Jul 17 2002 Nalin Dahyabhai <nalin@redhat.com> 0.9.6b-23
-- own %{_datadir}/ssl/misc
+- own {_datadir}/ssl/misc
 
 * Fri Jun 21 2002 Tim Powers <timp@redhat.com>
 - automated rebuild
