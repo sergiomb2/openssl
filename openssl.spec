@@ -65,6 +65,7 @@ Group: System Environment/Libraries
 URL: http://www.openssl.org/
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildRequires: mktemp, krb5-devel, perl, sed, zlib-devel, /usr/bin/cmp
+BuildRequires: /usr/bin/rename
 Requires: mktemp
 
 %description
