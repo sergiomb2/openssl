@@ -22,7 +22,7 @@
 Summary: The OpenSSL toolkit
 Name: openssl
 Version: 0.9.8g
-Release: 5%{?dist}
+Release: 6%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
 Source: openssl-%{version}-usa.tar.bz2
@@ -369,6 +369,9 @@ rm -rf $RPM_BUILD_ROOT/%{_bindir}/openssl_fips_fingerprint
 %postun -p /sbin/ldconfig
 
 %changelog
+* Mon Mar 10 2008 Joe Orton <jorton@redhat.com> 0.9.8g-6
+- update to new root CA bundle from mozilla.org (r1.45)
+
 * Wed Feb 20 2008 Fedora Release Engineering <rel-eng@fedoraproject.org> - 0.9.8g-5
 - Autorebuild for GCC 4.3
 
