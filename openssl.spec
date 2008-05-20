@@ -14,7 +14,7 @@
 
 # Arches on which we need to prevent arch conflicts on opensslconf.h, must
 # also be handled in opensslconf-new.h.
-%define multilib_arches %{ix86} ia64 ppc ppc64 s390 s390x x86_64
+%define multilib_arches %{ix86} ia64 ppc ppc64 s390 s390x sparcv9 sparc64 x86_64
 
 # Arches for which we don't build subpackages.
 %define optimize_arches i686
@@ -22,7 +22,7 @@
 Summary: The OpenSSL toolkit
 Name: openssl
 Version: 0.9.8g
-Release: 6%{?dist}
+Release: 7%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
 Source: openssl-%{version}-usa.tar.bz2
@@ -142,8 +142,12 @@ if ! echo %{_target} | grep -q i686 ; then
 	sslflags="no-asm 386"
 fi
 %endif
-%ifarch sparc
+%ifarch sparcv9
 sslarch=linux-sparcv9
+sslflags=no-asm
+%endif
+%ifarch sparc64
+sslarch=linux64-sparcv9
 sslflags=no-asm
 %endif
 %ifarch alpha alphaev56 alphaev6 alphaev67
@@ -286,6 +290,12 @@ basearch=%{_arch}
 %ifarch %{ix86}
 basearch=i386
 %endif
+%ifarch sparcv9
+basearch=sparc
+%endif
+%ifarch sparc64
+basearch=sparc64
+%endif
 
 %ifarch %{multilib_arches}
 # Do an opensslconf.h switcheroo to avoid file conflicts on systems where you
@@ -369,6 +379,9 @@ rm -rf $RPM_BUILD_ROOT/%{_bindir}/openssl_fips_fingerprint
 %postun -p /sbin/ldconfig
 
 %changelog
+* Mon May 19 2008 Tom "spot" Callaway <tcallawa@redhat.com> 0.9.8g-7
+- sparc handling
+
 * Mon Mar 10 2008 Joe Orton <jorton@redhat.com> 0.9.8g-6
 - update to new root CA bundle from mozilla.org (r1.45)
 
