@@ -22,7 +22,7 @@
 Summary: The OpenSSL toolkit
 Name: openssl
 Version: 0.9.8g
-Release: 7%{?dist}
+Release: 8%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
 Source: openssl-%{version}-usa.tar.bz2
