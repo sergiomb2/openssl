@@ -153,14 +153,13 @@ sslflags=no-asm
 %ifarch alpha alphaev56 alphaev6 alphaev67
 sslarch=linux-alpha-gcc
 %endif
-%ifarch s390
-# The -fno-regmove is a workaround for bug #199604
-sslarch="linux-generic32 -DB_ENDIAN -DNO_ASM -fno-regmove"
+%ifarch s390 sh3eb sh4eb
+sslarch="linux-generic32 -DB_ENDIAN"
 %endif
 %ifarch s390x
-sslarch="linux-generic64 -DB_ENDIAN -DNO_ASM"
+sslarch="linux-generic64 -DB_ENDIAN"
 %endif
-%ifarch %{arm}
+%ifarch %{arm} sh3 sh4
 sslarch=linux-generic32
 %endif
 # ia64, x86_64, ppc, ppc64 are OK by default
@@ -379,6 +378,10 @@ rm -rf $RPM_BUILD_ROOT/%{_bindir}/openssl_fips_fingerprint
 %postun -p /sbin/ldconfig
 
 %changelog
+* Tue May 27 2008 Tomas Mraz <tmraz@redhat.com> 0.9.8g-8
+- super-H arch support
+- drop workaround for bug 199604 as it should be fixed in gcc-4.3
+
 * Mon May 19 2008 Tom "spot" Callaway <tcallawa@redhat.com> 0.9.8g-7
 - sparc handling
 
