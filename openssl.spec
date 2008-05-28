@@ -22,7 +22,7 @@
 Summary: The OpenSSL toolkit
 Name: openssl
 Version: 0.9.8g
-Release: 8%{?dist}
+Release: 9%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
 Source: openssl-%{version}-usa.tar.bz2
@@ -59,6 +59,8 @@ Patch39: openssl-0.9.8g-ipv6-apps.patch
 # Backported fixes including security fixes
 Patch50: openssl-0.9.8g-speed-bug.patch
 Patch51: openssl-0.9.8g-bn-mul-bug.patch
+Patch52: openssl-0.9.8g-cve-2008-0891.patch
+Patch53: openssl-0.9.8g-cve-2008-1671.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -124,6 +126,8 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch39 -p1 -b .ipv6-apps
 %patch50 -p1 -b .speed-bug
 %patch51 -p1 -b .bn-mul-bug
+%patch52 -p0 -b .srvname-crash
+%patch53 -p0 -b .srv-kex-crash
 
 # Modify the various perl scripts to reference perl in the right location.
 perl util/perlpath.pl `dirname %{__perl}`
@@ -378,6 +382,10 @@ rm -rf $RPM_BUILD_ROOT/%{_bindir}/openssl_fips_fingerprint
 %postun -p /sbin/ldconfig
 
 %changelog
+* Wed May 28 2008 Tomas Mraz <tmraz@redhat.com> 0.9.8g-9
+- fix CVE-2008-0891 - server name extension crash (#448492)
+- fix CVE-2008-1672 - server key exchange message omit crash (#448495)
+
 * Tue May 27 2008 Tomas Mraz <tmraz@redhat.com> 0.9.8g-8
 - super-H arch support
 - drop workaround for bug 199604 as it should be fixed in gcc-4.3
