@@ -22,15 +22,12 @@
 Summary: The OpenSSL toolkit
 Name: openssl
 Version: 0.9.8g
-Release: 9%{?dist}
+Release: 10%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
 Source: openssl-%{version}-usa.tar.bz2
 Source1: hobble-openssl
 Source2: Makefile.certificate
-Source3: ca-bundle.crt
-Source4: https://rhn.redhat.com/help/RHNS-CA-CERT
-Source5: https://rhn.redhat.com/help/RHNS-CA-CERT.asc
 Source6: make-dummy-cert
 Source8: openssl-thread-test.c
 Source9: opensslconf-new.h
@@ -68,7 +65,7 @@ URL: http://www.openssl.org/
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildRequires: mktemp, krb5-devel, perl, sed, zlib-devel, /usr/bin/cmp
 BuildRequires: /usr/bin/rename
-Requires: mktemp
+Requires: mktemp, ca-certificates >= 2008-5
 
 %description
 The OpenSSL toolkit provides support for secure communications between
@@ -265,17 +262,6 @@ popd
 mkdir -m700 $RPM_BUILD_ROOT%{_sysconfdir}/pki/CA
 mkdir -m700 $RPM_BUILD_ROOT%{_sysconfdir}/pki/CA/private
 
-# Install root CA stuffs.
-cat << EOF > RHNS-blurb.txt
-#
-#  RHNS CA certificate.  Appended to the ca-bundle at package build-time.
-#
-EOF
-cat %{SOURCE3} RHNS-blurb.txt %{SOURCE4} > ca-bundle.crt
-install -m644 ca-bundle.crt $RPM_BUILD_ROOT%{_sysconfdir}/pki/tls/certs/
-ln -s certs/ca-bundle.crt $RPM_BUILD_ROOT%{_sysconfdir}/pki/tls/cert.pem
-# Reference timestamps to prevent multilib conflicts
-touch -r %{SOURCE3} $RPM_BUILD_ROOT%{_sysconfdir}/pki/tls/certs/ca-bundle.crt
 touch -r %{SOURCE3} $RPM_BUILD_ROOT%{_sysconfdir}/pki/tls/openssl.cnf
 
 # Fix libdir.
@@ -341,7 +327,6 @@ rm -rf $RPM_BUILD_ROOT/%{_bindir}/openssl_fips_fingerprint
 %dir %{_sysconfdir}/pki/tls/certs
 %{_sysconfdir}/pki/tls/certs/make-dummy-cert
 %{_sysconfdir}/pki/tls/certs/Makefile
-%{_sysconfdir}/pki/tls/cert.pem
 %dir %{_sysconfdir}/pki/tls/misc
 %{_sysconfdir}/pki/tls/misc/CA
 %dir %{_sysconfdir}/pki/CA
@@ -350,7 +335,6 @@ rm -rf $RPM_BUILD_ROOT/%{_bindir}/openssl_fips_fingerprint
 %{_sysconfdir}/pki/tls/private
 
 %config(noreplace) %{_sysconfdir}/pki/tls/openssl.cnf
-%config(noreplace) %{_sysconfdir}/pki/tls/certs/ca-bundle.crt
 
 %attr(0755,root,root) %{_bindir}/openssl
 %attr(0755,root,root) /%{_lib}/*.so.%{version}
@@ -382,6 +366,9 @@ rm -rf $RPM_BUILD_ROOT/%{_bindir}/openssl_fips_fingerprint
 %postun -p /sbin/ldconfig
 
 %changelog
+* Mon Jun  2 2008 Joe Orton <jorton@redhat.com> 0.9.8g-10
+- move root CA bundle to ca-certificates package
+
 * Wed May 28 2008 Tomas Mraz <tmraz@redhat.com> 0.9.8g-9
 - fix CVE-2008-0891 - server name extension crash (#448492)
 - fix CVE-2008-1672 - server key exchange message omit crash (#448495)
