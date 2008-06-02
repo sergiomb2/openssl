@@ -262,8 +262,6 @@ popd
 mkdir -m700 $RPM_BUILD_ROOT%{_sysconfdir}/pki/CA
 mkdir -m700 $RPM_BUILD_ROOT%{_sysconfdir}/pki/CA/private
 
-touch -r %{SOURCE3} $RPM_BUILD_ROOT%{_sysconfdir}/pki/tls/openssl.cnf
-
 # Fix libdir.
 pushd $RPM_BUILD_ROOT/%{_libdir}/pkgconfig
 for i in *.pc ; do
