@@ -262,6 +262,10 @@ popd
 mkdir -m700 $RPM_BUILD_ROOT%{_sysconfdir}/pki/CA
 mkdir -m700 $RPM_BUILD_ROOT%{_sysconfdir}/pki/CA/private
 
+# Ensure the openssl.cnf timestamp is identical across builds to avoid
+# mulitlib conflicts and unnecessary renames on upgrade
+touch -r %{SOURCE2} $RPM_BUILD_ROOT%{_sysconfdir}/pki/tls/openssl.cnf
+
 # Fix libdir.
 pushd $RPM_BUILD_ROOT/%{_libdir}/pkgconfig
 for i in *.pc ; do
