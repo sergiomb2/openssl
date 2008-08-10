@@ -47,7 +47,7 @@ Patch22: openssl-0.9.8b-x509-name-cmp.patch
 Patch23: openssl-0.9.8g-default-paths.patch
 Patch24: openssl-0.9.8g-no-extssl.patch
 # Functionality changes
-Patch32: openssl-0.9.7-beta6-ia64.patch
+Patch32: openssl-0.9.8g-ia64.patch
 Patch33: openssl-0.9.7f-ca-dir.patch
 Patch34: openssl-0.9.6-x509.patch
 Patch35: openssl-0.9.7-beta5-version-add-engines.patch
