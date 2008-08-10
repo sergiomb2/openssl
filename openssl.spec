@@ -22,7 +22,7 @@
 Summary: The OpenSSL toolkit
 Name: openssl
 Version: 0.9.8g
-Release: 10%{?dist}
+Release: 11%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
 Source: openssl-%{version}-usa.tar.bz2
@@ -368,6 +368,9 @@ rm -rf $RPM_BUILD_ROOT/%{_bindir}/openssl_fips_fingerprint
 %postun -p /sbin/ldconfig
 
 %changelog
+* Sun Aug 10 2008 Tomas Mraz <tmraz@redhat.com> 0.9.8g-11
+- do not add tls extensions to server hello for SSLv3 either
+
 * Mon Jun  2 2008 Joe Orton <jorton@redhat.com> 0.9.8g-10
 - move root CA bundle to ca-certificates package
 
