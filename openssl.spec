@@ -22,7 +22,7 @@
 Summary: The OpenSSL toolkit
 Name: openssl
 Version: 0.9.8g
-Release: 9%{?dist}
+Release: 9.12%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
 Source: openssl-%{version}-usa.tar.bz2
@@ -61,6 +61,8 @@ Patch50: openssl-0.9.8g-speed-bug.patch
 Patch51: openssl-0.9.8g-bn-mul-bug.patch
 Patch52: openssl-0.9.8g-cve-2008-0891.patch
 Patch53: openssl-0.9.8g-cve-2008-1671.patch
+Patch54: openssl-0.9.8g-cve-2008-5077.patch
+Patch55: openssl-0.9.8g-no-ign-eof.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -128,6 +130,8 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch51 -p1 -b .bn-mul-bug
 %patch52 -p0 -b .srvname-crash
 %patch53 -p0 -b .srv-kex-crash
+%patch54 -p1 -b .verifysig
+%patch55 -p1 -b .no-ign-eof
 
 # Modify the various perl scripts to reference perl in the right location.
 perl util/perlpath.pl `dirname %{__perl}`
@@ -382,6 +386,11 @@ rm -rf $RPM_BUILD_ROOT/%{_bindir}/openssl_fips_fingerprint
 %postun -p /sbin/ldconfig
 
 %changelog
+* Wed Jan  7 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8g-9.12
+- fix CVE-2008-5077 - incorrect checks for malformed signatures (#476671)
+- add -no_ign_eof option (#462393)
+- do not add tls extensions to server hello for SSLv3 either
+
 * Wed May 28 2008 Tomas Mraz <tmraz@redhat.com> 0.9.8g-9
 - fix CVE-2008-0891 - server name extension crash (#448492)
 - fix CVE-2008-1672 - server key exchange message omit crash (#448495)
