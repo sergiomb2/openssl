@@ -7,7 +7,8 @@
 # 0.9.7ef soversion = 5
 # 0.9.8ab soversion = 6
 # 0.9.8g soversion = 7
-%define soversion 7
+# 0.9.8j + EAP-FAST soversion = 8
+%define soversion 8
 
 # Number of threads to spawn when testing some threading fixes.
 %define thread_test_threads %{?threads:%{threads}}%{!?threads:1}
@@ -19,10 +20,10 @@
 # Arches for which we don't build subpackages.
 %define optimize_arches i686
 
-Summary: The OpenSSL toolkit
+Summary: A general purpose cryptography library with TLS implementation
 Name: openssl
-Version: 0.9.8g
-Release: 11%{?dist}
+Version: 0.9.8j
+Release: 1%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
 Source: openssl-%{version}-usa.tar.bz2
@@ -33,14 +34,14 @@ Source8: openssl-thread-test.c
 Source9: opensslconf-new.h
 Source10: opensslconf-new-warning.h
 # Build changes
-Patch0: openssl-0.9.8g-redhat.patch
+Patch0: openssl-0.9.8j-redhat.patch
 Patch1: openssl-0.9.8a-defaults.patch
 Patch2: openssl-0.9.8a-link-krb5.patch
-Patch3: openssl-0.9.8g-soversion.patch
-Patch4: openssl-0.9.8a-enginesdir.patch
+Patch3: openssl-0.9.8j-soversion.patch
+Patch4: openssl-0.9.8j-enginesdir.patch
 Patch5: openssl-0.9.8a-no-rpath.patch
 Patch6: openssl-0.9.8b-test-use-localhost.patch
-Patch7: openssl-0.9.8g-shlib-version.patch
+Patch7: openssl-0.9.8j-shlib-version.patch
 # Bug fixes
 Patch21: openssl-0.9.8b-aliasing-bug.patch
 Patch22: openssl-0.9.8b-x509-name-cmp.patch
@@ -48,16 +49,21 @@ Patch23: openssl-0.9.8g-default-paths.patch
 Patch24: openssl-0.9.8g-no-extssl.patch
 # Functionality changes
 Patch32: openssl-0.9.8g-ia64.patch
-Patch33: openssl-0.9.7f-ca-dir.patch
+Patch33: openssl-0.9.8j-ca-dir.patch
 Patch34: openssl-0.9.6-x509.patch
-Patch35: openssl-0.9.7-beta5-version-add-engines.patch
+Patch35: openssl-0.9.8j-version-add-engines.patch
 Patch38: openssl-0.9.8a-reuse-cipher-change.patch
 Patch39: openssl-0.9.8g-ipv6-apps.patch
+Patch40: openssl-0.9.8j-nocanister.patch
+Patch41: openssl-0.9.8j-use-fipscheck.patch
+Patch42: openssl-0.9.8j-fipscheck-hmac.patch
+Patch43: openssl-0.9.8j-evp-nonfips.patch
+Patch44: openssl-0.9.8j-kernel-fipsmode.patch
+Patch45: openssl-0.9.8j-env-nozlib.patch
+Patch46: openssl-0.9.8j-eap-fast.patch
+Patch47: openssl-0.9.8j-readme-warning.patch
+Patch48: openssl-0.9.8j-bad-mime.patch
 # Backported fixes including security fixes
-Patch50: openssl-0.9.8g-speed-bug.patch
-Patch51: openssl-0.9.8g-bn-mul-bug.patch
-Patch52: openssl-0.9.8g-cve-2008-0891.patch
-Patch53: openssl-0.9.8g-cve-2008-1671.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -65,7 +71,17 @@ URL: http://www.openssl.org/
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildRequires: mktemp, krb5-devel, perl, sed, zlib-devel, /usr/bin/cmp
 BuildRequires: /usr/bin/rename
+BuildRequires: pkgconfig
 Requires: mktemp, ca-certificates >= 2008-5
+
+# Temporary hack
+Requires(post): /sbin/ldconfig
+Requires(postun): /sbin/ldconfig
+%ifarch ppc64 s390x sparc64 x86_64
+Provides: libcrypto.so.7()(64bit) libssl.so.7()(64bit)
+%else
+Provides: libcrypto.so.7 libssl.so.7
+%endif
 
 %description
 The OpenSSL toolkit provides support for secure communications between
@@ -116,15 +132,20 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch24 -p1 -b .no-extssl
 
 %patch32 -p1 -b .ia64
-#patch33 is applied after make test
+%patch33 -p1 -b .ca-dir
 %patch34 -p1 -b .x509
 %patch35 -p1 -b .version-add-engines
 %patch38 -p1 -b .cipher-change
 %patch39 -p1 -b .ipv6-apps
-%patch50 -p1 -b .speed-bug
-%patch51 -p1 -b .bn-mul-bug
-%patch52 -p0 -b .srvname-crash
-%patch53 -p0 -b .srv-kex-crash
+%patch40 -p1 -b .nocanister
+%patch41 -p1 -b .use-fipscheck
+%patch42 -p1 -b .fipscheck-hmac
+%patch43 -p1 -b .evp-nonfips
+%patch44 -p1 -b .fipsmode
+%patch45 -p1 -b .env-nozlib
+%patch46 -p1 -b .eap-fast
+%patch47 -p1 -b .warning
+%patch48 -p1 -b .bad-mime
 
 # Modify the various perl scripts to reference perl in the right location.
 perl util/perlpath.pl `dirname %{__perl}`
@@ -170,21 +191,26 @@ sslarch=linux-generic32
 ./Configure \
 	--prefix=%{_prefix} --openssldir=%{_sysconfdir}/pki/tls ${sslflags} \
 	zlib enable-camellia enable-seed enable-tlsext enable-rfc3779 \
-	no-idea no-mdc2 no-rc5 no-ec no-ecdh no-ecdsa shared \
+	enable-cms no-idea no-mdc2 no-rc5 no-ec no-ecdh no-ecdsa shared \
 	--with-krb5-flavor=MIT --enginesdir=%{_libdir}/openssl/engines \
 	-I%{_prefix}/kerberos/include -L%{_prefix}/kerberos/%{_lib} \
-	${sslarch}
+	${sslarch} fipscanisterbuild
 
 # Add -Wa,--noexecstack here so that libcrypto's assembler modules will be
 # marked as not requiring an executable stack.
 RPM_OPT_FLAGS="$RPM_OPT_FLAGS -Wa,--noexecstack"
 make depend
-make all build-shared
+make all
 
 # Generate hashes for the included certs.
-make rehash build-shared
+make rehash
 
+%check
 # Verify that what was compiled actually works.
+
+# We must revert patch33 before tests otherwise they will fail
+patch -p1 -R < %{PATCH33}
+
 LD_LIBRARY_PATH=`pwd`${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
 export LD_LIBRARY_PATH
 make -C test apps tests
@@ -199,18 +225,21 @@ make -C test apps tests
 	-lpthread -lz -ldl
 ./openssl-thread-test --threads %{thread_test_threads}
 
-# Patch33 must be patched after tests otherwise they will fail
-patch -p1 -b -z .ca-dir < %{PATCH33}
+# Add generation of HMAC checksum of the final stripped library
+%define __spec_install_post \
+    %{?__debug_package:%{__debug_install_post}} \
+    %{__arch_install_post} \
+    %{__os_install_post} \
+    fips/fips_standalone_sha1 $RPM_BUILD_ROOT/%{_lib}/libcrypto.so.%{version} >$RPM_BUILD_ROOT/%{_lib}/.libcrypto.so.%{version}.hmac \
+    ln -sf .libcrypto.so.%{version}.hmac $RPM_BUILD_ROOT/%{_lib}/.libcrypto.so.%{soversion}.hmac \
+%{nil}
 
-if ! iconv -f UTF-8 -t ASCII//TRANSLIT CHANGES >/dev/null 2>&1 ; then
-	iconv -f ISO-8859-1 -t UTF-8 -o CHANGES.utf8 CHANGES && \
-		mv -f CHANGES.utf8 CHANGES
-fi
 %install
 [ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
 # Install OpenSSL.
 install -d $RPM_BUILD_ROOT/{%{_lib},%{_bindir},%{_includedir},%{_libdir},%{_mandir},%{_libdir}/openssl}
-make INSTALL_PREFIX=$RPM_BUILD_ROOT install build-shared
+make INSTALL_PREFIX=$RPM_BUILD_ROOT install
+make INSTALL_PREFIX=$RPM_BUILD_ROOT install_docs
 # OpenSSL install doesn't use correct _libdir
 mv $RPM_BUILD_ROOT/usr/lib/lib*.so.%{soversion} $RPM_BUILD_ROOT/%{_lib}/
 mv $RPM_BUILD_ROOT/usr/lib/engines $RPM_BUILD_ROOT/%{_libdir}/openssl
@@ -222,6 +251,8 @@ for lib in $RPM_BUILD_ROOT/%{_lib}/*.so.%{version} ; do
 	chmod 755 ${lib}
 	ln -s -f ../../%{_lib}/`basename ${lib}` $RPM_BUILD_ROOT%{_libdir}/`basename ${lib} .%{version}`
 	ln -s -f `basename ${lib}` $RPM_BUILD_ROOT/%{_lib}/`basename ${lib} .%{version}`.%{soversion}
+# temporary hack
+	ln -s -f `basename ${lib}` $RPM_BUILD_ROOT/%{_lib}/`basename ${lib} .%{version}`.7
 	rm -f $RPM_BUILD_ROOT%{_libdir}/`basename ${lib} .%{version}`.%{soversion}
 done
 
@@ -313,8 +344,10 @@ rm -rf $RPM_BUILD_ROOT/%{_mandir}/man1*/*.pl*
 rm -rf $RPM_BUILD_ROOT/%{_sysconfdir}/pki/tls/misc/*.pl
 %endif
 
-# Remove fips fingerprint script 
+# Remove unused files from upstream fips support
 rm -rf $RPM_BUILD_ROOT/%{_bindir}/openssl_fips_fingerprint
+rm -rf $RPM_BUILD_ROOT/%{_libdir}/fips_premain.*
+rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 
 %clean
 [ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
@@ -322,7 +355,7 @@ rm -rf $RPM_BUILD_ROOT/%{_bindir}/openssl_fips_fingerprint
 %files 
 %defattr(-,root,root)
 %doc FAQ LICENSE CHANGES NEWS INSTALL README
-%doc doc/README doc/c-indentation.el doc/openssl.txt
+%doc doc/c-indentation.el doc/openssl.txt
 %doc doc/openssl_button.html doc/openssl_button.gif
 %doc doc/ssleay.txt
 %dir %{_sysconfdir}/pki/tls
@@ -341,6 +374,9 @@ rm -rf $RPM_BUILD_ROOT/%{_bindir}/openssl_fips_fingerprint
 %attr(0755,root,root) %{_bindir}/openssl
 %attr(0755,root,root) /%{_lib}/*.so.%{version}
 %attr(0755,root,root) /%{_lib}/*.so.%{soversion}
+%attr(0644,root,root) /%{_lib}/.libcrypto.so.*.hmac
+# temporary hack
+%attr(0755,root,root) /%{_lib}/*.so.7
 %attr(0755,root,root) %{_libdir}/openssl
 %attr(0644,root,root) %{_mandir}/man1*/[ABD-Zabcd-z]*
 %attr(0644,root,root) %{_mandir}/man5*/*
@@ -363,11 +399,23 @@ rm -rf $RPM_BUILD_ROOT/%{_bindir}/openssl_fips_fingerprint
 %{_sysconfdir}/pki/tls/misc/*.pl
 %endif
 
-%post -p /sbin/ldconfig
+%post 
+/sbin/ldconfig -X
 
-%postun -p /sbin/ldconfig
+%postun
+/sbin/ldconfig -X
 
 %changelog
+* Thu Jan 15 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8j-1
+- new upstream version with necessary soname bump (#455753)
+- temporarily provide symlink to old soname to make it possible to rebuild
+  the dependent packages in rawhide
+- add eap-fast support (#428181)
+- add possibility to disable zlib by setting 
+- add fips mode support for testing purposes
+- do not null dereference on some invalid smime files
+- add buildrequires pkgconfig (#479493)
+
 * Sun Aug 10 2008 Tomas Mraz <tmraz@redhat.com> 0.9.8g-11
 - do not add tls extensions to server hello for SSLv3 either
 
