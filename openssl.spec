@@ -23,7 +23,7 @@
 Summary: A general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 0.9.8j
-Release: 2%{?dist}
+Release: 3%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
 Source: openssl-%{version}-usa.tar.bz2
@@ -75,7 +75,7 @@ BuildRequires: pkgconfig
 Requires: mktemp, ca-certificates >= 2008-5
 
 # Temporary hack
-Requires(post): /sbin/ldconfig
+Requires(post): /sbin/ldconfig coreutils
 Requires(postun): /sbin/ldconfig
 %ifarch ppc64 s390x sparc64 x86_64
 Provides: libcrypto.so.7()(64bit) libssl.so.7()(64bit)
@@ -400,11 +400,11 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %endif
 
 %post 
-if [ ! -h /%{_lib}/libcrypto.so.7 ] ; then
-    ln -s libcrypto.so.%{version} /%{_lib}/libcrypto.so.7 || :
+if [ "$(readlink /%{_lib}/libcrypto.so.7)" != libcrypto.so.%{version} ] ; then
+    ln -sf libcrypto.so.%{version} /%{_lib}/libcrypto.so.7 || :
 fi
-if [ ! -h /%{_lib}/libssl.so.7 ] ; then
-    ln -s libssl.so.%{version} /%{_lib}/libssl.so.7 || :
+if [ "$(readlink /%{_lib}/libssl.so.7)" != libssl.so.%{version} ] ; then
+    ln -sf libssl.so.%{version} /%{_lib}/libssl.so.7 || :
 fi
 /sbin/ldconfig -X
 
@@ -412,6 +412,9 @@ fi
 /sbin/ldconfig -X
 
 %changelog
+* Fri Jan 16 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8j-3
+- even more robust test for the temporary symlinks
+
 * Fri Jan 16 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8j-2
 - try to ensure the temporary symlinks exist
 
