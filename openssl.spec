@@ -23,7 +23,7 @@
 Summary: A general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 0.9.8j
-Release: 1%{?dist}
+Release: 2%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
 Source: openssl-%{version}-usa.tar.bz2
@@ -400,12 +400,21 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %endif
 
 %post 
+if [ ! -h /%{_lib}/libcrypto.so.7 ] ; then
+    ln -s libcrypto.so.%{version} /%{_lib}/libcrypto.so.7 || :
+fi
+if [ ! -h /%{_lib}/libssl.so.7 ] ; then
+    ln -s libssl.so.%{version} /%{_lib}/libssl.so.7 || :
+fi
 /sbin/ldconfig -X
 
 %postun
 /sbin/ldconfig -X
 
 %changelog
+* Fri Jan 16 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8j-2
+- try to ensure the temporary symlinks exist
+
 * Thu Jan 15 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8j-1
 - new upstream version with necessary soname bump (#455753)
 - temporarily provide symlink to old soname to make it possible to rebuild
