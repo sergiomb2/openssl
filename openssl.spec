@@ -413,7 +413,20 @@ fi
 %postun
 /sbin/ldconfig -X
 
+%triggerpostun -- openssl < 0.9.8j
+[ $1 != 0 ] || exit 0
+if [ "$(readlink /%{_lib}/libcrypto.so.7)" != libcrypto.so.%{version} ] ; then
+    ln -sf libcrypto.so.%{version} /%{_lib}/libcrypto.so.7 || :
+fi
+if [ "$(readlink /%{_lib}/libssl.so.7)" != libssl.so.%{version} ] ; then
+    ln -sf libssl.so.%{version} /%{_lib}/libssl.so.7 || :
+fi
+/sbin/ldconfig -X
+
 %changelog
+* Sat Jan 16 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8j-5
+- add temporary triggerpostun to reinstate the symlinks
+
 * Sat Jan 16 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8j-4
 - no pairwise key tests in non-fips mode (#479817)
 
