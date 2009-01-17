@@ -23,7 +23,7 @@
 Summary: A general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 0.9.8j
-Release: 3%{?dist}
+Release: 4%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
 Source: openssl-%{version}-usa.tar.bz2
@@ -63,6 +63,7 @@ Patch45: openssl-0.9.8j-env-nozlib.patch
 Patch46: openssl-0.9.8j-eap-fast.patch
 Patch47: openssl-0.9.8j-readme-warning.patch
 Patch48: openssl-0.9.8j-bad-mime.patch
+Patch49: openssl-0.9.8j-fips-no-pairwise.patch
 # Backported fixes including security fixes
 
 License: OpenSSL
@@ -146,6 +147,7 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch46 -p1 -b .eap-fast
 %patch47 -p1 -b .warning
 %patch48 -p1 -b .bad-mime
+%patch49 -p1 -b .no-pairwise
 
 # Modify the various perl scripts to reference perl in the right location.
 perl util/perlpath.pl `dirname %{__perl}`
@@ -412,6 +414,9 @@ fi
 /sbin/ldconfig -X
 
 %changelog
+* Sat Jan 16 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8j-4
+- no pairwise key tests in non-fips mode (#479817)
+
 * Fri Jan 16 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8j-3
 - even more robust test for the temporary symlinks
 
