@@ -23,7 +23,7 @@
 Summary: A general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 0.9.8j
-Release: 5%{?dist}
+Release: 6%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
 Source: openssl-%{version}-usa.tar.bz2
@@ -72,7 +72,6 @@ URL: http://www.openssl.org/
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildRequires: mktemp, krb5-devel, perl, sed, zlib-devel, /usr/bin/cmp
 BuildRequires: /usr/bin/rename
-BuildRequires: pkgconfig
 Requires: mktemp, ca-certificates >= 2008-5
 
 # Temporary hack
@@ -191,12 +190,11 @@ sslarch=linux-generic32
 # usable on all platforms.  The Configure script already knows to use -fPIC and
 # RPM_OPT_FLAGS, so we can skip specifiying them here.
 ./Configure \
-	--prefix=%{_prefix} --openssldir=%{_sysconfdir}/pki/tls ${sslflags} \
+	--prefix=/usr --openssldir=%{_sysconfdir}/pki/tls ${sslflags} \
 	zlib enable-camellia enable-seed enable-tlsext enable-rfc3779 \
 	enable-cms no-idea no-mdc2 no-rc5 no-ec no-ecdh no-ecdsa shared \
 	--with-krb5-flavor=MIT --enginesdir=%{_libdir}/openssl/engines \
-	-I%{_prefix}/kerberos/include -L%{_prefix}/kerberos/%{_lib} \
-	${sslarch} fipscanisterbuild
+	--with-krb5-dir=/usr ${sslarch} fipscanisterbuild
 
 # Add -Wa,--noexecstack here so that libcrypto's assembler modules will be
 # marked as not requiring an executable stack.
@@ -401,29 +399,18 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %{_sysconfdir}/pki/tls/misc/*.pl
 %endif
 
-%post 
-if [ "$(readlink /%{_lib}/libcrypto.so.7)" != libcrypto.so.%{version} ] ; then
-    ln -sf libcrypto.so.%{version} /%{_lib}/libcrypto.so.7 || :
-fi
-if [ "$(readlink /%{_lib}/libssl.so.7)" != libssl.so.%{version} ] ; then
-    ln -sf libssl.so.%{version} /%{_lib}/libssl.so.7 || :
-fi
+%post
 /sbin/ldconfig -X
 
 %postun
 /sbin/ldconfig -X
 
-%triggerpostun -- openssl < 0.9.8j
-[ $1 != 0 ] || exit 0
-if [ "$(readlink /%{_lib}/libcrypto.so.7)" != libcrypto.so.%{version} ] ; then
-    ln -sf libcrypto.so.%{version} /%{_lib}/libcrypto.so.7 || :
-fi
-if [ "$(readlink /%{_lib}/libssl.so.7)" != libssl.so.%{version} ] ; then
-    ln -sf libssl.so.%{version} /%{_lib}/libssl.so.7 || :
-fi
-/sbin/ldconfig -X
-
 %changelog
+* Mon Jan 26 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8j-6
+- drop the temporary triggerpostun and symlinking in post
+- fix the pkgconfig files and drop the unnecessary buildrequires
+  on pkgconfig as it is a rpmbuild dependency (#481419)
+
 * Sat Jan 16 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8j-5
 - add temporary triggerpostun to reinstate the symlinks
 
