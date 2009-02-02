@@ -1,8 +1,6 @@
-Use fipscheck compatible way of verification of the integrity of the libcrypto
-shared library.
 diff -up openssl-0.9.8j/test/Makefile.use-fipscheck openssl-0.9.8j/test/Makefile
 --- openssl-0.9.8j/test/Makefile.use-fipscheck	2008-12-13 13:22:47.000000000 +0100
-+++ openssl-0.9.8j/test/Makefile	2009-01-13 22:49:25.000000000 +0100
++++ openssl-0.9.8j/test/Makefile	2009-02-02 13:24:36.000000000 +0100
 @@ -402,8 +402,7 @@ FIPS_BUILD_CMD=shlib_target=; if [ -n "$
  	if [ "$(FIPSCANLIB)" = "libfips" ]; then \
  		LIBRARIES="-L$(TOP) -lfips"; \
@@ -24,8 +22,8 @@ diff -up openssl-0.9.8j/test/Makefile.use-fipscheck openssl-0.9.8j/test/Makefile
  	$(MAKE) -f $(TOP)/Makefile.shared -e \
  		CC=$${CC} APPNAME=$$target$(EXE_EXT) OBJECTS="$$target.o" \
 diff -up openssl-0.9.8j/Makefile.org.use-fipscheck openssl-0.9.8j/Makefile.org
---- openssl-0.9.8j/Makefile.org.use-fipscheck	2009-01-13 22:35:48.000000000 +0100
-+++ openssl-0.9.8j/Makefile.org	2009-01-13 22:35:49.000000000 +0100
+--- openssl-0.9.8j/Makefile.org.use-fipscheck	2009-02-02 13:24:36.000000000 +0100
++++ openssl-0.9.8j/Makefile.org	2009-02-02 13:24:36.000000000 +0100
 @@ -357,10 +357,6 @@ libcrypto$(SHLIB_EXT): libcrypto.a $(SHA
  			$(MAKE) SHLIBDIRS='crypto' SHLIBDEPS='-lfips' build-shared; \
  			$(AR) libcrypto.a fips/fipscanister.o ; \
@@ -59,7 +57,7 @@ diff -up openssl-0.9.8j/Makefile.org.use-fipscheck openssl-0.9.8j/Makefile.org
  Makefile: Makefile.org Configure config
 diff -up openssl-0.9.8j/fips/fips.c.use-fipscheck openssl-0.9.8j/fips/fips.c
 --- openssl-0.9.8j/fips/fips.c.use-fipscheck	2008-09-16 12:12:09.000000000 +0200
-+++ openssl-0.9.8j/fips/fips.c	2009-01-13 22:35:49.000000000 +0100
++++ openssl-0.9.8j/fips/fips.c	2009-02-02 13:31:53.000000000 +0100
 @@ -47,6 +47,7 @@
   *
   */
@@ -100,7 +98,7 @@ diff -up openssl-0.9.8j/fips/fips.c.use-fipscheck openssl-0.9.8j/fips/fips.c
 +	void *dl, *sym;
 +	int rv = -1;
 +
-+        dl = dlopen(libname, RTLD_NODELETE|RTLD_NOLOAD|RTLD_LAZY);
++        dl = dlopen(libname, RTLD_LAZY);
 +        if (dl == NULL) {
 +	        return -1;
 +        }       
@@ -293,26 +291,28 @@ diff -up openssl-0.9.8j/fips/fips.c.use-fipscheck openssl-0.9.8j/fips/fips.c
  
  int FIPS_mode_set(int onoff)
      {
-@@ -280,16 +485,9 @@ int FIPS_mode_set(int onoff)
+@@ -280,16 +485,17 @@ int FIPS_mode_set(int onoff)
  	    }
  #endif
  
 -	if(fips_signature_witness() != FIPS_signature)
--	    {
++	if(!FIPSCHECK_verify("libcrypto.so." SHLIB_VERSION_NUMBER,"FIPS_mode_set"))
+ 	    {
 -	    FIPSerr(FIPS_F_FIPS_MODE_SET,FIPS_R_CONTRADICTING_EVIDENCE);
--	    fips_selftest_fail = 1;
--	    ret = 0;
--	    goto end;
--	    }
--
++	    FIPSerr(FIPS_F_FIPS_MODE_SET,FIPS_R_FINGERPRINT_DOES_NOT_MATCH);
+ 	    fips_selftest_fail = 1;
+ 	    ret = 0;
+ 	    goto end;
+ 	    }
+ 
 -	if(!FIPS_check_incore_fingerprint())
-+	if(!FIPSCHECK_verify("libcrypto.so.0.9.8e","FIPS_mode_set"))
++	if(!FIPSCHECK_verify("libssl.so." SHLIB_VERSION_NUMBER,"SSL_CTX_new"))
  	    {
 +	    FIPSerr(FIPS_F_FIPS_MODE_SET,FIPS_R_FINGERPRINT_DOES_NOT_MATCH);
  	    fips_selftest_fail = 1;
  	    ret = 0;
  	    goto end;
-@@ -405,11 +603,13 @@ int fips_clear_owning_thread(void)
+@@ -405,11 +611,13 @@ int fips_clear_owning_thread(void)
  	return ret;
  	}
  
@@ -327,8 +327,8 @@ diff -up openssl-0.9.8j/fips/fips.c.use-fipscheck openssl-0.9.8j/fips/fips.c
  /* Generalized public key test routine. Signs and verifies the data
   * supplied in tbs using mesage digest md and setting option digest
 diff -up openssl-0.9.8j/fips/Makefile.use-fipscheck openssl-0.9.8j/fips/Makefile
---- openssl-0.9.8j/fips/Makefile.use-fipscheck	2009-01-13 22:35:49.000000000 +0100
-+++ openssl-0.9.8j/fips/Makefile	2009-01-13 22:36:15.000000000 +0100
+--- openssl-0.9.8j/fips/Makefile.use-fipscheck	2009-02-02 13:24:36.000000000 +0100
++++ openssl-0.9.8j/fips/Makefile	2009-02-02 13:24:36.000000000 +0100
 @@ -62,9 +62,9 @@ testapps:
  
  all:
@@ -371,7 +371,7 @@ diff -up openssl-0.9.8j/fips/Makefile.use-fipscheck openssl-0.9.8j/fips/Makefile
  	@target=lint; $(RECURSIVE_MAKE)
 diff -up openssl-0.9.8j/fips/fips_locl.h.use-fipscheck openssl-0.9.8j/fips/fips_locl.h
 --- openssl-0.9.8j/fips/fips_locl.h.use-fipscheck	2008-09-16 12:12:10.000000000 +0200
-+++ openssl-0.9.8j/fips/fips_locl.h	2009-01-13 22:35:49.000000000 +0100
++++ openssl-0.9.8j/fips/fips_locl.h	2009-02-02 13:24:36.000000000 +0100
 @@ -63,7 +63,9 @@ int fips_is_owning_thread(void);
  int fips_set_owning_thread(void);
  void fips_set_selftest_fail(void);

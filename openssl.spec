@@ -23,7 +23,7 @@
 Summary: A general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 0.9.8j
-Release: 6%{?dist}
+Release: 7%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
 Source: openssl-%{version}-usa.tar.bz2
@@ -64,6 +64,7 @@ Patch46: openssl-0.9.8j-eap-fast.patch
 Patch47: openssl-0.9.8j-readme-warning.patch
 Patch48: openssl-0.9.8j-bad-mime.patch
 Patch49: openssl-0.9.8j-fips-no-pairwise.patch
+Patch50: openssl-0.9.8j-fips-rng-seed.patch
 # Backported fixes including security fixes
 
 License: OpenSSL
@@ -73,15 +74,6 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildRequires: mktemp, krb5-devel, perl, sed, zlib-devel, /usr/bin/cmp
 BuildRequires: /usr/bin/rename
 Requires: mktemp, ca-certificates >= 2008-5
-
-# Temporary hack
-Requires(post): /sbin/ldconfig coreutils
-Requires(postun): /sbin/ldconfig
-%ifarch ppc64 s390x sparc64 x86_64
-Provides: libcrypto.so.7()(64bit) libssl.so.7()(64bit)
-%else
-Provides: libcrypto.so.7 libssl.so.7
-%endif
 
 %description
 The OpenSSL toolkit provides support for secure communications between
@@ -147,6 +139,7 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch47 -p1 -b .warning
 %patch48 -p1 -b .bad-mime
 %patch49 -p1 -b .no-pairwise
+%patch50 -p1 -b .rng-seed
 
 # Modify the various perl scripts to reference perl in the right location.
 perl util/perlpath.pl `dirname %{__perl}`
@@ -232,6 +225,8 @@ make -C test apps tests
     %{__os_install_post} \
     fips/fips_standalone_sha1 $RPM_BUILD_ROOT/%{_lib}/libcrypto.so.%{version} >$RPM_BUILD_ROOT/%{_lib}/.libcrypto.so.%{version}.hmac \
     ln -sf .libcrypto.so.%{version}.hmac $RPM_BUILD_ROOT/%{_lib}/.libcrypto.so.%{soversion}.hmac \
+    fips/fips_standalone_sha1 $RPM_BUILD_ROOT/%{_lib}/libssl.so.%{version} >$RPM_BUILD_ROOT/%{_lib}/.libssl.so.%{version}.hmac \
+    ln -sf .libssl.so.%{version}.hmac $RPM_BUILD_ROOT/%{_lib}/.libssl.so.%{soversion}.hmac \
 %{nil}
 
 %install
@@ -251,8 +246,6 @@ for lib in $RPM_BUILD_ROOT/%{_lib}/*.so.%{version} ; do
 	chmod 755 ${lib}
 	ln -s -f ../../%{_lib}/`basename ${lib}` $RPM_BUILD_ROOT%{_libdir}/`basename ${lib} .%{version}`
 	ln -s -f `basename ${lib}` $RPM_BUILD_ROOT/%{_lib}/`basename ${lib} .%{version}`.%{soversion}
-# temporary hack
-	ln -s -f `basename ${lib}` $RPM_BUILD_ROOT/%{_lib}/`basename ${lib} .%{version}`.7
 	rm -f $RPM_BUILD_ROOT%{_libdir}/`basename ${lib} .%{version}`.%{soversion}
 done
 
@@ -375,8 +368,7 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %attr(0755,root,root) /%{_lib}/*.so.%{version}
 %attr(0755,root,root) /%{_lib}/*.so.%{soversion}
 %attr(0644,root,root) /%{_lib}/.libcrypto.so.*.hmac
-# temporary hack
-%attr(0755,root,root) /%{_lib}/*.so.7
+%attr(0644,root,root) /%{_lib}/.libssl.so.*.hmac
 %attr(0755,root,root) %{_libdir}/openssl
 %attr(0644,root,root) %{_mandir}/man1*/[ABD-Zabcd-z]*
 %attr(0644,root,root) %{_mandir}/man5*/*
@@ -399,13 +391,16 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %{_sysconfdir}/pki/tls/misc/*.pl
 %endif
 
-%post
-/sbin/ldconfig -X
+%post -p /sbin/ldconfig
 
-%postun
-/sbin/ldconfig -X
+%postun -p /sbin/ldconfig
 
 %changelog
+* Mon Feb  2 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8j-7
+- must also verify checksum of libssl.so in the FIPS mode
+- obtain the seed for FIPS rng directly from the kernel device
+- drop the temporary symlinks
+
 * Mon Jan 26 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8j-6
 - drop the temporary triggerpostun and symlinking in post
 - fix the pkgconfig files and drop the unnecessary buildrequires
