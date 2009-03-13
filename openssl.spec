@@ -23,7 +23,7 @@
 Summary: A general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 0.9.8j
-Release: 8%{?dist}
+Release: 9%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
 Source: openssl-%{version}-usa.tar.bz2
@@ -89,7 +89,17 @@ Requires: pkgconfig
 
 %description devel
 OpenSSL is a toolkit for supporting cryptography. The openssl-devel
-package contains static libraries and include files needed to develop
+package contains include files needed to develop applications which
+support various cryptographic algorithms and protocols.
+
+%package static
+Summary:  Libraries for static linking of applications which will use OpenSSL
+Group: Development/Libraries
+Requires: %{name}-devel = %{version}-%{release}
+
+%description static
+OpenSSL is a toolkit for supporting cryptography. The openssl-static
+package contains static libraries needed for static linking of
 applications which support various cryptographic algorithms and
 protocols.
 
@@ -378,10 +388,13 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %files devel
 %defattr(-,root,root)
 %{_prefix}/include/openssl
-%attr(0644,root,root) %{_libdir}/*.a
 %attr(0755,root,root) %{_libdir}/*.so
 %attr(0644,root,root) %{_mandir}/man3*/*
 %attr(0644,root,root) %{_libdir}/pkgconfig/*.pc
+
+%files static
+%defattr(-,root,root)
+%attr(0644,root,root) %{_libdir}/*.a
 
 %files perl
 %defattr(-,root,root)
@@ -396,6 +409,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun -p /sbin/ldconfig
 
 %changelog
+* Fri Mar 13 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8j-9
+- add a static subpackage
+
 * Thu Feb 26 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.9.8j-8
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_11_Mass_Rebuild
 
