@@ -245,8 +245,8 @@ make -C test apps tests
 install -d $RPM_BUILD_ROOT{%{_bindir},%{_includedir},%{_libdir},%{_mandir},%{_libdir}/openssl}
 make INSTALL_PREFIX=$RPM_BUILD_ROOT install
 make INSTALL_PREFIX=$RPM_BUILD_ROOT install_docs
-# OpenSSL install doesn't use correct _libdir
-mv $RPM_BUILD_ROOT/usr/lib/lib*.so.%{soversion} $RPM_BUILD_ROOT%{_libdir}/
+# OpenSSL install doesn't use correct _libdir on 64 bit archs
+[ "%{_libdir}" != /usr/lib ] && mv $RPM_BUILD_ROOT/usr/lib/lib*.so.%{soversion} $RPM_BUILD_ROOT%{_libdir}/
 mv $RPM_BUILD_ROOT/usr/lib/engines $RPM_BUILD_ROOT%{_libdir}/openssl
 mv $RPM_BUILD_ROOT%{_sysconfdir}/pki/tls/man/* $RPM_BUILD_ROOT%{_mandir}/
 rmdir $RPM_BUILD_ROOT%{_sysconfdir}/pki/tls/man
