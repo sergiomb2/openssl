@@ -1,17 +1,17 @@
-diff -up openssl-0.9.8j/test/Makefile.use-fipscheck openssl-0.9.8j/test/Makefile
---- openssl-0.9.8j/test/Makefile.use-fipscheck	2008-12-13 13:22:47.000000000 +0100
-+++ openssl-0.9.8j/test/Makefile	2009-02-02 13:24:36.000000000 +0100
-@@ -402,8 +402,7 @@ FIPS_BUILD_CMD=shlib_target=; if [ -n "$
+diff -up openssl-0.9.8k/test/Makefile.use-fipscheck openssl-0.9.8k/test/Makefile
+--- openssl-0.9.8k/test/Makefile.use-fipscheck	2009-03-25 11:59:22.000000000 +0100
++++ openssl-0.9.8k/test/Makefile	2009-03-25 20:14:10.000000000 +0100
+@@ -401,9 +401,6 @@ FIPS_BUILD_CMD=shlib_target=; if [ -n "$
+ 	fi; \
  	if [ "$(FIPSCANLIB)" = "libfips" ]; then \
  		LIBRARIES="-L$(TOP) -lfips"; \
- 	elif [ -n "$(FIPSCANLIB)" ]; then \
+-	elif [ -n "$(FIPSCANLIB)" ]; then \
 -		FIPSLD_CC=$(CC); CC=$(TOP)/fips/fipsld; export CC FIPSLD_CC; \
 -		LIBRARIES="$${FIPSLIBDIR:-$(TOP)/fips/}fipscanister.o"; \
-+		LIBRARIES="$(LIBCRYPTO)"; \
+ 	else \
+ 		LIBRARIES="$(LIBCRYPTO)"; \
  	fi; \
- 	$(MAKE) -f $(TOP)/Makefile.shared -e \
- 		CC=$${CC} APPNAME=$$target$(EXE_EXT) OBJECTS="$$target.o" \
-@@ -414,9 +413,6 @@ FIPS_CRYPTO_BUILD_CMD=shlib_target=; if 
+@@ -416,9 +413,6 @@ FIPS_CRYPTO_BUILD_CMD=shlib_target=; if 
  		shlib_target="$(SHLIB_TARGET)"; \
  	fi; \
  	LIBRARIES="$(LIBSSL) $(LIBCRYPTO) $(LIBKRB5)"; \
@@ -21,9 +21,9 @@ diff -up openssl-0.9.8j/test/Makefile.use-fipscheck openssl-0.9.8j/test/Makefile
  	[ "$(FIPSCANLIB)" = "libfips" ] && LIBRARIES="$$LIBRARIES -lfips"; \
  	$(MAKE) -f $(TOP)/Makefile.shared -e \
  		CC=$${CC} APPNAME=$$target$(EXE_EXT) OBJECTS="$$target.o" \
-diff -up openssl-0.9.8j/Makefile.org.use-fipscheck openssl-0.9.8j/Makefile.org
---- openssl-0.9.8j/Makefile.org.use-fipscheck	2009-02-02 13:24:36.000000000 +0100
-+++ openssl-0.9.8j/Makefile.org	2009-02-02 13:24:36.000000000 +0100
+diff -up openssl-0.9.8k/Makefile.org.use-fipscheck openssl-0.9.8k/Makefile.org
+--- openssl-0.9.8k/Makefile.org.use-fipscheck	2009-03-25 20:10:37.000000000 +0100
++++ openssl-0.9.8k/Makefile.org	2009-03-25 20:10:37.000000000 +0100
 @@ -357,10 +357,6 @@ libcrypto$(SHLIB_EXT): libcrypto.a $(SHA
  			$(MAKE) SHLIBDIRS='crypto' SHLIBDEPS='-lfips' build-shared; \
  			$(AR) libcrypto.a fips/fipscanister.o ; \
@@ -55,9 +55,9 @@ diff -up openssl-0.9.8j/Makefile.org.use-fipscheck openssl-0.9.8j/Makefile.org
  	    echo 'Cflags: -I$${includedir} $(KRB5_INCLUDES)' ) > openssl.pc
  
  Makefile: Makefile.org Configure config
-diff -up openssl-0.9.8j/fips/fips.c.use-fipscheck openssl-0.9.8j/fips/fips.c
---- openssl-0.9.8j/fips/fips.c.use-fipscheck	2008-09-16 12:12:09.000000000 +0200
-+++ openssl-0.9.8j/fips/fips.c	2009-02-02 13:31:53.000000000 +0100
+diff -up openssl-0.9.8k/fips/fips.c.use-fipscheck openssl-0.9.8k/fips/fips.c
+--- openssl-0.9.8k/fips/fips.c.use-fipscheck	2008-09-16 12:12:09.000000000 +0200
++++ openssl-0.9.8k/fips/fips.c	2009-03-25 20:10:37.000000000 +0100
 @@ -47,6 +47,7 @@
   *
   */
@@ -326,9 +326,9 @@ diff -up openssl-0.9.8j/fips/fips.c.use-fipscheck openssl-0.9.8j/fips/fips.c
  
  /* Generalized public key test routine. Signs and verifies the data
   * supplied in tbs using mesage digest md and setting option digest
-diff -up openssl-0.9.8j/fips/Makefile.use-fipscheck openssl-0.9.8j/fips/Makefile
---- openssl-0.9.8j/fips/Makefile.use-fipscheck	2009-02-02 13:24:36.000000000 +0100
-+++ openssl-0.9.8j/fips/Makefile	2009-02-02 13:24:36.000000000 +0100
+diff -up openssl-0.9.8k/fips/Makefile.use-fipscheck openssl-0.9.8k/fips/Makefile
+--- openssl-0.9.8k/fips/Makefile.use-fipscheck	2009-03-25 20:10:37.000000000 +0100
++++ openssl-0.9.8k/fips/Makefile	2009-03-25 20:16:09.000000000 +0100
 @@ -62,9 +62,9 @@ testapps:
  
  all:
@@ -358,20 +358,27 @@ diff -up openssl-0.9.8j/fips/Makefile.use-fipscheck openssl-0.9.8j/fips/Makefile
  
  libs:
  	@target=lib; $(RECURSIVE_MAKE)
-@@ -195,10 +194,6 @@ install:
+@@ -195,17 +194,6 @@ install:
  	chmod 644 $(INSTALL_PREFIX)$(INSTALLTOP)/include/openssl/$$i ); \
  	done;
  	@target=install; $(RECURSIVE_MAKE)
--	@cp -p -f fipscanister.o fipscanister.o.sha1 fips_premain.c \
--		fips_premain.c.sha1 \
+-	for i in $(EXE) ; \
+-	do \
+-		echo "installing $$i"; \
+-		cp $$i $(INSTALL_PREFIX)$(INSTALLTOP)/bin/$$i.new; \
+-		chmod 755 $(INSTALL_PREFIX)$(INSTALLTOP)/bin/$$i.new; \
+-		mv -f $(INSTALL_PREFIX)$(INSTALLTOP)/bin/$$i.new $(INSTALL_PREFIX)$(INSTALLTOP)/bin/$$i; \
+-	done
+-	cp -p -f $(FIPSLIBDIR)fipscanister.o $(FIPSLIBDIR)fipscanister.o.sha1 \
+-		$(FIPSLIBDIR)fips_premain.c $(FIPSLIBDIR)fips_premain.c.sha1 \
 -		$(INSTALL_PREFIX)$(INSTALLTOP)/lib/; \
 -	chmod 0444 $(INSTALL_PREFIX)$(INSTALLTOP)/lib/fips*
  
  lint:
  	@target=lint; $(RECURSIVE_MAKE)
-diff -up openssl-0.9.8j/fips/fips_locl.h.use-fipscheck openssl-0.9.8j/fips/fips_locl.h
---- openssl-0.9.8j/fips/fips_locl.h.use-fipscheck	2008-09-16 12:12:10.000000000 +0200
-+++ openssl-0.9.8j/fips/fips_locl.h	2009-02-02 13:24:36.000000000 +0100
+diff -up openssl-0.9.8k/fips/fips_locl.h.use-fipscheck openssl-0.9.8k/fips/fips_locl.h
+--- openssl-0.9.8k/fips/fips_locl.h.use-fipscheck	2008-09-16 12:12:10.000000000 +0200
++++ openssl-0.9.8k/fips/fips_locl.h	2009-03-25 20:10:37.000000000 +0100
 @@ -63,7 +63,9 @@ int fips_is_owning_thread(void);
  int fips_set_owning_thread(void);
  void fips_set_selftest_fail(void);

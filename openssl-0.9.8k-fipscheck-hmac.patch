@@ -1,8 +1,6 @@
-Produce fipscheck compatible HMAC-SHA256 with the fips_standalone_sha1 binary.
-We use the binary just during the OpenSSL build to checksum the libcrypto.
-diff -up openssl-0.9.8j/fips/sha/Makefile.fipscheck-hmac openssl-0.9.8j/fips/sha/Makefile
---- openssl-0.9.8j/fips/sha/Makefile.fipscheck-hmac	2008-10-26 19:42:05.000000000 +0100
-+++ openssl-0.9.8j/fips/sha/Makefile	2009-01-14 16:39:41.000000000 +0100
+diff -up openssl-0.9.8k/fips/sha/Makefile.fipscheck-hmac openssl-0.9.8k/fips/sha/Makefile
+--- openssl-0.9.8k/fips/sha/Makefile.fipscheck-hmac	2008-10-26 19:42:05.000000000 +0100
++++ openssl-0.9.8k/fips/sha/Makefile	2009-03-25 20:18:08.000000000 +0100
 @@ -46,7 +46,7 @@ lib:	$(LIBOBJ)
  	@echo $(LIBOBJ) > lib
  
@@ -12,9 +10,9 @@ diff -up openssl-0.9.8j/fips/sha/Makefile.fipscheck-hmac openssl-0.9.8j/fips/sha
  	$(CC) -o $@ $(CFLAGS) fips_standalone_sha1.o $$FIPS_SHA_ASM
  
  files:
-diff -up openssl-0.9.8j/fips/sha/fips_standalone_sha1.c.fipscheck-hmac openssl-0.9.8j/fips/sha/fips_standalone_sha1.c
---- openssl-0.9.8j/fips/sha/fips_standalone_sha1.c.fipscheck-hmac	2008-09-16 12:12:23.000000000 +0200
-+++ openssl-0.9.8j/fips/sha/fips_standalone_sha1.c	2009-01-14 17:07:56.000000000 +0100
+diff -up openssl-0.9.8k/fips/sha/fips_standalone_sha1.c.fipscheck-hmac openssl-0.9.8k/fips/sha/fips_standalone_sha1.c
+--- openssl-0.9.8k/fips/sha/fips_standalone_sha1.c.fipscheck-hmac	2009-01-15 13:34:54.000000000 +0100
++++ openssl-0.9.8k/fips/sha/fips_standalone_sha1.c	2009-03-25 20:18:08.000000000 +0100
 @@ -62,7 +62,7 @@ void OPENSSL_cleanse(void *p,size_t len)
  
  #ifdef OPENSSL_FIPS
@@ -23,7 +21,7 @@ diff -up openssl-0.9.8j/fips/sha/fips_standalone_sha1.c.fipscheck-hmac openssl-0
 +static void hmac_init(SHA256_CTX *md_ctx,SHA256_CTX *o_ctx,
  		      const char *key)
      {
-     int len=strlen(key);
+     size_t len=strlen(key);
 @@ -72,10 +72,10 @@ static void hmac_init(SHA_CTX *md_ctx,SH
  
      if (len > SHA_CBLOCK)
@@ -91,15 +89,6 @@ diff -up openssl-0.9.8j/fips/sha/fips_standalone_sha1.c.fipscheck-hmac openssl-0
  	int i;
  
  	if(!f)
-@@ -139,7 +139,7 @@ int main(int argc,char **argv)
- 	for( ; ; )
- 	    {
- 	    char buf[1024];
--	    int l=fread(buf,1,sizeof buf,f);
-+	    size_t l=fread(buf,1,sizeof buf,f);
- 
- 	    if(l == 0)
- 		{
 @@ -151,18 +151,18 @@ int main(int argc,char **argv)
  		else
  		    break;

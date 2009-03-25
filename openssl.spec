@@ -7,7 +7,7 @@
 # 0.9.7ef soversion = 5
 # 0.9.8ab soversion = 6
 # 0.9.8g soversion = 7
-# 0.9.8j + EAP-FAST soversion = 8
+# 0.9.8jk + EAP-FAST soversion = 8
 %define soversion 8
 
 # Number of threads to spawn when testing some threading fixes.
@@ -22,8 +22,8 @@
 
 Summary: A general purpose cryptography library with TLS implementation
 Name: openssl
-Version: 0.9.8j
-Release: 10%{?dist}
+Version: 0.9.8k
+Release: 1%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
 Source: openssl-%{version}-usa.tar.bz2
@@ -44,7 +44,7 @@ Patch6: openssl-0.9.8b-test-use-localhost.patch
 Patch7: openssl-0.9.8j-shlib-version.patch
 # Bug fixes
 Patch21: openssl-0.9.8b-aliasing-bug.patch
-Patch22: openssl-0.9.8b-x509-name-cmp.patch
+Patch22: openssl-0.9.8k-x509-name-cmp.patch
 Patch23: openssl-0.9.8g-default-paths.patch
 Patch24: openssl-0.9.8g-no-extssl.patch
 # Functionality changes
@@ -55,8 +55,8 @@ Patch35: openssl-0.9.8j-version-add-engines.patch
 Patch38: openssl-0.9.8a-reuse-cipher-change.patch
 Patch39: openssl-0.9.8g-ipv6-apps.patch
 Patch40: openssl-0.9.8j-nocanister.patch
-Patch41: openssl-0.9.8j-use-fipscheck.patch
-Patch42: openssl-0.9.8j-fipscheck-hmac.patch
+Patch41: openssl-0.9.8k-use-fipscheck.patch
+Patch42: openssl-0.9.8k-fipscheck-hmac.patch
 Patch43: openssl-0.9.8j-evp-nonfips.patch
 Patch44: openssl-0.9.8j-kernel-fipsmode.patch
 Patch45: openssl-0.9.8j-env-nozlib.patch
@@ -408,6 +408,10 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun -p /sbin/ldconfig
 
 %changelog
+* Thu Mar 25 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8k-1
+- update to new upstream release (minor bug fixes, security
+  fixes and machine code optimizations only)
+
 * Thu Mar 19 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8j-10
 - move libraries to /usr/lib (#239375)
 
