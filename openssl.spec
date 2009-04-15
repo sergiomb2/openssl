@@ -23,7 +23,7 @@
 Summary: A general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 0.9.8k
-Release: 1%{?dist}
+Release: 2%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
 Source: openssl-%{version}-usa.tar.bz2
@@ -57,14 +57,14 @@ Patch39: openssl-0.9.8g-ipv6-apps.patch
 Patch40: openssl-0.9.8j-nocanister.patch
 Patch41: openssl-0.9.8k-use-fipscheck.patch
 Patch42: openssl-0.9.8k-fipscheck-hmac.patch
-Patch43: openssl-0.9.8j-evp-nonfips.patch
-Patch44: openssl-0.9.8j-kernel-fipsmode.patch
+Patch44: openssl-0.9.8k-kernel-fipsmode.patch
 Patch45: openssl-0.9.8j-env-nozlib.patch
 Patch46: openssl-0.9.8j-eap-fast.patch
 Patch47: openssl-0.9.8j-readme-warning.patch
 Patch48: openssl-0.9.8j-bad-mime.patch
 Patch49: openssl-0.9.8j-fips-no-pairwise.patch
 Patch50: openssl-0.9.8j-fips-rng-seed.patch
+Patch51: openssl-0.9.8k-multi-crl.patch
 # Backported fixes including security fixes
 
 License: OpenSSL
@@ -142,7 +142,6 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch40 -p1 -b .nocanister
 %patch41 -p1 -b .use-fipscheck
 %patch42 -p1 -b .fipscheck-hmac
-%patch43 -p1 -b .evp-nonfips
 %patch44 -p1 -b .fipsmode
 %patch45 -p1 -b .env-nozlib
 %patch46 -p1 -b .eap-fast
@@ -150,6 +149,7 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch48 -p1 -b .bad-mime
 %patch49 -p1 -b .no-pairwise
 %patch50 -p1 -b .rng-seed
+%patch51 -p1 -b .multi-crl
 
 # Modify the various perl scripts to reference perl in the right location.
 perl util/perlpath.pl `dirname %{__perl}`
@@ -408,6 +408,10 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun -p /sbin/ldconfig
 
 %changelog
+* Wed Apr 15 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8k-2
+- add support for multiple CRLs with same subject
+- load only dynamic engine support in FIPS mode
+
 * Thu Mar 25 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8k-1
 - update to new upstream release (minor bug fixes, security
   fixes and machine code optimizations only)
