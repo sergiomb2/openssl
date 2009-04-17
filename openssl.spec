@@ -23,7 +23,7 @@
 Summary: A general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 0.9.8k
-Release: 2%{?dist}
+Release: 3%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
 Source: openssl-%{version}-usa.tar.bz2
@@ -41,7 +41,7 @@ Patch3: openssl-0.9.8j-soversion.patch
 Patch4: openssl-0.9.8j-enginesdir.patch
 Patch5: openssl-0.9.8a-no-rpath.patch
 Patch6: openssl-0.9.8b-test-use-localhost.patch
-Patch7: openssl-0.9.8j-shlib-version.patch
+Patch7: openssl-0.9.8k-shlib-version.patch
 # Bug fixes
 Patch21: openssl-0.9.8b-aliasing-bug.patch
 Patch22: openssl-0.9.8k-x509-name-cmp.patch
@@ -408,6 +408,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun -p /sbin/ldconfig
 
 %changelog
+* Fri Apr 17 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8k-3
+- correct the SHLIB_VERSION define
+
 * Wed Apr 15 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8k-2
 - add support for multiple CRLs with same subject
 - load only dynamic engine support in FIPS mode
