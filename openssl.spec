@@ -22,7 +22,7 @@
 Summary: The OpenSSL toolkit
 Name: openssl
 Version: 0.9.8g
-Release: 12%{?dist}
+Release: 13%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
 Source: openssl-%{version}-usa.tar.bz2
@@ -60,6 +60,8 @@ Patch52: openssl-0.9.8g-cve-2008-0891.patch
 Patch53: openssl-0.9.8g-cve-2008-1671.patch
 Patch54: openssl-0.9.8g-cve-2008-5077.patch
 Patch55: openssl-0.9.8g-no-ign-eof.patch
+Patch56: openssl-0.9.8g-bad-mime.patch
+Patch57: openssl-0.9.8g-dtls-compat.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -80,6 +82,7 @@ Summary: Files for development of applications which will use OpenSSL
 Group: Development/Libraries
 Requires: %{name} = %{version}-%{release}, krb5-devel, zlib-devel
 Requires: pkgconfig
+Provides: %{name}-static
 
 %description devel
 OpenSSL is a toolkit for supporting cryptography. The openssl-devel
@@ -129,6 +132,8 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch53 -p0 -b .srv-kex-crash
 %patch54 -p1 -b .verifysig
 %patch55 -p1 -b .no-ign-eof
+%patch56 -p1 -b .bad-mime
+%patch57 -p1 -b .dtls-compat
 
 # Modify the various perl scripts to reference perl in the right location.
 perl util/perlpath.pl `dirname %{__perl}`
@@ -372,6 +377,11 @@ rm -rf $RPM_BUILD_ROOT/%{_bindir}/openssl_fips_fingerprint
 %postun -p /sbin/ldconfig
 
 %changelog
+* Tue Apr 21 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8g-13
+- support compatibility DTLS mode for CISCO AnyConnect (#464629)
+- fix crash when parsing malformed mime headers in the smime app
+- provide openssl-static by the devel subpackage (#496372)
+
 * Wed Jan  7 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8g-12
 - fix CVE-2008-5077 - incorrect checks for malformed signatures (#476671)
 - add -no_ign_eof option (#462393)
