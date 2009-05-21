@@ -1,0 +1,213 @@
+Improve dtls compatibility with old DTLS servers (such as CISCO AnyConnect).
+Additional backported DTLS fixes.
+diff -up openssl-0.9.8g/ssl/d1_clnt.c.dtls-compat openssl-0.9.8g/ssl/d1_clnt.c
+--- openssl-0.9.8g/ssl/d1_clnt.c.dtls-compat	2007-09-30 21:36:32.000000000 +0200
++++ openssl-0.9.8g/ssl/d1_clnt.c	2009-04-21 14:17:41.000000000 +0200
+@@ -130,7 +130,7 @@ static int dtls1_get_hello_verify(SSL *s
+ 
+ static SSL_METHOD *dtls1_get_client_method(int ver)
+ 	{
+-	if (ver == DTLS1_VERSION)
++	if (ver == DTLS1_VERSION || ver == DTLS1_BAD_VER)
+ 		return(DTLSv1_client_method());
+ 	else
+ 		return(NULL);
+@@ -181,7 +181,8 @@ int dtls1_connect(SSL *s)
+ 			s->server=0;
+ 			if (cb != NULL) cb(s,SSL_CB_HANDSHAKE_START,1);
+ 
+-			if ((s->version & 0xff00 ) != (DTLS1_VERSION & 0xff00))
++			if ((s->version & 0xff00 ) != (DTLS1_VERSION & 0xff00) &&
++			    (s->version & 0xff00 ) != (DTLS1_BAD_VER & 0xff00))
+ 				{
+ 				SSLerr(SSL_F_DTLS1_CONNECT, ERR_R_INTERNAL_ERROR);
+ 				ret = -1;
+diff -up openssl-0.9.8g/ssl/d1_lib.c.dtls-compat openssl-0.9.8g/ssl/d1_lib.c
+--- openssl-0.9.8g/ssl/d1_lib.c.dtls-compat	2007-10-05 23:05:27.000000000 +0200
++++ openssl-0.9.8g/ssl/d1_lib.c	2009-04-21 14:19:07.000000000 +0200
+@@ -106,6 +106,7 @@ int dtls1_new(SSL *s)
+ 	pq_64bit_init(&(d1->bitmap.map));
+ 	pq_64bit_init(&(d1->bitmap.max_seq_num));
+ 	
++	d1->next_bitmap.length = d1->bitmap.length;
+ 	pq_64bit_init(&(d1->next_bitmap.map));
+ 	pq_64bit_init(&(d1->next_bitmap.max_seq_num));
+ 
+@@ -186,7 +187,10 @@ void dtls1_free(SSL *s)
+ void dtls1_clear(SSL *s)
+ 	{
+ 	ssl3_clear(s);
+-	s->version=DTLS1_VERSION;
++	if (s->options & SSL_OP_CISCO_ANYCONNECT)
++		s->version=DTLS1_BAD_VER;
++	else
++		s->version=DTLS1_VERSION;
+ 	}
+ 
+ /*
+diff -up openssl-0.9.8g/ssl/d1_pkt.c.dtls-compat openssl-0.9.8g/ssl/d1_pkt.c
+--- openssl-0.9.8g/ssl/d1_pkt.c.dtls-compat	2007-10-19 09:39:53.000000000 +0200
++++ openssl-0.9.8g/ssl/d1_pkt.c	2009-04-21 14:36:15.000000000 +0200
+@@ -597,6 +597,7 @@ again:
+ 	/* check whether this is a repeat, or aged record */
+ 	if ( ! dtls1_record_replay_check(s, bitmap, &(rr->seq_num)))
+ 		{
++		rr->length = 0;
+ 		s->packet_length=0; /* dump this record */
+ 		goto again;     /* get another record */
+ 		}
+@@ -978,15 +979,17 @@ start:
+ 	if (rr->type == SSL3_RT_CHANGE_CIPHER_SPEC)
+ 		{
+ 		struct ccs_header_st ccs_hdr;
++		int ccs_hdr_len = DTLS1_CCS_HEADER_LENGTH;
+ 
+ 		dtls1_get_ccs_header(rr->data, &ccs_hdr);
+ 
+ 		/* 'Change Cipher Spec' is just a single byte, so we know
+ 		 * exactly what the record payload has to look like */
+ 		/* XDTLS: check that epoch is consistent */
+-		if (	(s->client_version == DTLS1_BAD_VER && rr->length != 3) ||
+-			(s->client_version != DTLS1_BAD_VER && rr->length != DTLS1_CCS_HEADER_LENGTH) || 
+-			(rr->off != 0) || (rr->data[0] != SSL3_MT_CCS))
++		if (s->client_version == DTLS1_BAD_VER || s->version == DTLS1_BAD_VER)
++			ccs_hdr_len = 3;
++
++		if ((rr->length != ccs_hdr_len) || (rr->off != 0) || (rr->data[0] != SSL3_MT_CCS))
+ 			{
+ 			i=SSL_AD_ILLEGAL_PARAMETER;
+ 			SSLerr(SSL_F_DTLS1_READ_BYTES,SSL_R_BAD_CHANGE_CIPHER_SPEC);
+@@ -1251,7 +1254,7 @@ int dtls1_write_bytes(SSL *s, int type, 
+ 	else 
+ 		s->s3->wnum += i;
+ 
+-	return tot + i;
++	return i;
+ 	}
+ 
+ int do_dtls1_write(SSL *s, int type, const unsigned char *buf, unsigned int len, int create_empty_fragment)
+@@ -1302,7 +1305,7 @@ int do_dtls1_write(SSL *s, int type, con
+ #if 0
+ 	/* 'create_empty_fragment' is true only when this function calls itself */
+ 	if (!clear && !create_empty_fragment && !s->s3->empty_fragment_done
+-		&& SSL_version(s) != DTLS1_VERSION)
++	    && SSL_version(s) != DTLS1_VERSION && SSL_version(s) != DTLS1_BAD_VER)
+ 		{
+ 		/* countermeasure against known-IV weakness in CBC ciphersuites
+ 		 * (see http://www.openssl.org/~bodo/tls-cbc.txt) 
+diff -up openssl-0.9.8g/ssl/s3_clnt.c.dtls-compat openssl-0.9.8g/ssl/s3_clnt.c
+--- openssl-0.9.8g/ssl/s3_clnt.c.dtls-compat	2009-01-07 16:11:32.000000000 +0100
++++ openssl-0.9.8g/ssl/s3_clnt.c	2009-04-21 14:17:41.000000000 +0200
+@@ -676,7 +676,7 @@ int ssl3_get_server_hello(SSL *s)
+ 
+ 	if (!ok) return((int)n);
+ 
+-	if ( SSL_version(s) == DTLS1_VERSION)
++	if ( SSL_version(s) == DTLS1_VERSION || SSL_version(s) == DTLS1_BAD_VER)
+ 		{
+ 		if ( s->s3->tmp.message_type == DTLS1_MT_HELLO_VERIFY_REQUEST)
+ 			{
+diff -up openssl-0.9.8g/ssl/s3_pkt.c.dtls-compat openssl-0.9.8g/ssl/s3_pkt.c
+--- openssl-0.9.8g/ssl/s3_pkt.c.dtls-compat	2006-11-29 15:45:14.000000000 +0100
++++ openssl-0.9.8g/ssl/s3_pkt.c	2009-04-21 14:39:07.000000000 +0200
+@@ -754,7 +754,16 @@ int ssl3_write_pending(SSL *s, int type,
+ 			return(s->s3->wpend_ret);
+ 			}
+ 		else if (i <= 0)
++			{
++			if (s->version == DTLS1_VERSION ||
++			    s->version == DTLS1_BAD_VER)
++				{
++				/* For DTLS, just drop it. That's kind of the whole
++				   point in using a datagram service */
++				s->s3->wbuf.left = 0;
++				}
+ 			return(i);
++			}
+ 		s->s3->wbuf.offset+=i;
+ 		s->s3->wbuf.left-=i;
+ 		}
+diff -up openssl-0.9.8g/ssl/ssl_err.c.dtls-compat openssl-0.9.8g/ssl/ssl_err.c
+--- openssl-0.9.8g/ssl/ssl_err.c.dtls-compat	2007-10-11 16:36:59.000000000 +0200
++++ openssl-0.9.8g/ssl/ssl_err.c	2009-04-21 14:55:47.000000000 +0200
+@@ -138,6 +138,7 @@ static ERR_STRING_DATA SSL_str_functs[]=
+ {ERR_FUNC(SSL_F_SSL3_CONNECT),	"SSL3_CONNECT"},
+ {ERR_FUNC(SSL_F_SSL3_CTRL),	"SSL3_CTRL"},
+ {ERR_FUNC(SSL_F_SSL3_CTX_CTRL),	"SSL3_CTX_CTRL"},
++{ERR_FUNC(SSL_F_SSL3_DO_CHANGE_CIPHER_SPEC),	"SSL3_DO_CHANGE_CIPHER_SPEC"},
+ {ERR_FUNC(SSL_F_SSL3_ENC),	"SSL3_ENC"},
+ {ERR_FUNC(SSL_F_SSL3_GENERATE_KEY_BLOCK),	"SSL3_GENERATE_KEY_BLOCK"},
+ {ERR_FUNC(SSL_F_SSL3_GET_CERTIFICATE_REQUEST),	"SSL3_GET_CERTIFICATE_REQUEST"},
+diff -up openssl-0.9.8g/ssl/ssl.h.dtls-compat openssl-0.9.8g/ssl/ssl.h
+--- openssl-0.9.8g/ssl/ssl.h.dtls-compat	2009-01-07 16:09:11.000000000 +0100
++++ openssl-0.9.8g/ssl/ssl.h	2009-04-21 14:55:08.000000000 +0200
+@@ -511,6 +511,8 @@ typedef struct ssl_session_st
+ #define SSL_OP_COOKIE_EXCHANGE              0x00002000L
+ /* Don't use RFC4507 ticket extension */
+ #define SSL_OP_NO_TICKET	            0x00004000L
++/* Use Cisco's "speshul" version of DTLS_BAD_VER (as client)  */
++#define SSL_OP_CISCO_ANYCONNECT		    0x00008000L
+ 
+ /* As server, disallow session resumption on renegotiation */
+ #define SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION	0x00010000L
+@@ -1658,6 +1660,7 @@ void ERR_load_SSL_strings(void);
+ #define SSL_F_SSL3_CONNECT				 132
+ #define SSL_F_SSL3_CTRL					 213
+ #define SSL_F_SSL3_CTX_CTRL				 133
++#define SSL_F_SSL3_DO_CHANGE_CIPHER_SPEC		 279
+ #define SSL_F_SSL3_ENC					 134
+ #define SSL_F_SSL3_GENERATE_KEY_BLOCK			 238
+ #define SSL_F_SSL3_GET_CERTIFICATE_REQUEST		 135
+diff -up openssl-0.9.8g/ssl/ssl_lib.c.dtls-compat openssl-0.9.8g/ssl/ssl_lib.c
+--- openssl-0.9.8g/ssl/ssl_lib.c.dtls-compat	2007-09-19 14:16:21.000000000 +0200
++++ openssl-0.9.8g/ssl/ssl_lib.c	2009-04-21 14:17:41.000000000 +0200
+@@ -976,7 +976,8 @@ long SSL_ctrl(SSL *s,int cmd,long larg,v
+ 		s->max_cert_list=larg;
+ 		return(l);
+ 	case SSL_CTRL_SET_MTU:
+-		if (SSL_version(s) == DTLS1_VERSION)
++		if (SSL_version(s) == DTLS1_VERSION ||
++		    SSL_version(s) == DTLS1_BAD_VER)
+ 			{
+ 			s->d1->mtu = larg;
+ 			return larg;
+diff -up openssl-0.9.8g/ssl/ssl_sess.c.dtls-compat openssl-0.9.8g/ssl/ssl_sess.c
+--- openssl-0.9.8g/ssl/ssl_sess.c.dtls-compat	2007-10-19 09:36:34.000000000 +0200
++++ openssl-0.9.8g/ssl/ssl_sess.c	2009-04-21 14:17:41.000000000 +0200
+@@ -208,6 +208,11 @@ int ssl_get_new_session(SSL *s, int sess
+ 			ss->ssl_version=TLS1_VERSION;
+ 			ss->session_id_length=SSL3_SSL_SESSION_ID_LENGTH;
+ 			}
++		else if (s->version == DTLS1_BAD_VER)
++			{
++			ss->ssl_version=DTLS1_BAD_VER;
++			ss->session_id_length=SSL3_SSL_SESSION_ID_LENGTH;
++			}
+ 		else if (s->version == DTLS1_VERSION)
+ 			{
+ 			ss->ssl_version=DTLS1_VERSION;
+diff -up openssl-0.9.8g/ssl/t1_enc.c.dtls-compat openssl-0.9.8g/ssl/t1_enc.c
+--- openssl-0.9.8g/ssl/t1_enc.c.dtls-compat	2007-10-09 21:22:01.000000000 +0200
++++ openssl-0.9.8g/ssl/t1_enc.c	2009-04-21 14:17:41.000000000 +0200
+@@ -755,10 +755,10 @@ int tls1_mac(SSL *ssl, unsigned char *md
+ 	HMAC_CTX_init(&hmac);
+ 	HMAC_Init_ex(&hmac,mac_sec,EVP_MD_size(hash),hash,NULL);
+ 
+-	if (ssl->version == DTLS1_VERSION && ssl->client_version != DTLS1_BAD_VER)
++	if (ssl->version == DTLS1_BAD_VER ||
++	    (ssl->version == DTLS1_VERSION && ssl->client_version != DTLS1_BAD_VER))
+ 		{
+ 		unsigned char dtlsseq[8],*p=dtlsseq;
+-
+ 		s2n(send?ssl->d1->w_epoch:ssl->d1->r_epoch, p);
+ 		memcpy (p,&seq[2],6);
+ 
+@@ -783,7 +783,7 @@ printf("rec=");
+ {unsigned int z; for (z=0; z<rec->length; z++) printf("%02X ",buf[z]); printf("\n"); }
+ #endif
+ 
+-	if ( SSL_version(ssl) != DTLS1_VERSION)
++	if ( SSL_version(ssl) != DTLS1_VERSION && SSL_version(ssl) != DTLS1_BAD_VER)
+ 		{
+ 		for (i=7; i>=0; i--)
+ 			{

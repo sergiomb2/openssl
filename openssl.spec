@@ -22,7 +22,7 @@
 Summary: The OpenSSL toolkit
 Name: openssl
 Version: 0.9.8g
-Release: 9.12%{?dist}
+Release: 9.14%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
 Source: openssl-%{version}-usa.tar.bz2
@@ -63,6 +63,9 @@ Patch52: openssl-0.9.8g-cve-2008-0891.patch
 Patch53: openssl-0.9.8g-cve-2008-1671.patch
 Patch54: openssl-0.9.8g-cve-2008-5077.patch
 Patch55: openssl-0.9.8g-no-ign-eof.patch
+Patch56: openssl-0.9.8g-bad-mime.patch
+Patch57: openssl-0.9.8g-dtls-compat.patch
+Patch58: openssl-0.9.8k-dtls-dos.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -132,6 +135,9 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch53 -p0 -b .srv-kex-crash
 %patch54 -p1 -b .verifysig
 %patch55 -p1 -b .no-ign-eof
+%patch56 -p1 -b .bad-mime
+%patch57 -p1 -b .dtls-compat
+%patch58 -p1 -b .dtls-dos
 
 # Modify the various perl scripts to reference perl in the right location.
 perl util/perlpath.pl `dirname %{__perl}`
@@ -386,6 +392,12 @@ rm -rf $RPM_BUILD_ROOT/%{_bindir}/openssl_fips_fingerprint
 %postun -p /sbin/ldconfig
 
 %changelog
+* Thu May 21 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8g-9.14
+- fix CVE-2009-1377 CVE-2009-1378 CVE-2009-1379
+  (DTLS DoS problems) (#501253, #501254, #501572)
+- support compatibility DTLS mode for CISCO AnyConnect (#464629)
+- fix crash when parsing malformed mime headers in the smime app
+
 * Wed Jan  7 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8g-9.12
 - fix CVE-2008-5077 - incorrect checks for malformed signatures (#476671)
 - add -no_ign_eof option (#462393)

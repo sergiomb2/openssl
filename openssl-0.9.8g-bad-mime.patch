@@ -1,0 +1,14 @@
+diff -up openssl-0.9.8g/crypto/pkcs7/pk7_mime.c.bad-mime openssl-0.9.8g/crypto/pkcs7/pk7_mime.c
+--- openssl-0.9.8g/crypto/pkcs7/pk7_mime.c.bad-mime	2007-07-04 14:56:33.000000000 +0200
++++ openssl-0.9.8g/crypto/pkcs7/pk7_mime.c	2009-04-21 15:07:45.000000000 +0200
+@@ -689,6 +689,10 @@ static int mime_hdr_addparam(MIME_HEADER
+ static int mime_hdr_cmp(const MIME_HEADER * const *a,
+ 			const MIME_HEADER * const *b)
+ {
++	if ((*a)->name == NULL || (*b)->name == NULL)
++		return (*a)->name - (*b)->name < 0 ? -1 :
++			(*a)->name - (*b)->name > 0 ? 1 : 0;
++
+ 	return(strcmp((*a)->name, (*b)->name));
+ }
+ 
