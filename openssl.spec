@@ -23,7 +23,7 @@
 Summary: A general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 0.9.8k
-Release: 4%{?dist}
+Release: 5%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
 Source: openssl-%{version}-usa.tar.bz2
@@ -66,6 +66,7 @@ Patch49: openssl-0.9.8j-fips-no-pairwise.patch
 Patch50: openssl-0.9.8j-fips-rng-seed.patch
 Patch51: openssl-0.9.8k-multi-crl.patch
 Patch52: openssl-0.9.8k-dtls-compat.patch
+Patch53: openssl-0.9.8k-dtls-dos.patch
 # Backported fixes including security fixes
 
 License: OpenSSL
@@ -152,6 +153,7 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch50 -p1 -b .rng-seed
 %patch51 -p1 -b .multi-crl
 %patch52 -p1 -b .dtls-compat
+%patch53 -p1 -b .dtls-dos
 
 # Modify the various perl scripts to reference perl in the right location.
 perl util/perlpath.pl `dirname %{__perl}`
@@ -410,6 +412,10 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun -p /sbin/ldconfig
 
 %changelog
+* Thu May 21 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8k-5
+- fix CVE-2009-1377 CVE-2009-1378 CVE-2009-1379
+  (DTLS DoS problems) (#501253, #501254, #501572)
+
 * Tue Apr 21 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8k-4
 - support compatibility DTLS mode for CISCO AnyConnect (#464629)
 
