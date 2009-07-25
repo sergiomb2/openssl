@@ -20,7 +20,7 @@
 Summary: A general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 0.9.8k
-Release: 6%{?dist}
+Release: 7%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
 Source: openssl-%{version}-usa.tar.bz2
@@ -401,6 +401,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun -p /sbin/ldconfig
 
 %changelog
+* Sat Jul 25 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.9.8k-7
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_12_Mass_Rebuild
+
 * Wed Jul 22 2009 Bill Nottingham <notting@redhat.com>
 - do not build special 'optimized' versions for i686, as that's the base
   arch in Fedora now
