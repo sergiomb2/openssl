@@ -544,7 +544,7 @@ diff -up openssl-1.0.0-beta3/crypto/camellia/Makefile.fips openssl-1.0.0-beta3/c
 +	   cmll_cfb.c cmll_ctr.c cmll_fblk.c
  
 -LIBOBJ= cmll_ecb.o cmll_ofb.o cmll_cfb.o cmll_ctr.o $(CMLL_ENC)
-+LIBOBJ= cmll_ecb.o cmll_ofb.o cmll_cfb.o cmll_ctr.o cmll_fblk.o $(CMLL_ENC)
++LIBOBJ= cmll_ecb.o cmll_ofb.o cmll_cfb.o cmll_ctr.o $(CMLL_ENC) cmll_fblk.o
  
  SRC= $(LIBSRC)
  
@@ -10850,7 +10850,7 @@ diff -up /dev/null openssl-1.0.0-beta3/crypto/rc4/rc4_fblk.c
 diff -up openssl-1.0.0-beta3/crypto/rc4/rc4.h.fips openssl-1.0.0-beta3/crypto/rc4/rc4.h
 --- openssl-1.0.0-beta3/crypto/rc4/rc4.h.fips	2009-08-11 18:07:30.000000000 +0200
 +++ openssl-1.0.0-beta3/crypto/rc4/rc4.h	2009-08-11 18:07:30.000000000 +0200
-@@ -78,8 +78,11 @@ typedef struct rc4_key_st
+@@ -78,6 +78,9 @@ typedef struct rc4_key_st
  
   
  const char *RC4_options(void);
@@ -10858,11 +10858,8 @@ diff -up openssl-1.0.0-beta3/crypto/rc4/rc4.h.fips openssl-1.0.0-beta3/crypto/rc
 +void private_RC4_set_key(RC4_KEY *key, int len, const unsigned char *data);
 +#endif
  void RC4_set_key(RC4_KEY *key, int len, const unsigned char *data);
--void RC4(RC4_KEY *key, size_t len, const unsigned char *indata,
-+void RC4(RC4_KEY *key, unsigned long len, const unsigned char *indata,
+ void RC4(RC4_KEY *key, size_t len, const unsigned char *indata,
  		unsigned char *outdata);
- 
- #ifdef  __cplusplus
 diff -up openssl-1.0.0-beta3/crypto/rc4/rc4_skey.c.fips openssl-1.0.0-beta3/crypto/rc4/rc4_skey.c
 --- openssl-1.0.0-beta3/crypto/rc4/rc4_skey.c.fips	2007-01-21 14:07:13.000000000 +0100
 +++ openssl-1.0.0-beta3/crypto/rc4/rc4_skey.c	2009-08-11 18:07:30.000000000 +0200
