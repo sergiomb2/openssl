@@ -10601,7 +10601,7 @@ diff -up openssl-1.0.0-beta3/crypto/rc4/asm/rc4-586.pl.fips openssl-1.0.0-beta3/
  
  &external_label("OPENSSL_ia32cap_P");
  
-+$setkeyfunc = "RC4_set_key"
++$setkeyfunc = "RC4_set_key";
 +$setkeyfunc = "private_RC4_set_key" if ($ENV{FIPS} ne "");
 +
 +
