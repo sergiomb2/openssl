@@ -379,7 +379,7 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %attr(0644,root,root) %{_mandir}/man7*/*
 
 # Temporary hack
-%attr(0755,root,root) /%{_lib}/*.so.8
+%attr(0755,root,root) %{_libdir}/*.so.8
 
 %files devel
 %defattr(-,root,root)
@@ -406,11 +406,11 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %triggerpostun -- openssl < 1.0.0
 # Temporary hack
 [ $1 != 0 ] || exit 0
-if [ "$(readlink /%{_lib}/libcrypto.so.8)" != libcrypto.so.%{version} ] ; then
-    ln -sf libcrypto.so.%{version} /%{_lib}/libcrypto.so.8 || :
+if [ "$(readlink %{_libdir}/libcrypto.so.8)" != libcrypto.so.%{version} ] ; then
+    ln -sf libcrypto.so.%{version} %{_libdir}/libcrypto.so.8 || :
 fi
-if [ "$(readlink /%{_lib}/libssl.so.8)" != libssl.so.%{version} ] ; then
-    ln -sf libssl.so.%{version} /%{_lib}/libssl.so.8 || :
+if [ "$(readlink %{_libdir}/libssl.so.8)" != libssl.so.%{version} ] ; then
+    ln -sf libssl.so.%{version} %{_libdir}/libssl.so.8 || :
 fi
 /sbin/ldconfig -X
 
