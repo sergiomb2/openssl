@@ -23,7 +23,7 @@
 Summary: A general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.0
-Release: 0.1.%{beta}%{?dist}
+Release: 0.2.%{beta}%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
 Source: openssl-%{version}-%{beta}-usa.tar.bz2
@@ -196,9 +196,9 @@ sslarch=linux-generic32
 ./Configure \
 	--prefix=/usr --openssldir=%{_sysconfdir}/pki/tls ${sslflags} \
 	zlib enable-camellia enable-seed enable-tlsext enable-rfc3779 \
-	enable-cms no-idea no-mdc2 no-rc5 no-ec no-ecdh no-ecdsa shared \
+	enable-cms enable-md2 no-idea no-mdc2 no-rc5 no-ec no-ecdh no-ecdsa \
 	--with-krb5-flavor=MIT --enginesdir=%{_libdir}/openssl/engines \
-	--with-krb5-dir=/usr ${sslarch} fips
+	--with-krb5-dir=/usr shared  ${sslarch} fips
 
 # Add -Wa,--noexecstack here so that libcrypto's assembler modules will be
 # marked as not requiring an executable stack.
@@ -415,6 +415,9 @@ fi
 /sbin/ldconfig -X
 
 %changelog
+* Fri Aug 21 2009 Tomas Mraz <tmraz@redhat.com> 1.0.0-0.2.beta3
+- enable MD-2
+
 * Thu Aug 20 2009 Tomas Mraz <tmraz@redhat.com> 1.0.0-0.1.beta3
 - update to new major upstream release
 
