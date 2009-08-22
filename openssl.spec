@@ -23,7 +23,7 @@
 Summary: A general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.0
-Release: 0.3.%{beta}%{?dist}
+Release: 0.4.%{beta}%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
 Source: openssl-%{version}-%{beta}-usa.tar.bz2
@@ -61,6 +61,7 @@ Patch47: openssl-0.9.8j-readme-warning.patch
 Patch48: openssl-0.9.8j-bad-mime.patch
 Patch49: openssl-0.9.8k-algo-doc.patch
 Patch50: openssl-1.0.0-beta3-curl.patch
+Patch51: openssl-1.0.0-beta3-const.patch
 # Backported fixes including security fixes
 Patch60: openssl-1.0.0-beta3-namingstr.patch
 Patch61: openssl-1.0.0-beta3-namingblk.patch
@@ -151,6 +152,7 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch48 -p1 -b .bad-mime
 %patch49 -p1 -b .algo-doc
 %patch50 -p1 -b .curl
+%patch51 -p1 -b .const
 %patch60 -p1 -b .namingstr
 %patch61 -p1 -b .namingblk
 
@@ -417,6 +419,9 @@ fi
 /sbin/ldconfig -X
 
 %changelog
+* Sat Aug 22 2009 Tomas Mraz <tmraz@redhat.com> 1.0.0-0.4.beta3
+- constify SSL_CIPHER_description()
+
 * Fri Aug 21 2009 Tomas Mraz <tmraz@redhat.com> 1.0.0-0.3.beta3
 - fix WWW:Curl:Easy reference in tsget
 
