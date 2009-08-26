@@ -23,7 +23,7 @@
 Summary: A general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.0
-Release: 0.4.%{beta}%{?dist}
+Release: 0.5.%{beta}%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
 Source: openssl-%{version}-%{beta}-usa.tar.bz2
@@ -73,14 +73,6 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildRequires: mktemp, krb5-devel, perl, sed, zlib-devel, /usr/bin/cmp
 BuildRequires: /usr/bin/rename
 Requires: mktemp, ca-certificates >= 2008-5
-
-# Temporary hack
-Requires(post): coreutils
-%ifarch ppc64 s390x sparc64 x86_64
-Provides: libcrypto.so.8()(64bit) libssl.so.8()(64bit)
-%else
-Provides: libcrypto.so.8 libssl.so.8
-%endif
 
 %description
 The OpenSSL toolkit provides support for secure communications between
@@ -264,8 +256,6 @@ for lib in $RPM_BUILD_ROOT%{_libdir}/*.so.%{version} ; do
 	chmod 755 ${lib}
 	ln -s -f `basename ${lib}` $RPM_BUILD_ROOT%{_libdir}/`basename ${lib} .%{version}`
 	ln -s -f `basename ${lib}` $RPM_BUILD_ROOT%{_libdir}/`basename ${lib} .%{version}`.%{soversion}
-# Temporary hack
-	ln -s -f `basename ${lib}` $RPM_BUILD_ROOT%{_libdir}/`basename ${lib} .%{version}`.8
 
 done
 
@@ -382,9 +372,6 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %attr(0644,root,root) %{_mandir}/man5*/*
 %attr(0644,root,root) %{_mandir}/man7*/*
 
-# Temporary hack
-%attr(0755,root,root) %{_libdir}/*.so.8
-
 %files devel
 %defattr(-,root,root)
 %{_prefix}/include/openssl
@@ -407,18 +394,10 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 
 %postun -p /sbin/ldconfig
 
-%triggerpostun -- openssl < 1.0.0
-# Temporary hack
-[ $1 != 0 ] || exit 0
-if [ "$(readlink %{_libdir}/libcrypto.so.8)" != libcrypto.so.%{version} ] ; then
-    ln -sf libcrypto.so.%{version} %{_libdir}/libcrypto.so.8 || :
-fi
-if [ "$(readlink %{_libdir}/libssl.so.8)" != libssl.so.%{version} ] ; then
-    ln -sf libssl.so.%{version} %{_libdir}/libssl.so.8 || :
-fi
-/sbin/ldconfig -X
-
 %changelog
+* Wed Aug 26 2009 Tomas Mraz <tmraz@redhat.com> 1.0.0-0.5.beta3
+- drop the compat symlink hacks
+
 * Sat Aug 22 2009 Tomas Mraz <tmraz@redhat.com> 1.0.0-0.4.beta3
 - constify SSL_CIPHER_description()
 
