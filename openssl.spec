@@ -23,7 +23,7 @@
 Summary: A general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.0
-Release: 0.6.%{beta}%{?dist}
+Release: 0.7.%{beta}%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
 Source: openssl-%{version}-%{beta}-usa.tar.bz2
@@ -63,6 +63,7 @@ Patch49: openssl-0.9.8k-algo-doc.patch
 Patch50: openssl-1.0.0-beta3-curl.patch
 Patch51: openssl-1.0.0-beta3-const.patch
 Patch52: openssl-1.0.0-beta3-dss1.patch
+Patch53: openssl-1.0.0-beta3-cmll-noasm.patch
 # Backported fixes including security fixes
 Patch60: openssl-1.0.0-beta3-namingstr.patch
 Patch61: openssl-1.0.0-beta3-namingblk.patch
@@ -147,6 +148,7 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch50 -p1 -b .curl
 %patch51 -p1 -b .const
 %patch52 -p1 -b .dss1
+%patch53 -p1 -b .cmll-noasm
 %patch60 -p1 -b .namingstr
 %patch61 -p1 -b .namingblk
 
@@ -397,6 +399,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun -p /sbin/ldconfig
 
 %changelog
+* Fri Sep  4 2009 Tomas Mraz <tmraz@redhat.com> 1.0.0-0.7.beta3
+- temporarily disable x86_64 camellia assembler code (#521127)
+
 * Mon Aug 31 2009 Tomas Mraz <tmraz@redhat.com> 1.0.0-0.6.beta3
 - fix openssl dgst -dss1 (#520152)
 
