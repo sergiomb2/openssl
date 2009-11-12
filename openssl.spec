@@ -43,6 +43,7 @@ Patch5: openssl-0.9.8a-no-rpath.patch
 Patch6: openssl-0.9.8b-test-use-localhost.patch
 # Bug fixes
 Patch23: openssl-1.0.0-beta4-default-paths.patch
+Patch24: openssl-1.0.0-beta4-binutils.patch
 # Functionality changes
 Patch32: openssl-0.9.8g-ia64.patch
 Patch33: openssl-1.0.0-beta4-ca-dir.patch
@@ -121,6 +122,7 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch6 -p1 -b .use-localhost
 
 %patch23 -p1 -b .default-paths
+%patch24 -p1 -b .binutils
 
 %patch32 -p1 -b .ia64
 %patch33 -p1 -b .ca-dir
