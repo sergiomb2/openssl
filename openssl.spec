@@ -23,7 +23,7 @@
 Summary: A general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.0
-Release: 0.13.%{beta}%{?dist}
+Release: 0.14.%{beta}%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
 Source: openssl-%{version}-%{beta}-usa.tar.bz2
@@ -181,7 +181,7 @@ sslarch=linux-alpha-gcc
 sslarch="linux-generic32 -DB_ENDIAN"
 %endif
 %ifarch s390x
-sslarch="linux-generic64 -DB_ENDIAN"
+sslarch="linux-s390x"
 %endif
 %ifarch %{arm} sh3 sh4
 sslarch=linux-generic32
@@ -396,6 +396,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun -p /sbin/ldconfig
 
 %changelog
+* Fri Nov 20 2009 Tomas Mraz <tmraz@redhat.com> 1.0.0-0.14.beta4
+- fix build on s390x
+
 * Wed Nov 18 2009 Tomas Mraz <tmraz@redhat.com> 1.0.0-0.13.beta4
 - disable enforcement of the renegotiation extension on the client (#537962)
 - add fixes from the current upstream snapshot
