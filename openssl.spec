@@ -23,7 +23,7 @@
 Summary: A general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.0
-Release: 0.14.%{beta}%{?dist}
+Release: 0.15.%{beta}%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
 Source: openssl-%{version}-%{beta}-usa.tar.bz2
@@ -66,6 +66,7 @@ Patch60: openssl-1.0.0-beta4-reneg.patch
 # This one is not backported but has to be applied after reneg patch
 Patch61: openssl-1.0.0-beta4-client-reneg.patch
 Patch62: openssl-1.0.0-beta4-backports.patch
+Patch63: openssl-1.0.0-beta4-reneg-err.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -148,6 +149,7 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch60 -p1 -b .reneg
 %patch61 -p1 -b .client-reneg
 %patch62 -p1 -b .backports
+%patch63 -p1 -b .reneg-err
 
 # Modify the various perl scripts to reference perl in the right location.
 perl util/perlpath.pl `dirname %{__perl}`
@@ -396,6 +398,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun -p /sbin/ldconfig
 
 %changelog
+* Fri Nov 20 2009 Tomas Mraz <tmraz@redhat.com> 1.0.0-0.15.beta4
+- add better error reporting for the unsafe renegotiation
+
 * Fri Nov 20 2009 Tomas Mraz <tmraz@redhat.com> 1.0.0-0.14.beta4
 - fix build on s390x
 
