@@ -13,7 +13,7 @@ diff -up openssl-1.0.0-beta4/crypto/bio/b_sock.c.dtls-ipv6 openssl-1.0.0-beta4/c
  		{
 diff -up openssl-1.0.0-beta4/crypto/bio/bss_dgram.c.dtls-ipv6 openssl-1.0.0-beta4/crypto/bio/bss_dgram.c
 --- openssl-1.0.0-beta4/crypto/bio/bss_dgram.c.dtls-ipv6	2009-10-15 19:41:44.000000000 +0200
-+++ openssl-1.0.0-beta4/crypto/bio/bss_dgram.c	2009-11-23 08:50:45.000000000 +0100
++++ openssl-1.0.0-beta4/crypto/bio/bss_dgram.c	2010-01-07 17:31:00.000000000 +0100
 @@ -108,11 +108,13 @@ static BIO_METHOD methods_dgramp=
  
  typedef struct bio_dgram_data_st
@@ -135,7 +135,7 @@ diff -up openssl-1.0.0-beta4/crypto/bio/bss_dgram.c.dtls-ipv6 openssl-1.0.0-beta
  #if 0
  			}
  #endif
-@@ -537,41 +543,60 @@ static long dgram_ctrl(BIO *b, int cmd, 
+@@ -537,41 +543,62 @@ static long dgram_ctrl(BIO *b, int cmd, 
  		if ( to != NULL)
  			{
  			data->connected = 1;
@@ -170,12 +170,12 @@ diff -up openssl-1.0.0-beta4/crypto/bio/bss_dgram.c.dtls-ipv6 openssl-1.0.0-beta
  			}
  		break;
  	case BIO_CTRL_DGRAM_GET_PEER:
- 		to = (struct sockaddr *) ptr;
+-		to = (struct sockaddr *) ptr;
 -
-+		switch (to->sa_family)
++		switch (data->peer.sa.sa_family)
 +			{
 +			case AF_INET:
-+				memcpy(to,&data->peer,(ret=sizeof(data->peer.sa_in)));
++				ret=sizeof(data->peer.sa_in);
 +				break;
  #if OPENSSL_USE_IPV6
 -		memcpy(to, &(data->peer), sizeof(struct sockaddr_storage));
@@ -185,13 +185,16 @@ diff -up openssl-1.0.0-beta4/crypto/bio/bss_dgram.c.dtls-ipv6 openssl-1.0.0-beta
 -		ret = sizeof(struct sockaddr_in);
 -#endif
 +			case AF_INET6:
-+				memcpy(to,&data->peer,(ret=sizeof(data->peer.sa_in6)));
++				ret=sizeof(data->peer.sa_in6);
 +				break;
 +#endif
 +			default:
-+				memcpy(to,&data->peer,(ret=sizeof(data->peer.sa)));
++				ret=sizeof(data->peer.sa);
 +				break;
 +			}
++		if (num==0 || num>ret)
++			num=ret;
++		memcpy(ptr,&data->peer,(ret=num));
  		break;
  	case BIO_CTRL_DGRAM_SET_PEER:
  		to = (struct sockaddr *) ptr;

@@ -23,7 +23,7 @@
 Summary: A general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.0
-Release: 0.16.%{beta}%{?dist}
+Release: 0.17.%{beta}%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
 Source: openssl-%{version}-%{beta}-usa.tar.bz2
@@ -68,6 +68,10 @@ Patch61: openssl-1.0.0-beta4-client-reneg.patch
 Patch62: openssl-1.0.0-beta4-backports.patch
 Patch63: openssl-1.0.0-beta4-reneg-err.patch
 Patch64: openssl-1.0.0-beta4-dtls-ipv6.patch
+Patch65: openssl-1.0.0-beta4-dtls-reneg.patch
+Patch66: openssl-1.0.0-beta4-backports2.patch
+Patch67: openssl-1.0.0-beta4-reneg-scsv.patch
+Patch68: openssl-1.0.0-beta4-tls-comp.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -152,6 +156,10 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch62 -p1 -b .backports
 %patch63 -p1 -b .reneg-err
 %patch64 -p1 -b .dtls-ipv6
+%patch65 -p1 -b .dtls-reneg
+%patch66 -p1 -b .backports2
+%patch67 -p1 -b .scsv
+%patch68 -p1 -b .tls-comp
 
 # Modify the various perl scripts to reference perl in the right location.
 perl util/perlpath.pl `dirname %{__perl}`
@@ -160,7 +168,7 @@ perl util/perlpath.pl `dirname %{__perl}`
 touch Makefile
 make TABLE PERL=%{__perl}
 
-%build 
+%build
 # Figure out which flags we want to use.
 # default
 sslarch=%{_os}-%{_arch}
@@ -347,7 +355,7 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %clean
 [ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
 
-%files 
+%files
 %defattr(-,root,root)
 %doc FAQ LICENSE CHANGES NEWS INSTALL README
 %doc doc/c-indentation.el doc/openssl.txt
@@ -400,6 +408,11 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun -p /sbin/ldconfig
 
 %changelog
+* Thu Jan  7 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0-0.17.beta4
+- upstream fix compression handling on session resumption
+- various null checks and other small fixes from upstream
+- upstream changes for the renegotiation info according to the latest draft 
+
 * Mon Nov 23 2009 Tomas Mraz <tmraz@redhat.com> 1.0.0-0.16.beta4
 - fix non-fips mingw build (patch by Kalev Lember)
 - add IPV6 fix for DTLS
@@ -419,7 +432,7 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
   openssh and possibly other dependencies with too strict version check
 
 * Thu Nov 12 2009 Tomas Mraz <tmraz@redhat.com> 1.0.0-0.11.beta4
-- update to new upstream version, no soname bump needed 
+- update to new upstream version, no soname bump needed
 - fix CVE-2009-3555 - note that the fix is bypassed if SSL_OP_ALL is used
   so the compatibility with unfixed clients is not broken. The
   protocol extension is also not final.
