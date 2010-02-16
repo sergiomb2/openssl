@@ -11932,10 +11932,11 @@ diff -up openssl-1.0.0-beta5/crypto/whrlpool/whrlpool.h.fips openssl-1.0.0-beta5
 diff -up openssl-1.0.0-beta5/crypto/whrlpool/wp_dgst.c.fips openssl-1.0.0-beta5/crypto/whrlpool/wp_dgst.c
 --- openssl-1.0.0-beta5/crypto/whrlpool/wp_dgst.c.fips	2008-12-29 13:35:49.000000000 +0100
 +++ openssl-1.0.0-beta5/crypto/whrlpool/wp_dgst.c	2010-02-16 23:42:49.000000000 +0100
-@@ -53,8 +53,11 @@
+@@ -53,8 +53,12 @@
  
  #include "wp_locl.h"
  #include <string.h>
++#include <openssl/err.h>
 +#ifdef OPENSSL_FIPS
 +#include <openssl/fips.h>
 +#endif
