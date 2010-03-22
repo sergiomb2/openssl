@@ -1,6 +1,6 @@
-diff -up openssl-0.9.8k/crypto/engine/eng_all.c.fipsmode openssl-0.9.8k/crypto/engine/eng_all.c
---- openssl-0.9.8k/crypto/engine/eng_all.c.fipsmode	2008-06-04 20:01:39.000000000 +0200
-+++ openssl-0.9.8k/crypto/engine/eng_all.c	2009-04-15 14:31:32.000000000 +0200
+diff -up openssl-0.9.8m/crypto/engine/eng_all.c.fipsmode openssl-0.9.8m/crypto/engine/eng_all.c
+--- openssl-0.9.8m/crypto/engine/eng_all.c.fipsmode	2008-06-04 20:01:39.000000000 +0200
++++ openssl-0.9.8m/crypto/engine/eng_all.c	2010-03-22 18:08:24.000000000 +0100
 @@ -58,9 +58,23 @@
  
  #include "cryptlib.h"
@@ -25,9 +25,9 @@ diff -up openssl-0.9.8k/crypto/engine/eng_all.c.fipsmode openssl-0.9.8k/crypto/e
  	/* There's no longer any need for an "openssl" ENGINE unless, one day,
  	 * it is the *only* way for standard builtin implementations to be be
  	 * accessed (ie. it would be possible to statically link binaries with
-diff -up openssl-0.9.8k/crypto/evp/c_allc.c.fipsmode openssl-0.9.8k/crypto/evp/c_allc.c
---- openssl-0.9.8k/crypto/evp/c_allc.c.fipsmode	2007-04-24 01:50:04.000000000 +0200
-+++ openssl-0.9.8k/crypto/evp/c_allc.c	2009-03-26 15:53:42.000000000 +0100
+diff -up openssl-0.9.8m/crypto/evp/c_allc.c.fipsmode openssl-0.9.8m/crypto/evp/c_allc.c
+--- openssl-0.9.8m/crypto/evp/c_allc.c.fipsmode	2009-12-25 15:11:18.000000000 +0100
++++ openssl-0.9.8m/crypto/evp/c_allc.c	2010-03-22 18:10:11.000000000 +0100
 @@ -65,6 +65,11 @@
  void OpenSSL_add_all_ciphers(void)
  	{
@@ -40,7 +40,7 @@ diff -up openssl-0.9.8k/crypto/evp/c_allc.c.fipsmode openssl-0.9.8k/crypto/evp/c
  #ifndef OPENSSL_NO_DES
  	EVP_add_cipher(EVP_des_cfb());
  	EVP_add_cipher(EVP_des_cfb1());
-@@ -219,6 +224,63 @@ void OpenSSL_add_all_ciphers(void)
+@@ -221,6 +226,65 @@ void OpenSSL_add_all_ciphers(void)
  	EVP_add_cipher_alias(SN_camellia_256_cbc,"CAMELLIA256");
  	EVP_add_cipher_alias(SN_camellia_256_cbc,"camellia256");
  #endif
@@ -51,6 +51,8 @@ diff -up openssl-0.9.8k/crypto/evp/c_allc.c.fipsmode openssl-0.9.8k/crypto/evp/c
 +#ifndef OPENSSL_NO_DES
 +	EVP_add_cipher(EVP_des_ede_cfb());
 +	EVP_add_cipher(EVP_des_ede3_cfb());
++	EVP_add_cipher(EVP_des_ede3_cfb1());
++	EVP_add_cipher(EVP_des_ede3_cfb8());
 +
 +	EVP_add_cipher(EVP_des_ede_ofb());
 +	EVP_add_cipher(EVP_des_ede3_ofb());
@@ -104,9 +106,9 @@ diff -up openssl-0.9.8k/crypto/evp/c_allc.c.fipsmode openssl-0.9.8k/crypto/evp/c
  
  	PKCS12_PBE_add();
  	PKCS5_PBE_add();
-diff -up openssl-0.9.8k/crypto/evp/c_alld.c.fipsmode openssl-0.9.8k/crypto/evp/c_alld.c
---- openssl-0.9.8k/crypto/evp/c_alld.c.fipsmode	2005-04-30 23:51:40.000000000 +0200
-+++ openssl-0.9.8k/crypto/evp/c_alld.c	2009-03-26 15:53:42.000000000 +0100
+diff -up openssl-0.9.8m/crypto/evp/c_alld.c.fipsmode openssl-0.9.8m/crypto/evp/c_alld.c
+--- openssl-0.9.8m/crypto/evp/c_alld.c.fipsmode	2009-07-08 10:33:26.000000000 +0200
++++ openssl-0.9.8m/crypto/evp/c_alld.c	2010-03-22 18:10:43.000000000 +0100
 @@ -64,6 +64,11 @@
  
  void OpenSSL_add_all_digests(void)
@@ -116,10 +118,10 @@ diff -up openssl-0.9.8k/crypto/evp/c_alld.c.fipsmode openssl-0.9.8k/crypto/evp/c
 +	if (!FIPS_mode())
 +		{
 +#endif
- #ifndef OPENSSL_NO_MD2
- 	EVP_add_digest(EVP_md2());
+ #ifndef OPENSSL_NO_MD4
+ 	EVP_add_digest(EVP_md4());
  #endif
-@@ -111,4 +116,32 @@ void OpenSSL_add_all_digests(void)
+@@ -108,4 +113,32 @@ void OpenSSL_add_all_digests(void)
  	EVP_add_digest(EVP_sha384());
  	EVP_add_digest(EVP_sha512());
  #endif
@@ -152,13 +154,14 @@ diff -up openssl-0.9.8k/crypto/evp/c_alld.c.fipsmode openssl-0.9.8k/crypto/evp/c
 +		}
 +#endif
  	}
-diff -up openssl-0.9.8k/crypto/o_init.c.fipsmode openssl-0.9.8k/crypto/o_init.c
---- openssl-0.9.8k/crypto/o_init.c.fipsmode	2008-11-05 19:36:36.000000000 +0100
-+++ openssl-0.9.8k/crypto/o_init.c	2009-03-26 15:53:42.000000000 +0100
-@@ -59,6 +59,45 @@
- #include <e_os.h>
- #include <openssl/err.h>
+diff -up openssl-0.9.8m/crypto/o_init.c.fipsmode openssl-0.9.8m/crypto/o_init.c
+--- openssl-0.9.8m/crypto/o_init.c.fipsmode	2010-01-27 14:21:34.000000000 +0100
++++ openssl-0.9.8m/crypto/o_init.c	2010-03-22 18:11:53.000000000 +0100
+@@ -64,6 +64,46 @@ extern	void int_EVP_MD_init_engine_callb
+ extern	void int_EVP_CIPHER_init_engine_callbacks(void );
+ extern	void int_RAND_init_engine_callbacks(void );
  
++
 +#ifdef OPENSSL_FIPS
 +#include <sys/types.h>
 +#include <sys/stat.h>
@@ -201,22 +204,9 @@ diff -up openssl-0.9.8k/crypto/o_init.c.fipsmode openssl-0.9.8k/crypto/o_init.c
  /* Perform any essential OpenSSL initialization operations.
   * Currently only sets FIPS callbacks
   */
-@@ -73,11 +112,10 @@ void OPENSSL_init(void)
- #ifdef CRYPTO_MDEBUG
- 		CRYPTO_malloc_debug_init();
- #endif
--#ifdef OPENSSL_ENGINE
-+		init_fips_mode();
- 		int_EVP_MD_init_engine_callbacks();
- 		int_EVP_CIPHER_init_engine_callbacks();
- 		int_RAND_init_engine_callbacks();
--#endif
- 		done = 1;
- 		}
- #endif
-diff -up openssl-0.9.8k/ssl/ssl_algs.c.fipsmode openssl-0.9.8k/ssl/ssl_algs.c
---- openssl-0.9.8k/ssl/ssl_algs.c.fipsmode	2007-04-24 01:50:21.000000000 +0200
-+++ openssl-0.9.8k/ssl/ssl_algs.c	2009-04-15 14:32:13.000000000 +0200
+diff -up openssl-0.9.8m/ssl/ssl_algs.c.fipsmode openssl-0.9.8m/ssl/ssl_algs.c
+--- openssl-0.9.8m/ssl/ssl_algs.c.fipsmode	2009-07-08 10:33:27.000000000 +0200
++++ openssl-0.9.8m/ssl/ssl_algs.c	2010-03-22 18:08:24.000000000 +0100
 @@ -64,6 +64,10 @@
  int SSL_library_init(void)
  	{

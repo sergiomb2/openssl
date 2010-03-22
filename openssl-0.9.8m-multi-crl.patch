@@ -1,10 +1,13 @@
-diff -up openssl-0.9.8k/crypto/x509/x509_lu.c.multi-crl openssl-0.9.8k/crypto/x509/x509_lu.c
---- openssl-0.9.8k/crypto/x509/x509_lu.c.multi-crl	2005-05-11 05:45:35.000000000 +0200
-+++ openssl-0.9.8k/crypto/x509/x509_lu.c	2009-03-26 15:47:45.000000000 +0100
-@@ -453,19 +453,41 @@ X509_OBJECT *X509_OBJECT_retrieve_by_sub
+diff -up openssl-0.9.8m/crypto/x509/x509_lu.c.multi-crl openssl-0.9.8m/crypto/x509/x509_lu.c
+--- openssl-0.9.8m/crypto/x509/x509_lu.c.multi-crl	2010-02-19 19:25:39.000000000 +0100
++++ openssl-0.9.8m/crypto/x509/x509_lu.c	2010-03-22 18:21:20.000000000 +0100
+@@ -458,7 +458,18 @@ X509_OBJECT *X509_OBJECT_retrieve_by_sub
+ 	idx = X509_OBJECT_idx_by_subject(h, type, name);
+ 	if (idx==-1) return NULL;
  	return sk_X509_OBJECT_value(h, idx);
- }
- 
+-	}
++}
++
 +static int x509_crl_match(const X509_CRL *a, const X509_CRL *b)
 +{
 +	if (a->signature == NULL || b->signature == NULL)
@@ -15,10 +18,10 @@ diff -up openssl-0.9.8k/crypto/x509/x509_lu.c.multi-crl openssl-0.9.8k/crypto/x5
 +
 +	return memcmp(a->signature->data, b->signature->data, a->signature->length);
 +}
-+
+ 
  X509_OBJECT *X509_OBJECT_retrieve_match(STACK_OF(X509_OBJECT) *h, X509_OBJECT *x)
- {
- 	int idx, i;
+ 	{
+@@ -466,13 +477,24 @@ X509_OBJECT *X509_OBJECT_retrieve_match(
  	X509_OBJECT *obj;
  	idx = sk_X509_OBJECT_find(h, x);
  	if (idx == -1) return NULL;
@@ -45,9 +48,9 @@ diff -up openssl-0.9.8k/crypto/x509/x509_lu.c.multi-crl openssl-0.9.8k/crypto/x5
  			return obj;
  		}
  	return NULL;
-diff -up openssl-0.9.8k/crypto/x509/x509_vfy.c.multi-crl openssl-0.9.8k/crypto/x509/x509_vfy.c
---- openssl-0.9.8k/crypto/x509/x509_vfy.c.multi-crl	2008-07-13 16:33:15.000000000 +0200
-+++ openssl-0.9.8k/crypto/x509/x509_vfy.c	2009-03-26 15:47:45.000000000 +0100
+diff -up openssl-0.9.8m/crypto/x509/x509_vfy.c.multi-crl openssl-0.9.8m/crypto/x509/x509_vfy.c
+--- openssl-0.9.8m/crypto/x509/x509_vfy.c.multi-crl	2009-06-26 13:34:21.000000000 +0200
++++ openssl-0.9.8m/crypto/x509/x509_vfy.c	2010-03-22 18:17:30.000000000 +0100
 @@ -725,7 +725,38 @@ static int get_crl(X509_STORE_CTX *ctx, 
  		return 0;
  		}

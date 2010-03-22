@@ -22,8 +22,8 @@
 
 Summary: A general purpose cryptography library with TLS implementation
 Name: openssl
-Version: 0.9.8k
-Release: 5%{?dist}
+Version: 0.9.8m
+Release: 1%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
 Source: openssl-%{version}-usa.tar.bz2
@@ -34,40 +34,37 @@ Source8: openssl-thread-test.c
 Source9: opensslconf-new.h
 Source10: opensslconf-new-warning.h
 # Build changes
-Patch0: openssl-0.9.8j-redhat.patch
+Patch0: openssl-0.9.8m-redhat.patch
 Patch1: openssl-0.9.8a-defaults.patch
 Patch2: openssl-0.9.8a-link-krb5.patch
 Patch3: openssl-0.9.8j-soversion.patch
-Patch4: openssl-0.9.8j-enginesdir.patch
+Patch4: openssl-0.9.8m-enginesdir.patch
 Patch5: openssl-0.9.8a-no-rpath.patch
 Patch6: openssl-0.9.8b-test-use-localhost.patch
 Patch7: openssl-0.9.8k-shlib-version.patch
 # Bug fixes
-Patch21: openssl-0.9.8b-aliasing-bug.patch
 Patch22: openssl-0.9.8k-x509-name-cmp.patch
-Patch23: openssl-0.9.8g-default-paths.patch
-Patch24: openssl-0.9.8g-no-extssl.patch
+Patch23: openssl-0.9.8m-default-paths.patch
 # Functionality changes
 Patch32: openssl-0.9.8g-ia64.patch
-Patch33: openssl-0.9.8j-ca-dir.patch
+Patch33: openssl-0.9.8m-ca-dir.patch
 Patch34: openssl-0.9.6-x509.patch
 Patch35: openssl-0.9.8j-version-add-engines.patch
-Patch38: openssl-0.9.8a-reuse-cipher-change.patch
+Patch38: openssl-0.9.8m-reuse-cipher-change.patch
 Patch39: openssl-0.9.8g-ipv6-apps.patch
 Patch40: openssl-0.9.8j-nocanister.patch
-Patch41: openssl-0.9.8k-use-fipscheck.patch
-Patch42: openssl-0.9.8k-fipscheck-hmac.patch
-Patch44: openssl-0.9.8k-kernel-fipsmode.patch
+Patch41: openssl-0.9.8m-use-fipscheck.patch
+Patch42: openssl-0.9.8m-fipscheck-hmac.patch
+Patch44: openssl-0.9.8m-kernel-fipsmode.patch
 Patch45: openssl-0.9.8j-env-nozlib.patch
-Patch46: openssl-0.9.8j-eap-fast.patch
+Patch46: openssl-0.9.8m-eap-fast.patch
 Patch47: openssl-0.9.8j-readme-warning.patch
 Patch48: openssl-0.9.8j-bad-mime.patch
 Patch49: openssl-0.9.8j-fips-no-pairwise.patch
 Patch50: openssl-0.9.8j-fips-rng-seed.patch
-Patch51: openssl-0.9.8k-multi-crl.patch
-Patch52: openssl-0.9.8k-dtls-compat.patch
-Patch53: openssl-0.9.8k-dtls-dos.patch
+Patch51: openssl-0.9.8m-multi-crl.patch
 # Backported fixes including security fixes
+Patch60: openssl-0.9.8m-cve-2010-0433.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -130,10 +127,8 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch6 -p1 -b .use-localhost
 %patch7 -p1 -b .shlib-version
 
-%patch21 -p1 -b .aliasing-bug
 %patch22 -p1 -b .name-cmp
 %patch23 -p1 -b .default-paths
-%patch24 -p1 -b .no-extssl
 
 %patch32 -p1 -b .ia64
 %patch33 -p1 -b .ca-dir
@@ -152,8 +147,8 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch49 -p1 -b .no-pairwise
 %patch50 -p1 -b .rng-seed
 %patch51 -p1 -b .multi-crl
-%patch52 -p1 -b .dtls-compat
-%patch53 -p1 -b .dtls-dos
+
+%patch60 -p1 -b .krbdos
 
 # Modify the various perl scripts to reference perl in the right location.
 perl util/perlpath.pl `dirname %{__perl}`
@@ -412,6 +407,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun -p /sbin/ldconfig
 
 %changelog
+* Mon Mar 22 2010 Tomas Mraz <tmraz@redhat.com> 0.9.8m-1
+- fix CVE-2009-3245 CVE-2009-3555 CVE-2009-4355 CVE-2010-0433
+
 * Thu May 21 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8k-5
 - fix CVE-2009-1377 CVE-2009-1378 CVE-2009-1379
   (DTLS DoS problems) (#501253, #501254, #501572)

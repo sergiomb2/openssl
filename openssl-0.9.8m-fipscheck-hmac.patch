@@ -1,18 +1,6 @@
-diff -up openssl-0.9.8k/fips/sha/Makefile.fipscheck-hmac openssl-0.9.8k/fips/sha/Makefile
---- openssl-0.9.8k/fips/sha/Makefile.fipscheck-hmac	2008-10-26 19:42:05.000000000 +0100
-+++ openssl-0.9.8k/fips/sha/Makefile	2009-03-25 20:18:08.000000000 +0100
-@@ -46,7 +46,7 @@ lib:	$(LIBOBJ)
- 	@echo $(LIBOBJ) > lib
- 
- ../fips_standalone_sha1$(EXE_EXT): fips_standalone_sha1.o
--	FIPS_SHA_ASM=""; for i in $(SHA1_ASM_OBJ) sha1dgst.o ; do FIPS_SHA_ASM="$$FIPS_SHA_ASM ../../crypto/sha/$$i" ; done; \
-+	FIPS_SHA_ASM=""; for i in $(SHA1_ASM_OBJ) sha256.o ; do FIPS_SHA_ASM="$$FIPS_SHA_ASM ../../crypto/sha/$$i" ; done; \
- 	$(CC) -o $@ $(CFLAGS) fips_standalone_sha1.o $$FIPS_SHA_ASM
- 
- files:
-diff -up openssl-0.9.8k/fips/sha/fips_standalone_sha1.c.fipscheck-hmac openssl-0.9.8k/fips/sha/fips_standalone_sha1.c
---- openssl-0.9.8k/fips/sha/fips_standalone_sha1.c.fipscheck-hmac	2009-01-15 13:34:54.000000000 +0100
-+++ openssl-0.9.8k/fips/sha/fips_standalone_sha1.c	2009-03-25 20:18:08.000000000 +0100
+diff -up openssl-0.9.8m/fips/sha/fips_standalone_sha1.c.fipscheck-hmac openssl-0.9.8m/fips/sha/fips_standalone_sha1.c
+--- openssl-0.9.8m/fips/sha/fips_standalone_sha1.c.fipscheck-hmac	2009-01-15 13:34:54.000000000 +0100
++++ openssl-0.9.8m/fips/sha/fips_standalone_sha1.c	2010-03-22 18:05:47.000000000 +0100
 @@ -62,7 +62,7 @@ void OPENSSL_cleanse(void *p,size_t len)
  
  #ifdef OPENSSL_FIPS
@@ -112,3 +100,19 @@ diff -up openssl-0.9.8k/fips/sha/fips_standalone_sha1.c.fipscheck-hmac openssl-0
  	    printf("%02x",md[i]);
  	printf("\n");
  	}
+diff -up openssl-0.9.8m/fips/sha/Makefile.fipscheck-hmac openssl-0.9.8m/fips/sha/Makefile
+--- openssl-0.9.8m/fips/sha/Makefile.fipscheck-hmac	2009-10-15 16:14:35.000000000 +0200
++++ openssl-0.9.8m/fips/sha/Makefile	2010-03-22 18:07:36.000000000 +0100
+@@ -47,10 +47,10 @@ lib:	$(LIBOBJ)
+ 
+ ../fips_standalone_sha1$(EXE_EXT): fips_standalone_sha1.o
+ 	if [ -z "$(HOSTCC)" ] ; then \
+-	FIPS_SHA_ASM=""; for i in $(SHA1_ASM_OBJ) sha1dgst.o ; do FIPS_SHA_ASM="$$FIPS_SHA_ASM ../../crypto/sha/$$i" ; done; \
++	FIPS_SHA_ASM=""; for i in $(SHA1_ASM_OBJ) sha256.o ; do FIPS_SHA_ASM="$$FIPS_SHA_ASM ../../crypto/sha/$$i" ; done; \
+ 	$(CC) -o $@ $(CFLAGS) fips_standalone_sha1.o $$FIPS_SHA_ASM ; \
+ 	else \
+-		$(HOSTCC) $(HOSTCFLAGS) -o $ $@ -I../../include -I../../crypto fips_standalone_sha1.c ../../crypto/sha/sha1dgst.c ; \
++		$(HOSTCC) $(HOSTCFLAGS) -o $ $@ -I../../include -I../../crypto fips_standalone_sha1.c ../../crypto/sha/sha256.c ; \
+ 	fi
+ 
+ files:

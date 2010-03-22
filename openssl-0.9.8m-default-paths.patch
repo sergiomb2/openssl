@@ -1,0 +1,77 @@
+diff -up openssl-0.9.8m/apps/s_client.c.default-paths openssl-0.9.8m/apps/s_client.c
+--- openssl-0.9.8m/apps/s_client.c.default-paths	2009-12-16 21:34:19.000000000 +0100
++++ openssl-0.9.8m/apps/s_client.c	2010-03-22 17:48:51.000000000 +0100
+@@ -741,12 +741,13 @@ bad:
+ 	if (!set_cert_key_stuff(ctx,cert,key))
+ 		goto end;
+ 
+-	if ((!SSL_CTX_load_verify_locations(ctx,CAfile,CApath)) ||
+-		(!SSL_CTX_set_default_verify_paths(ctx)))
++	if (!SSL_CTX_load_verify_locations(ctx,CAfile,CApath))
++		{
++		ERR_print_errors(bio_err);
++		}
++	if (!SSL_CTX_set_default_verify_paths(ctx))
+ 		{
+-		/* BIO_printf(bio_err,"error setting default verify locations\n"); */
+ 		ERR_print_errors(bio_err);
+-		/* goto end; */
+ 		}
+ 
+ 	store = SSL_CTX_get_cert_store(ctx);
+diff -up openssl-0.9.8m/apps/s_server.c.default-paths openssl-0.9.8m/apps/s_server.c
+--- openssl-0.9.8m/apps/s_server.c.default-paths	2010-01-24 14:52:38.000000000 +0100
++++ openssl-0.9.8m/apps/s_server.c	2010-03-22 17:50:44.000000000 +0100
+@@ -1275,12 +1275,13 @@ bad:
+ 		}
+ #endif
+ 
+-	if ((!SSL_CTX_load_verify_locations(ctx,CAfile,CApath)) ||
+-		(!SSL_CTX_set_default_verify_paths(ctx)))
++	if (!SSL_CTX_load_verify_locations(ctx,CAfile,CApath))
++		{
++		ERR_print_errors(bio_err);
++		}
++	if (!SSL_CTX_set_default_verify_paths(ctx))
+ 		{
+-		/* BIO_printf(bio_err,"X509_load_verify_locations\n"); */
+ 		ERR_print_errors(bio_err);
+-		/* goto end; */
+ 		}
+ 	store = SSL_CTX_get_cert_store(ctx);
+ 	X509_STORE_set_flags(store, vflags);
+@@ -1333,8 +1334,11 @@ bad:
+ 		else
+ 			SSL_CTX_sess_set_cache_size(ctx2,128);
+ 
+-		if ((!SSL_CTX_load_verify_locations(ctx2,CAfile,CApath)) ||
+-			(!SSL_CTX_set_default_verify_paths(ctx2)))
++		if (!SSL_CTX_load_verify_locations(ctx2,CAfile,CApath))
++			{
++			ERR_print_errors(bio_err);
++			}
++		if (!SSL_CTX_set_default_verify_paths(ctx2))
+ 			{
+ 			ERR_print_errors(bio_err);
+ 			}
+diff -up openssl-0.9.8m/apps/s_time.c.default-paths openssl-0.9.8m/apps/s_time.c
+--- openssl-0.9.8m/apps/s_time.c.default-paths	2003-12-27 15:40:17.000000000 +0100
++++ openssl-0.9.8m/apps/s_time.c	2010-03-22 17:48:51.000000000 +0100
+@@ -476,12 +476,13 @@ int MAIN(int argc, char **argv)
+ 
+ 	SSL_load_error_strings();
+ 
+-	if ((!SSL_CTX_load_verify_locations(tm_ctx,CAfile,CApath)) ||
+-		(!SSL_CTX_set_default_verify_paths(tm_ctx)))
++	if (!SSL_CTX_load_verify_locations(tm_ctx,CAfile,CApath))
++		{
++		ERR_print_errors(bio_err);
++		}
++	if (!SSL_CTX_set_default_verify_paths(tm_ctx))
+ 		{
+-		/* BIO_printf(bio_err,"error setting default verify locations\n"); */
+ 		ERR_print_errors(bio_err);
+-		/* goto end; */
+ 		}
+ 
+ 	if (tm_cipher == NULL)
