@@ -22,7 +22,7 @@
 
 Summary: A general purpose cryptography library with TLS implementation
 Name: openssl
-Version: 0.9.8m
+Version: 0.9.8n
 Release: 1%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
@@ -64,7 +64,6 @@ Patch49: openssl-0.9.8j-fips-no-pairwise.patch
 Patch50: openssl-0.9.8j-fips-rng-seed.patch
 Patch51: openssl-0.9.8m-multi-crl.patch
 # Backported fixes including security fixes
-Patch60: openssl-0.9.8m-cve-2010-0433.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -147,8 +146,6 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch49 -p1 -b .no-pairwise
 %patch50 -p1 -b .rng-seed
 %patch51 -p1 -b .multi-crl
-
-%patch60 -p1 -b .krbdos
 
 # Modify the various perl scripts to reference perl in the right location.
 perl util/perlpath.pl `dirname %{__perl}`
@@ -407,6 +404,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun -p /sbin/ldconfig
 
 %changelog
+* Thu Mar 25 2010 Tomas Mraz <tmraz@redhat.com> 0.9.8n-1
+- fix CVE-2010-0740
+
 * Mon Mar 22 2010 Tomas Mraz <tmraz@redhat.com> 0.9.8m-1
 - fix CVE-2009-3245 CVE-2009-3555 CVE-2009-4355 CVE-2010-0433
 
