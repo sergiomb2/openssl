@@ -11,8 +11,6 @@
 # 1.0.0 soversion = 10
 %define soversion 10
 
-%define beta beta4
-
 # Number of threads to spawn when testing some threading fixes.
 %define thread_test_threads %{?threads:%{threads}}%{!?threads:1}
 
@@ -23,10 +21,10 @@
 Summary: A general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.0
-Release: 0.16.%{beta}%{?dist}
+Release: 1%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
-Source: openssl-%{version}-%{beta}-usa.tar.bz2
+Source: openssl-%{version}-usa.tar.bz2
 Source1: hobble-openssl
 Source2: Makefile.certificate
 Source6: make-dummy-cert
@@ -38,36 +36,30 @@ Source11: README.FIPS
 Patch0: openssl-1.0.0-beta4-redhat.patch
 Patch1: openssl-1.0.0-beta3-defaults.patch
 Patch3: openssl-1.0.0-beta3-soversion.patch
-Patch4: openssl-1.0.0-beta4-enginesdir.patch
+Patch4: openssl-1.0.0-beta5-enginesdir.patch
 Patch5: openssl-0.9.8a-no-rpath.patch
 Patch6: openssl-0.9.8b-test-use-localhost.patch
 # Bug fixes
 Patch23: openssl-1.0.0-beta4-default-paths.patch
-Patch24: openssl-1.0.0-beta4-binutils.patch
+Patch24: openssl-0.9.8j-bad-mime.patch
 # Functionality changes
 Patch32: openssl-0.9.8g-ia64.patch
 Patch33: openssl-1.0.0-beta4-ca-dir.patch
 Patch34: openssl-0.9.6-x509.patch
 Patch35: openssl-0.9.8j-version-add-engines.patch
-Patch38: openssl-1.0.0-beta3-cipher-change.patch
-Patch39: openssl-1.0.0-beta3-ipv6-apps.patch
-Patch40: openssl-1.0.0-beta4-fips.patch
+Patch38: openssl-1.0.0-beta5-cipher-change.patch
+Patch39: openssl-1.0.0-beta5-ipv6-apps.patch
+Patch40: openssl-1.0.0-fips.patch
 Patch41: openssl-1.0.0-beta3-fipscheck.patch
 Patch43: openssl-1.0.0-beta3-fipsmode.patch
 Patch44: openssl-1.0.0-beta3-fipsrng.patch
 Patch45: openssl-0.9.8j-env-nozlib.patch
-Patch47: openssl-0.9.8j-readme-warning.patch
-Patch48: openssl-0.9.8j-bad-mime.patch
+Patch47: openssl-1.0.0-beta5-readme-warning.patch
 Patch49: openssl-1.0.0-beta4-algo-doc.patch
 Patch50: openssl-1.0.0-beta4-dtls1-abi.patch
-Patch51: openssl-1.0.0-beta4-version.patch
+Patch51: openssl-1.0.0-version.patch
+Patch52: openssl-1.0.0-beta4-aesni.patch
 # Backported fixes including security fixes
-Patch60: openssl-1.0.0-beta4-reneg.patch
-# This one is not backported but has to be applied after reneg patch
-Patch61: openssl-1.0.0-beta4-client-reneg.patch
-Patch62: openssl-1.0.0-beta4-backports.patch
-Patch63: openssl-1.0.0-beta4-reneg-err.patch
-Patch64: openssl-1.0.0-beta4-dtls-ipv6.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -117,7 +109,7 @@ package provides Perl scripts for converting certificates and keys
 from other formats to the formats used by the OpenSSL toolkit.
 
 %prep
-%setup -q -n %{name}-%{version}-%{beta}
+%setup -q -n %{name}-%{version}
 
 %{SOURCE1} > /dev/null
 %patch0 -p1 -b .redhat
@@ -128,7 +120,7 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch6 -p1 -b .use-localhost
 
 %patch23 -p1 -b .default-paths
-%patch24 -p1 -b .binutils
+%patch24 -p1 -b .bad-mime
 
 %patch32 -p1 -b .ia64
 %patch33 -p1 -b .ca-dir
@@ -142,16 +134,10 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch44 -p1 -b .fipsrng
 %patch45 -p1 -b .env-nozlib
 %patch47 -p1 -b .warning
-%patch48 -p1 -b .bad-mime
 %patch49 -p1 -b .algo-doc
 %patch50 -p1 -b .dtls1-abi
 %patch51 -p1 -b .version
-
-%patch60 -p1 -b .reneg
-%patch61 -p1 -b .client-reneg
-%patch62 -p1 -b .backports
-%patch63 -p1 -b .reneg-err
-%patch64 -p1 -b .dtls-ipv6
+%patch52 -p1 -b .aesni
 
 # Modify the various perl scripts to reference perl in the right location.
 perl util/perlpath.pl `dirname %{__perl}`
@@ -160,7 +146,7 @@ perl util/perlpath.pl `dirname %{__perl}`
 touch Makefile
 make TABLE PERL=%{__perl}
 
-%build 
+%build
 # Figure out which flags we want to use.
 # default
 sslarch=%{_os}-%{_arch}
@@ -250,12 +236,9 @@ make -C test apps tests
 install -d $RPM_BUILD_ROOT{%{_bindir},%{_includedir},%{_libdir},%{_mandir},%{_libdir}/openssl}
 make INSTALL_PREFIX=$RPM_BUILD_ROOT install
 make INSTALL_PREFIX=$RPM_BUILD_ROOT install_docs
-# OpenSSL install doesn't use correct _libdir on 64 bit archs
-[ "%{_libdir}" != /usr/lib ] && mv $RPM_BUILD_ROOT/usr/lib/lib*.so.%{soversion} $RPM_BUILD_ROOT%{_libdir}/
-mv $RPM_BUILD_ROOT/usr/lib/engines $RPM_BUILD_ROOT%{_libdir}/openssl
+mv $RPM_BUILD_ROOT%{_libdir}/engines $RPM_BUILD_ROOT%{_libdir}/openssl
 mv $RPM_BUILD_ROOT%{_sysconfdir}/pki/tls/man/* $RPM_BUILD_ROOT%{_mandir}/
 rmdir $RPM_BUILD_ROOT%{_sysconfdir}/pki/tls/man
-mv $RPM_BUILD_ROOT/usr/lib/* $RPM_BUILD_ROOT%{_libdir}/ || :
 rename so.%{soversion} so.%{version} $RPM_BUILD_ROOT%{_libdir}/*.so.%{soversion}
 for lib in $RPM_BUILD_ROOT%{_libdir}/*.so.%{version} ; do
 	chmod 755 ${lib}
@@ -347,7 +330,7 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %clean
 [ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
 
-%files 
+%files
 %defattr(-,root,root)
 %doc FAQ LICENSE CHANGES NEWS INSTALL README
 %doc doc/c-indentation.el doc/openssl.txt
@@ -400,6 +383,33 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun -p /sbin/ldconfig
 
 %changelog
+* Tue Mar 30 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0-1
+- update to final 1.0.0 upstream release
+
+* Tue Feb 16 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0-0.22.beta5
+- make TLS work in the FIPS mode
+
+* Fri Feb 12 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0-0.21.beta5
+- gracefully handle zero length in assembler implementations of
+  OPENSSL_cleanse (#564029)
+- do not fail in s_server if client hostname not resolvable (#561260)
+
+* Wed Jan 20 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0-0.20.beta5
+- new upstream release
+
+* Thu Jan 14 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0-0.19.beta4
+- fix CVE-2009-4355 - leak in applications incorrectly calling
+  CRYPTO_free_all_ex_data() before application exit (#546707)
+- upstream fix for future TLS protocol version handling
+
+* Wed Jan 13 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0-0.18.beta4
+- add support for Intel AES-NI
+
+* Thu Jan  7 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0-0.17.beta4
+- upstream fix compression handling on session resumption
+- various null checks and other small fixes from upstream
+- upstream changes for the renegotiation info according to the latest draft
+
 * Mon Nov 23 2009 Tomas Mraz <tmraz@redhat.com> 1.0.0-0.16.beta4
 - fix non-fips mingw build (patch by Kalev Lember)
 - add IPV6 fix for DTLS
@@ -419,7 +429,7 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
   openssh and possibly other dependencies with too strict version check
 
 * Thu Nov 12 2009 Tomas Mraz <tmraz@redhat.com> 1.0.0-0.11.beta4
-- update to new upstream version, no soname bump needed 
+- update to new upstream version, no soname bump needed
 - fix CVE-2009-3555 - note that the fix is bypassed if SSL_OP_ALL is used
   so the compatibility with unfixed clients is not broken. The
   protocol extension is also not final.
@@ -525,7 +535,7 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 - temporarily provide symlink to old soname to make it possible to rebuild
   the dependent packages in rawhide
 - add eap-fast support (#428181)
-- add possibility to disable zlib by setting 
+- add possibility to disable zlib by setting
 - add fips mode support for testing purposes
 - do not null dereference on some invalid smime files
 - add buildrequires pkgconfig (#479493)
@@ -732,7 +742,7 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 - upgrade to new upstream version (no soname bump needed)
 - disable thread test - it was testing the backport of the
   RSA blinding - no longer needed
-- added support for changing serial number to 
+- added support for changing serial number to
   Makefile.certificate (#151188)
 - make ca-bundle.crt a config file (#118903)
 
