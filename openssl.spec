@@ -21,7 +21,7 @@
 Summary: A general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.0
-Release: 1%{?dist}
+Release: 2%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
 Source: openssl-%{version}-usa.tar.bz2
@@ -39,6 +39,7 @@ Patch3: openssl-1.0.0-beta3-soversion.patch
 Patch4: openssl-1.0.0-beta5-enginesdir.patch
 Patch5: openssl-0.9.8a-no-rpath.patch
 Patch6: openssl-0.9.8b-test-use-localhost.patch
+Patch7: openssl-1.0.0-timezone.patch
 # Bug fixes
 Patch23: openssl-1.0.0-beta4-default-paths.patch
 Patch24: openssl-0.9.8j-bad-mime.patch
@@ -118,6 +119,7 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch4 -p1 -b .enginesdir
 %patch5 -p1 -b .no-rpath
 %patch6 -p1 -b .use-localhost
+%patch7 -p1 -b .timezone
 
 %patch23 -p1 -b .default-paths
 %patch24 -p1 -b .bad-mime
@@ -383,6 +385,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun -p /sbin/ldconfig
 
 %changelog
+* Tue Apr  6 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0-2
+- set UTC timezone on pod2man run (#578842)
+
 * Tue Mar 30 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0-1
 - update to final 1.0.0 upstream release
 
