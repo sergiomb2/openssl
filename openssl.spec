@@ -60,6 +60,7 @@ Patch49: openssl-1.0.0-beta4-algo-doc.patch
 Patch50: openssl-1.0.0-beta4-dtls1-abi.patch
 Patch51: openssl-1.0.0-version.patch
 Patch52: openssl-1.0.0-beta4-aesni.patch
+Patch53: openssl-1.0.0-name-hash.patch
 # Backported fixes including security fixes
 
 License: OpenSSL
@@ -140,6 +141,7 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch50 -p1 -b .dtls1-abi
 %patch51 -p1 -b .version
 %patch52 -p1 -b .aesni
+%patch53 -p1 -b .name-hash
 
 # Modify the various perl scripts to reference perl in the right location.
 perl util/perlpath.pl `dirname %{__perl}`
@@ -387,6 +389,7 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %changelog
 * Tue Apr  6 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0-2
 - set UTC timezone on pod2man run (#578842)
+- make X509_NAME_hash_old work in FIPS mode
 
 * Tue Mar 30 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0-1
 - update to final 1.0.0 upstream release
