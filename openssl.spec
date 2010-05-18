@@ -21,7 +21,7 @@
 Summary: A general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.0
-Release: 1%{?dist}
+Release: 4%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
 Source: openssl-%{version}-usa.tar.bz2
@@ -39,6 +39,7 @@ Patch3: openssl-1.0.0-beta3-soversion.patch
 Patch4: openssl-1.0.0-beta5-enginesdir.patch
 Patch5: openssl-0.9.8a-no-rpath.patch
 Patch6: openssl-0.9.8b-test-use-localhost.patch
+Patch7: openssl-1.0.0-timezone.patch
 # Bug fixes
 Patch23: openssl-1.0.0-beta4-default-paths.patch
 Patch24: openssl-0.9.8j-bad-mime.patch
@@ -59,7 +60,10 @@ Patch49: openssl-1.0.0-beta4-algo-doc.patch
 Patch50: openssl-1.0.0-beta4-dtls1-abi.patch
 Patch51: openssl-1.0.0-version.patch
 Patch52: openssl-1.0.0-beta4-aesni.patch
+Patch53: openssl-1.0.0-name-hash.patch
 # Backported fixes including security fixes
+Patch60: openssl-1.0.0-dtls1-backports.patch
+Patch61: openssl-1.0.0-init-sha256.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -118,6 +122,7 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch4 -p1 -b .enginesdir
 %patch5 -p1 -b .no-rpath
 %patch6 -p1 -b .use-localhost
+%patch7 -p1 -b .timezone
 
 %patch23 -p1 -b .default-paths
 %patch24 -p1 -b .bad-mime
@@ -138,7 +143,10 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch50 -p1 -b .dtls1-abi
 %patch51 -p1 -b .version
 %patch52 -p1 -b .aesni
+%patch53 -p1 -b .name-hash
 
+%patch60 -p1 -b .dtls1
+%patch61 -p1 -b .sha256
 # Modify the various perl scripts to reference perl in the right location.
 perl util/perlpath.pl `dirname %{__perl}`
 
@@ -224,8 +232,8 @@ make -C test apps tests
     %{?__debug_package:%{__debug_install_post}} \
     %{__arch_install_post} \
     %{__os_install_post} \
-    crypto/fips/fips_standalone_sha1 $RPM_BUILD_ROOT%{_libdir}/libcrypto.so.%{version} >$RPM_BUILD_ROOT%{_libdir}/.libcrypto.so.%{version}.hmac \
-    ln -sf .libcrypto.so.%{version}.hmac $RPM_BUILD_ROOT%{_libdir}/.libcrypto.so.%{soversion}.hmac \
+    crypto/fips/fips_standalone_sha1 $RPM_BUILD_ROOT/%{_lib}/libcrypto.so.%{version} >$RPM_BUILD_ROOT/%{_lib}/.libcrypto.so.%{version}.hmac \
+    ln -sf .libcrypto.so.%{version}.hmac $RPM_BUILD_ROOT/%{_lib}/.libcrypto.so.%{soversion}.hmac \
     crypto/fips/fips_standalone_sha1 $RPM_BUILD_ROOT%{_libdir}/libssl.so.%{version} >$RPM_BUILD_ROOT%{_libdir}/.libssl.so.%{version}.hmac \
     ln -sf .libssl.so.%{version}.hmac $RPM_BUILD_ROOT%{_libdir}/.libssl.so.%{soversion}.hmac \
 %{nil}
@@ -240,11 +248,17 @@ mv $RPM_BUILD_ROOT%{_libdir}/engines $RPM_BUILD_ROOT%{_libdir}/openssl
 mv $RPM_BUILD_ROOT%{_sysconfdir}/pki/tls/man/* $RPM_BUILD_ROOT%{_mandir}/
 rmdir $RPM_BUILD_ROOT%{_sysconfdir}/pki/tls/man
 rename so.%{soversion} so.%{version} $RPM_BUILD_ROOT%{_libdir}/*.so.%{soversion}
+mkdir $RPM_BUILD_ROOT/%{_lib}
+mv $RPM_BUILD_ROOT%{_libdir}/libcrypto.so.%{version} $RPM_BUILD_ROOT/%{_lib}
 for lib in $RPM_BUILD_ROOT%{_libdir}/*.so.%{version} ; do
 	chmod 755 ${lib}
 	ln -s -f `basename ${lib}` $RPM_BUILD_ROOT%{_libdir}/`basename ${lib} .%{version}`
 	ln -s -f `basename ${lib}` $RPM_BUILD_ROOT%{_libdir}/`basename ${lib} .%{version}`.%{soversion}
-
+done
+for lib in $RPM_BUILD_ROOT/%{_lib}/*.so.%{version} ; do
+	chmod 755 ${lib}
+	ln -s -f ../../%{_lib}/`basename ${lib}` $RPM_BUILD_ROOT%{_libdir}/`basename ${lib} .%{version}`
+	ln -s -f `basename ${lib}` $RPM_BUILD_ROOT/%{_lib}/`basename ${lib} .%{version}`.%{soversion}
 done
 
 # Install a makefile for generating keys and self-signed certs, and a script
@@ -281,8 +295,11 @@ pushd  $RPM_BUILD_ROOT%{_sysconfdir}/pki/tls/misc
 mv CA.sh CA
 popd
 
-mkdir -m700 $RPM_BUILD_ROOT%{_sysconfdir}/pki/CA
+mkdir -m755 $RPM_BUILD_ROOT%{_sysconfdir}/pki/CA
 mkdir -m700 $RPM_BUILD_ROOT%{_sysconfdir}/pki/CA/private
+mkdir -m755 $RPM_BUILD_ROOT%{_sysconfdir}/pki/CA/certs
+mkdir -m755 $RPM_BUILD_ROOT%{_sysconfdir}/pki/CA/crl
+mkdir -m755 $RPM_BUILD_ROOT%{_sysconfdir}/pki/CA/newcerts
 
 # Ensure the openssl.cnf timestamp is identical across builds to avoid
 # mulitlib conflicts and unnecessary renames on upgrade
@@ -345,15 +362,20 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %{_sysconfdir}/pki/tls/misc/CA
 %dir %{_sysconfdir}/pki/CA
 %dir %{_sysconfdir}/pki/CA/private
+%dir %{_sysconfdir}/pki/CA/certs
+%dir %{_sysconfdir}/pki/CA/crl
+%dir %{_sysconfdir}/pki/CA/newcerts
 %{_sysconfdir}/pki/tls/misc/c_*
 %{_sysconfdir}/pki/tls/private
 
 %config(noreplace) %{_sysconfdir}/pki/tls/openssl.cnf
 
 %attr(0755,root,root) %{_bindir}/openssl
-%attr(0755,root,root) %{_libdir}/*.so.%{version}
-%attr(0755,root,root) %{_libdir}/*.so.%{soversion}
-%attr(0644,root,root) %{_libdir}/.libcrypto.so.*.hmac
+%attr(0755,root,root) /%{_lib}/libcrypto.so.%{version}
+%attr(0755,root,root) /%{_lib}/libcrypto.so.%{soversion}
+%attr(0755,root,root) %{_libdir}/libssl.so.%{version}
+%attr(0755,root,root) %{_libdir}/libssl.so.%{soversion}
+%attr(0644,root,root) /%{_lib}/.libcrypto.so.*.hmac
 %attr(0644,root,root) %{_libdir}/.libssl.so.*.hmac
 %attr(0755,root,root) %{_libdir}/openssl
 %attr(0644,root,root) %{_mandir}/man1*/[ABD-Zabcd-z]*
@@ -383,6 +405,17 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun -p /sbin/ldconfig
 
 %changelog
+* Tue May 18 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0-4
+- make CA dir readable - the private keys are in private subdir (#584810)
+
+* Fri Apr  9 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0-3
+- a few fixes from upstream CVS
+- move libcrypto to /lib (#559953)
+
+* Tue Apr  6 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0-2
+- set UTC timezone on pod2man run (#578842)
+- make X509_NAME_hash_old work in FIPS mode
+
 * Tue Mar 30 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0-1
 - update to final 1.0.0 upstream release
 
