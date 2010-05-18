@@ -295,8 +295,11 @@ pushd  $RPM_BUILD_ROOT%{_sysconfdir}/pki/tls/misc
 mv CA.sh CA
 popd
 
-mkdir -m700 $RPM_BUILD_ROOT%{_sysconfdir}/pki/CA
+mkdir -m755 $RPM_BUILD_ROOT%{_sysconfdir}/pki/CA
 mkdir -m700 $RPM_BUILD_ROOT%{_sysconfdir}/pki/CA/private
+mkdir -m755 $RPM_BUILD_ROOT%{_sysconfdir}/pki/CA/certs
+mkdir -m755 $RPM_BUILD_ROOT%{_sysconfdir}/pki/CA/crl
+mkdir -m755 $RPM_BUILD_ROOT%{_sysconfdir}/pki/CA/newcerts
 
 # Ensure the openssl.cnf timestamp is identical across builds to avoid
 # mulitlib conflicts and unnecessary renames on upgrade
@@ -359,6 +362,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %{_sysconfdir}/pki/tls/misc/CA
 %dir %{_sysconfdir}/pki/CA
 %dir %{_sysconfdir}/pki/CA/private
+%dir %{_sysconfdir}/pki/CA/certs
+%dir %{_sysconfdir}/pki/CA/crl
+%dir %{_sysconfdir}/pki/CA/newcerts
 %{_sysconfdir}/pki/tls/misc/c_*
 %{_sysconfdir}/pki/tls/private
 
@@ -399,6 +405,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun -p /sbin/ldconfig
 
 %changelog
+* Tue May 18 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0-4
+- make CA dir readable - the private keys are in private subdir (#584810)
+
 * Fri Apr  9 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0-3
 - a few fixes from upstream CVS
 - move libcrypto to /lib (#559953)
