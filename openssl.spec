@@ -21,7 +21,7 @@
 Summary: A general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.0
-Release: 4%{?dist}
+Release: 5%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
 Source: openssl-%{version}-usa.tar.bz2
@@ -305,16 +305,6 @@ mkdir -m755 $RPM_BUILD_ROOT%{_sysconfdir}/pki/CA/newcerts
 # mulitlib conflicts and unnecessary renames on upgrade
 touch -r %{SOURCE2} $RPM_BUILD_ROOT%{_sysconfdir}/pki/tls/openssl.cnf
 
-# Fix libdir.
-pushd $RPM_BUILD_ROOT/%{_libdir}/pkgconfig
-for i in *.pc ; do
-	sed 's,^libdir=${exec_prefix}/lib,libdir=${exec_prefix}/%{_lib},g' \
-		$i >$i.tmp && \
-	cat $i.tmp >$i && \
-	rm -f $i.tmp
-done
-popd
-
 # Determine which arch opensslconf.h is going to try to #include.
 basearch=%{_arch}
 %ifarch %{ix86}
@@ -405,6 +395,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun -p /sbin/ldconfig
 
 %changelog
+* Wed May 19 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0-5
+- pkgconfig files now contain the correct libdir (#593723)
+
 * Tue May 18 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0-4
 - make CA dir readable - the private keys are in private subdir (#584810)
 
