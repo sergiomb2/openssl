@@ -23,7 +23,7 @@
 Summary: A general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 0.9.8n
-Release: 1%{?dist}
+Release: 2%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
 Source: openssl-%{version}-usa.tar.bz2
@@ -42,6 +42,7 @@ Patch4: openssl-0.9.8m-enginesdir.patch
 Patch5: openssl-0.9.8a-no-rpath.patch
 Patch6: openssl-0.9.8b-test-use-localhost.patch
 Patch7: openssl-0.9.8k-shlib-version.patch
+Patch8: openssl-1.0.0-timezone.patch
 # Bug fixes
 Patch22: openssl-0.9.8k-x509-name-cmp.patch
 Patch23: openssl-0.9.8m-default-paths.patch
@@ -64,6 +65,7 @@ Patch49: openssl-0.9.8j-fips-no-pairwise.patch
 Patch50: openssl-0.9.8j-fips-rng-seed.patch
 Patch51: openssl-0.9.8m-multi-crl.patch
 # Backported fixes including security fixes
+Patch60: openssl-0.9.8n-cve-2010-0742.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -125,6 +127,7 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch5 -p1 -b .no-rpath
 %patch6 -p1 -b .use-localhost
 %patch7 -p1 -b .shlib-version
+%patch8 -p1 -b .timezone
 
 %patch22 -p1 -b .name-cmp
 %patch23 -p1 -b .default-paths
@@ -147,6 +150,7 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch50 -p1 -b .rng-seed
 %patch51 -p1 -b .multi-crl
 
+%patch60 -p1 -b .originfo
 # Modify the various perl scripts to reference perl in the right location.
 perl util/perlpath.pl `dirname %{__perl}`
 
@@ -404,6 +408,10 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun -p /sbin/ldconfig
 
 %changelog
+* Wed Jun  2 2010 Tomas Mraz <tmraz@redhat.com> 0.9.8n-2
+- fix CVE-2010-0742
+- set UTC timezone on pod2man run (#578842)
+
 * Thu Mar 25 2010 Tomas Mraz <tmraz@redhat.com> 0.9.8n-1
 - fix CVE-2010-0740
 
