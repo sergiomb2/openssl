@@ -1,6 +1,6 @@
-diff -up openssl-1.0.0-beta3/crypto/engine/eng_all.c.fipsmode openssl-1.0.0-beta3/crypto/engine/eng_all.c
---- openssl-1.0.0-beta3/crypto/engine/eng_all.c.fipsmode	2009-07-01 16:55:58.000000000 +0200
-+++ openssl-1.0.0-beta3/crypto/engine/eng_all.c	2009-08-11 17:37:16.000000000 +0200
+diff -up openssl-1.0.0a/crypto/engine/eng_all.c.fipsmode openssl-1.0.0a/crypto/engine/eng_all.c
+--- openssl-1.0.0a/crypto/engine/eng_all.c.fipsmode	2009-07-01 16:55:58.000000000 +0200
++++ openssl-1.0.0a/crypto/engine/eng_all.c	2010-06-04 13:32:13.000000000 +0200
 @@ -58,9 +58,23 @@
  
  #include "cryptlib.h"
@@ -25,9 +25,9 @@ diff -up openssl-1.0.0-beta3/crypto/engine/eng_all.c.fipsmode openssl-1.0.0-beta
  #if 0
  	/* There's no longer any need for an "openssl" ENGINE unless, one day,
  	 * it is the *only* way for standard builtin implementations to be be
-diff -up openssl-1.0.0-beta3/crypto/evp/c_allc.c.fipsmode openssl-1.0.0-beta3/crypto/evp/c_allc.c
---- openssl-1.0.0-beta3/crypto/evp/c_allc.c.fipsmode	2007-04-24 01:48:28.000000000 +0200
-+++ openssl-1.0.0-beta3/crypto/evp/c_allc.c	2009-08-11 17:42:34.000000000 +0200
+diff -up openssl-1.0.0a/crypto/evp/c_allc.c.fipsmode openssl-1.0.0a/crypto/evp/c_allc.c
+--- openssl-1.0.0a/crypto/evp/c_allc.c.fipsmode	2009-12-25 15:12:24.000000000 +0100
++++ openssl-1.0.0a/crypto/evp/c_allc.c	2010-06-04 13:32:13.000000000 +0200
 @@ -65,6 +65,11 @@
  void OpenSSL_add_all_ciphers(void)
  	{
@@ -40,7 +40,7 @@ diff -up openssl-1.0.0-beta3/crypto/evp/c_allc.c.fipsmode openssl-1.0.0-beta3/cr
  #ifndef OPENSSL_NO_DES
  	EVP_add_cipher(EVP_des_cfb());
  	EVP_add_cipher(EVP_des_cfb1());
-@@ -219,4 +224,61 @@ void OpenSSL_add_all_ciphers(void)
+@@ -221,4 +226,61 @@ void OpenSSL_add_all_ciphers(void)
  	EVP_add_cipher_alias(SN_camellia_256_cbc,"CAMELLIA256");
  	EVP_add_cipher_alias(SN_camellia_256_cbc,"camellia256");
  #endif
@@ -102,9 +102,9 @@ diff -up openssl-1.0.0-beta3/crypto/evp/c_allc.c.fipsmode openssl-1.0.0-beta3/cr
 +		}
 +#endif
  	}
-diff -up openssl-1.0.0-beta3/crypto/evp/c_alld.c.fipsmode openssl-1.0.0-beta3/crypto/evp/c_alld.c
---- openssl-1.0.0-beta3/crypto/evp/c_alld.c.fipsmode	2009-07-08 10:50:53.000000000 +0200
-+++ openssl-1.0.0-beta3/crypto/evp/c_alld.c	2009-08-11 17:54:08.000000000 +0200
+diff -up openssl-1.0.0a/crypto/evp/c_alld.c.fipsmode openssl-1.0.0a/crypto/evp/c_alld.c
+--- openssl-1.0.0a/crypto/evp/c_alld.c.fipsmode	2009-07-08 10:50:53.000000000 +0200
++++ openssl-1.0.0a/crypto/evp/c_alld.c	2010-06-04 13:32:13.000000000 +0200
 @@ -64,6 +64,11 @@
  
  void OpenSSL_add_all_digests(void)
@@ -117,11 +117,10 @@ diff -up openssl-1.0.0-beta3/crypto/evp/c_alld.c.fipsmode openssl-1.0.0-beta3/cr
  #ifndef OPENSSL_NO_MD4
  	EVP_add_digest(EVP_md4());
  #endif
-@@ -110,5 +115,33 @@ void OpenSSL_add_all_digests(void)
- #endif
+@@ -111,4 +116,32 @@ void OpenSSL_add_all_digests(void)
  #ifndef OPENSSL_NO_WHIRLPOOL
  	EVP_add_digest(EVP_whirlpool());
-+#endif
+ #endif
 +#ifdef OPENSSL_FIPS
 +		}
 +	else
@@ -149,11 +148,11 @@ diff -up openssl-1.0.0-beta3/crypto/evp/c_alld.c.fipsmode openssl-1.0.0-beta3/cr
 +	EVP_add_digest(EVP_sha512());
 +#endif
 +		}
- #endif
++#endif
  	}
-diff -up openssl-1.0.0-beta3/crypto/o_init.c.fipsmode openssl-1.0.0-beta3/crypto/o_init.c
---- openssl-1.0.0-beta3/crypto/o_init.c.fipsmode	2009-08-11 17:28:25.000000000 +0200
-+++ openssl-1.0.0-beta3/crypto/o_init.c	2009-08-11 17:39:06.000000000 +0200
+diff -up openssl-1.0.0a/crypto/o_init.c.fipsmode openssl-1.0.0a/crypto/o_init.c
+--- openssl-1.0.0a/crypto/o_init.c.fipsmode	2010-06-04 13:32:13.000000000 +0200
++++ openssl-1.0.0a/crypto/o_init.c	2010-06-04 13:32:13.000000000 +0200
 @@ -59,6 +59,43 @@
  #include <e_os.h>
  #include <openssl/err.h>
@@ -206,9 +205,9 @@ diff -up openssl-1.0.0-beta3/crypto/o_init.c.fipsmode openssl-1.0.0-beta3/crypto
  		done = 1;
  		}
  #endif
-diff -up openssl-1.0.0-beta3/ssl/ssl_algs.c.fipsmode openssl-1.0.0-beta3/ssl/ssl_algs.c
---- openssl-1.0.0-beta3/ssl/ssl_algs.c.fipsmode	2009-07-08 10:50:53.000000000 +0200
-+++ openssl-1.0.0-beta3/ssl/ssl_algs.c	2009-08-11 18:01:13.000000000 +0200
+diff -up openssl-1.0.0a/ssl/ssl_algs.c.fipsmode openssl-1.0.0a/ssl/ssl_algs.c
+--- openssl-1.0.0a/ssl/ssl_algs.c.fipsmode	2010-04-07 15:18:30.000000000 +0200
++++ openssl-1.0.0a/ssl/ssl_algs.c	2010-06-04 13:32:48.000000000 +0200
 @@ -64,6 +64,12 @@
  int SSL_library_init(void)
  	{
@@ -222,7 +221,7 @@ diff -up openssl-1.0.0-beta3/ssl/ssl_algs.c.fipsmode openssl-1.0.0-beta3/ssl/ssl
  #ifndef OPENSSL_NO_DES
  	EVP_add_cipher(EVP_des_cbc());
  	EVP_add_cipher(EVP_des_ede3_cbc());
-@@ -115,6 +121,40 @@ int SSL_library_init(void)
+@@ -127,6 +133,48 @@ int SSL_library_init(void)
  	EVP_add_digest(EVP_sha());
  	EVP_add_digest(EVP_dss());
  #endif
@@ -248,6 +247,14 @@ diff -up openssl-1.0.0-beta3/ssl/ssl_algs.c.fipsmode openssl-1.0.0-beta3/ssl/ssl
 +	EVP_add_digest(EVP_sha1()); /* RSA with sha1 */
 +	EVP_add_digest_alias(SN_sha1,"ssl3-sha1");
 +	EVP_add_digest_alias(SN_sha1WithRSAEncryption,SN_sha1WithRSA);
++#endif
++#ifndef OPENSSL_NO_SHA256
++	EVP_add_digest(EVP_sha224());
++	EVP_add_digest(EVP_sha256());
++#endif
++#ifndef OPENSSL_NO_SHA512
++	EVP_add_digest(EVP_sha384());
++	EVP_add_digest(EVP_sha512());
 +#endif
 +#if !defined(OPENSSL_NO_SHA) && !defined(OPENSSL_NO_DSA)
 +	EVP_add_digest(EVP_dss1()); /* DSA with sha1 */

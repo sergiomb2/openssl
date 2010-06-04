@@ -20,8 +20,8 @@
 
 Summary: A general purpose cryptography library with TLS implementation
 Name: openssl
-Version: 1.0.0
-Release: 5%{?dist}
+Version: 1.0.0a
+Release: 1%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
 Source: openssl-%{version}-usa.tar.bz2
@@ -50,20 +50,18 @@ Patch34: openssl-0.9.6-x509.patch
 Patch35: openssl-0.9.8j-version-add-engines.patch
 Patch38: openssl-1.0.0-beta5-cipher-change.patch
 Patch39: openssl-1.0.0-beta5-ipv6-apps.patch
-Patch40: openssl-1.0.0-fips.patch
+Patch40: openssl-1.0.0a-fips.patch
 Patch41: openssl-1.0.0-beta3-fipscheck.patch
-Patch43: openssl-1.0.0-beta3-fipsmode.patch
+Patch43: openssl-1.0.0a-fipsmode.patch
 Patch44: openssl-1.0.0-beta3-fipsrng.patch
 Patch45: openssl-0.9.8j-env-nozlib.patch
 Patch47: openssl-1.0.0-beta5-readme-warning.patch
 Patch49: openssl-1.0.0-beta4-algo-doc.patch
 Patch50: openssl-1.0.0-beta4-dtls1-abi.patch
-Patch51: openssl-1.0.0-version.patch
+Patch51: openssl-1.0.0a-version.patch
 Patch52: openssl-1.0.0-beta4-aesni.patch
 Patch53: openssl-1.0.0-name-hash.patch
 # Backported fixes including security fixes
-Patch60: openssl-1.0.0-dtls1-backports.patch
-Patch61: openssl-1.0.0-init-sha256.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -145,8 +143,6 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch52 -p1 -b .aesni
 %patch53 -p1 -b .name-hash
 
-%patch60 -p1 -b .dtls1
-%patch61 -p1 -b .sha256
 # Modify the various perl scripts to reference perl in the right location.
 perl util/perlpath.pl `dirname %{__perl}`
 
@@ -395,6 +391,10 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun -p /sbin/ldconfig
 
 %changelog
+* Fri Jun  4 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0a-1
+- new upstream patch release, fixes CVE-2010-0742 (#598738)
+  and CVE-2010-1633 (#598732)
+
 * Wed May 19 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0-5
 - pkgconfig files now contain the correct libdir (#593723)
 
