@@ -21,7 +21,7 @@
 Summary: A general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.0a
-Release: 2%{?dist}
+Release: 3%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
 Source: openssl-%{version}-usa.tar.bz2
@@ -393,6 +393,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun -p /sbin/ldconfig
 
 %changelog
+* Tue Sep  7 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0a-3
+- make SHLIB_VERSION reflect the library suffix
+
 * Wed Jun 30 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0a-2
 - openssl man page fix (#609484)
 
