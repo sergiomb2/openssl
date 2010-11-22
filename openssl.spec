@@ -21,7 +21,7 @@
 Summary: A general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.0b
-Release: 1%{?dist}
+Release: 2%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
 Source: openssl-%{version}-usa.tar.bz2
@@ -44,6 +44,7 @@ Patch7: openssl-1.0.0-timezone.patch
 Patch23: openssl-1.0.0-beta4-default-paths.patch
 Patch24: openssl-0.9.8j-bad-mime.patch
 Patch25: openssl-1.0.0a-manfix.patch
+Patch26: openssl-1.0.0b-s390bn.patch
 # Functionality changes
 Patch32: openssl-0.9.8g-ia64.patch
 Patch33: openssl-1.0.0-beta4-ca-dir.patch
@@ -126,6 +127,7 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch23 -p1 -b .default-paths
 %patch24 -p1 -b .bad-mime
 %patch25 -p1 -b .manfix
+%patch26 -p1 -b .s390bn
 
 %patch32 -p1 -b .ia64
 %patch33 -p1 -b .ca-dir
@@ -393,6 +395,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun -p /sbin/ldconfig
 
 %changelog
+* Mon Nov 22 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0b-2
+- revert upstream change in s390x bignum asm routines
+
 * Tue Nov 16 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0b-1
 - new upstream version fixing CVE-2010-3864 (#649304)
 
