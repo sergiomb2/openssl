@@ -395,6 +395,10 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun -p /sbin/ldconfig
 
 %changelog
+* Tue Nov 23 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0b-3
+- replace the revert for the s390x bignum asm routines with
+  fix from upstream
+
 * Mon Nov 22 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0b-2
 - revert upstream change in s390x bignum asm routines
 
