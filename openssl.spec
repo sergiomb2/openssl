@@ -20,8 +20,8 @@
 
 Summary: A general purpose cryptography library with TLS implementation
 Name: openssl
-Version: 1.0.0b
-Release: 3%{?dist}
+Version: 1.0.0c
+Release: 1%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
 Source: openssl-%{version}-usa.tar.bz2
@@ -44,7 +44,6 @@ Patch7: openssl-1.0.0-timezone.patch
 Patch23: openssl-1.0.0-beta4-default-paths.patch
 Patch24: openssl-0.9.8j-bad-mime.patch
 Patch25: openssl-1.0.0a-manfix.patch
-Patch26: openssl-1.0.0b-s390bn.patch
 # Functionality changes
 Patch32: openssl-0.9.8g-ia64.patch
 Patch33: openssl-1.0.0-beta4-ca-dir.patch
@@ -60,7 +59,7 @@ Patch45: openssl-0.9.8j-env-nozlib.patch
 Patch47: openssl-1.0.0-beta5-readme-warning.patch
 Patch49: openssl-1.0.0-beta4-algo-doc.patch
 Patch50: openssl-1.0.0-beta4-dtls1-abi.patch
-Patch51: openssl-1.0.0b-version.patch
+Patch51: openssl-1.0.0c-version.patch
 Patch52: openssl-1.0.0b-aesni.patch
 Patch53: openssl-1.0.0-name-hash.patch
 # Backported fixes including security fixes
@@ -127,7 +126,6 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch23 -p1 -b .default-paths
 %patch24 -p1 -b .bad-mime
 %patch25 -p1 -b .manfix
-%patch26 -p1 -b .s390bn
 
 %patch32 -p1 -b .ia64
 %patch33 -p1 -b .ca-dir
