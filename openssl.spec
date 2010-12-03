@@ -393,6 +393,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun -p /sbin/ldconfig
 
 %changelog
+* Fri Dec  3 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0c-1
+- new upstream version fixing CVE-2010-4180
+
 * Tue Nov 23 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0b-3
 - replace the revert for the s390x bignum asm routines with
   fix from upstream
