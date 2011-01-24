@@ -21,7 +21,7 @@
 Summary: A general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.0c
-Release: 1%{?dist}
+Release: 2%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
 Source: openssl-%{version}-usa.tar.bz2
@@ -62,6 +62,8 @@ Patch50: openssl-1.0.0-beta4-dtls1-abi.patch
 Patch51: openssl-1.0.0c-version.patch
 Patch52: openssl-1.0.0b-aesni.patch
 Patch53: openssl-1.0.0-name-hash.patch
+Patch54: openssl-1.0.0c-speed-fips.patch
+Patch55: openssl-1.0.0c-apps-ipv6listen.patch
 # Backported fixes including security fixes
 
 License: OpenSSL
@@ -144,6 +146,8 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch51 -p1 -b .version
 %patch52 -p1 -b .aesni
 %patch53 -p1 -b .name-hash
+%patch54 -p1 -b .spfips
+%patch55 -p1 -b .ipv6listen
 
 # Modify the various perl scripts to reference perl in the right location.
 perl util/perlpath.pl `dirname %{__perl}`
@@ -393,6 +397,12 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun -p /sbin/ldconfig
 
 %changelog
+* Mon Jan 24 2011 Tomas Mraz <tmraz@redhat.com> 1.0.0c-2
+- listen on ipv6 wildcard in s_server so we accept connections
+  from both ipv4 and ipv6 (#601612)
+- fix openssl speed command so it can be used in the FIPS mode
+  with FIPS allowed ciphers
+
 * Fri Dec  3 2010 Tomas Mraz <tmraz@redhat.com> 1.0.0c-1
 - new upstream version fixing CVE-2010-4180
 
