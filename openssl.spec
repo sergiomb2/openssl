@@ -67,6 +67,7 @@ Patch55: openssl-1.0.0c-apps-ipv6listen.patch
 Patch56: openssl-1.0.0c-rsa-x931.patch
 Patch57: openssl-1.0.0c-fips186-3.patch
 Patch58: openssl-1.0.0c-fips-md5-allow.patch
+Patch59: openssl-1.0.0c-pkcs12-fips-default.patch
 # Backported fixes including security fixes
 
 License: OpenSSL
@@ -154,6 +155,7 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch56 -p1 -b .x931
 %patch57 -p1 -b .fips186-3
 %patch58 -p1 -b .md5-allow
+%patch59 -p1 -b .fips-default
 
 # Modify the various perl scripts to reference perl in the right location.
 perl util/perlpath.pl `dirname %{__perl}`
@@ -410,6 +412,7 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 - add OPENSSL_FIPS_NON_APPROVED_MD5_ALLOW environment variable
   to allow using MD5 when the system is in the maintenance state
   even if the /proc fips flag is on
+- make openssl pkcs12 command work by default in the FIPS mode
 
 * Mon Jan 24 2011 Tomas Mraz <tmraz@redhat.com> 1.0.0c-2
 - listen on ipv6 wildcard in s_server so we accept connections
