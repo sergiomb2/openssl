@@ -21,7 +21,7 @@
 Summary: A general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.0d
-Release: 1%{?dist}
+Release: 2%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
 Source: openssl-%{version}-usa.tar.bz2
@@ -68,6 +68,7 @@ Patch56: openssl-1.0.0c-rsa-x931.patch
 Patch57: openssl-1.0.0c-fips186-3.patch
 Patch58: openssl-1.0.0c-fips-md5-allow.patch
 Patch59: openssl-1.0.0c-pkcs12-fips-default.patch
+Patch60: openssl-1.0.0d-apps-dgst.patch
 # Backported fixes including security fixes
 
 License: OpenSSL
@@ -156,6 +157,7 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch57 -p1 -b .fips186-3
 %patch58 -p1 -b .md5-allow
 %patch59 -p1 -b .fips-default
+%patch60 -p1 -b .dgst
 
 # Modify the various perl scripts to reference perl in the right location.
 perl util/perlpath.pl `dirname %{__perl}`
@@ -405,6 +407,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun -p /sbin/ldconfig
 
 %changelog
+* Tue Apr  5 2011 Tomas Mraz <tmraz@redhat.com> 1.0.0d-2
+- clarify apps help texts for available digest algorithms (#693858)
+
 * Thu Feb 10 2011 Tomas Mraz <tmraz@redhat.com> 1.0.0d-1
 - new upstream release fixing CVE-2011-0014 (OCSP stapling vulnerability)
 
