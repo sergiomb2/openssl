@@ -21,7 +21,7 @@
 Summary: A general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.0d
-Release: 2%{?dist}
+Release: 3%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
 Source: openssl-%{version}-usa.tar.bz2
@@ -44,6 +44,7 @@ Patch7: openssl-1.0.0-timezone.patch
 Patch23: openssl-1.0.0-beta4-default-paths.patch
 Patch24: openssl-0.9.8j-bad-mime.patch
 Patch25: openssl-1.0.0a-manfix.patch
+Patch26: openssl-1.0.0a-load-certs.patch
 # Functionality changes
 Patch32: openssl-0.9.8g-ia64.patch
 Patch33: openssl-1.0.0-beta4-ca-dir.patch
@@ -70,6 +71,7 @@ Patch58: openssl-1.0.0c-fips-md5-allow.patch
 Patch59: openssl-1.0.0c-pkcs12-fips-default.patch
 Patch60: openssl-1.0.0d-apps-dgst.patch
 # Backported fixes including security fixes
+Patch61: openssl-1.0.0d-padlock64.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -133,6 +135,7 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch23 -p1 -b .default-paths
 %patch24 -p1 -b .bad-mime
 %patch25 -p1 -b .manfix
+%patch26 -p1 -b .load-certs
 
 %patch32 -p1 -b .ia64
 %patch33 -p1 -b .ca-dir
@@ -158,6 +161,7 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch58 -p1 -b .md5-allow
 %patch59 -p1 -b .fips-default
 %patch60 -p1 -b .dgst
+%patch61 -p1 -b .padlock64
 
 # Modify the various perl scripts to reference perl in the right location.
 perl util/perlpath.pl `dirname %{__perl}`
@@ -407,6 +411,10 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun -p /sbin/ldconfig
 
 %changelog
+* Thu Apr 28 2011 Tomas Mraz <tmraz@redhat.com> 1.0.0d-3
+- add support for VIA Padlock on 64bit arch from upstream (#617539)
+- do not return bogus values from load_certs (#652286)
+
 * Tue Apr  5 2011 Tomas Mraz <tmraz@redhat.com> 1.0.0d-2
 - clarify apps help texts for available digest algorithms (#693858)
 
