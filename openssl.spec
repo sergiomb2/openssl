@@ -173,7 +173,7 @@ make TABLE PERL=%{__perl}
 %build
 # Figure out which flags we want to use.
 # default
-sslarch=%{_os}-%{_arch}
+sslarch=%{_os}-%{_target_cpu}
 %ifarch %ix86
 sslarch=linux-elf
 if ! echo %{_target} | grep -q i686 ; then
