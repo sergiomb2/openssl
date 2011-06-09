@@ -21,7 +21,7 @@
 Summary: A general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.0d
-Release: 4%{?dist}
+Release: 5%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
 Source: openssl-%{version}-usa.tar.bz2
@@ -71,6 +71,7 @@ Patch58: openssl-1.0.0c-fips-md5-allow.patch
 Patch59: openssl-1.0.0c-pkcs12-fips-default.patch
 Patch60: openssl-1.0.0d-apps-dgst.patch
 Patch61: openssl-1.0.0d-cavs.patch
+Patch62: openssl-1.0.0-fips-aesni.patch
 # Backported fixes including security fixes
 Patch81: openssl-1.0.0d-padlock64.patch
 
@@ -163,6 +164,8 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch59 -p1 -b .fips-default
 %patch60 -p1 -b .dgst
 %patch61 -p1 -b .cavs
+%patch62 -p1 -b .fips-aesni
+
 %patch81 -p1 -b .padlock64
 
 # Modify the various perl scripts to reference perl in the right location.
@@ -413,6 +416,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun -p /sbin/ldconfig
 
 %changelog
+* Thu Jun  9 2011 Tomas Mraz <tmraz@redhat.com> 1.0.0d-5
+- allow the AES-NI engine in the FIPS mode
+
 * Tue May 24 2011 Tomas Mraz <tmraz@redhat.com> 1.0.0d-4
 - add API necessary for CAVS testing of the new DSA parameter generation
 
