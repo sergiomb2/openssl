@@ -21,7 +21,7 @@
 Summary: A general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.0d
-Release: 6%{?dist}
+Release: 7%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
 Source: openssl-%{version}-usa.tar.bz2
@@ -48,6 +48,7 @@ Patch23: openssl-1.0.0-beta4-default-paths.patch
 Patch24: openssl-0.9.8j-bad-mime.patch
 Patch25: openssl-1.0.0a-manfix.patch
 Patch26: openssl-1.0.0a-load-certs.patch
+Patch27: openssl-1.0.0d-cms-keyid.patch
 # Functionality changes
 Patch32: openssl-0.9.8g-ia64.patch
 Patch33: openssl-1.0.0-beta4-ca-dir.patch
@@ -75,6 +76,7 @@ Patch59: openssl-1.0.0c-pkcs12-fips-default.patch
 Patch60: openssl-1.0.0d-apps-dgst.patch
 Patch61: openssl-1.0.0d-cavs.patch
 Patch62: openssl-1.0.0-fips-aesni.patch
+Patch63: openssl-1.0.0d-xmpp-starttls.patch
 # Backported fixes including security fixes
 Patch81: openssl-1.0.0d-padlock64.patch
 
@@ -144,6 +146,7 @@ popd
 %patch24 -p1 -b .bad-mime
 %patch25 -p1 -b .manfix
 %patch26 -p1 -b .load-certs
+%patch27 -p1 -b .keyid
 
 %patch32 -p1 -b .ia64
 %patch33 -p1 -b .ca-dir
@@ -171,6 +174,7 @@ popd
 %patch60 -p1 -b .dgst
 %patch61 -p1 -b .cavs
 %patch62 -p1 -b .fips-aesni
+%patch63 -p1 -b .starttls
 
 %patch81 -p1 -b .padlock64
 
@@ -434,6 +438,10 @@ popd
 %postun -p /sbin/ldconfig
 
 %changelog
+* Tue Jul 26 2011 Tomas Mraz <tmraz@redhat.com> 1.0.0d-7
+- correct openssl cms help output (#636266)
+- more tolerant starttls detection in XMPP protocol (#608239)
+
 * Wed Jul 20 2011 Tomas Mraz <tmraz@redhat.com> 1.0.0d-6
 - add support for newest Intel acceleration improvements backported
   from upstream by Intel in form of a separate engine
