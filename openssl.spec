@@ -21,7 +21,7 @@
 Summary: A general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.0d
-Release: 7%{?dist}
+Release: 8%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
 Source: openssl-%{version}-usa.tar.bz2
@@ -32,8 +32,6 @@ Source8: openssl-thread-test.c
 Source9: opensslconf-new.h
 Source10: opensslconf-new-warning.h
 Source11: README.FIPS
-# Intel acceleration engine backported from upstream by Intel
-Source12: intel-accel-1.3.tar.gz
 # Build changes
 Patch0: openssl-1.0.0-beta4-redhat.patch
 Patch1: openssl-1.0.0-beta3-defaults.patch
@@ -42,7 +40,6 @@ Patch4: openssl-1.0.0-beta5-enginesdir.patch
 Patch5: openssl-0.9.8a-no-rpath.patch
 Patch6: openssl-0.9.8b-test-use-localhost.patch
 Patch7: openssl-1.0.0-timezone.patch
-Patch10: intel-accel-1.3-build.patch
 # Bug fixes
 Patch23: openssl-1.0.0-beta4-default-paths.patch
 Patch24: openssl-0.9.8j-bad-mime.patch
@@ -77,6 +74,7 @@ Patch60: openssl-1.0.0d-apps-dgst.patch
 Patch61: openssl-1.0.0d-cavs.patch
 Patch62: openssl-1.0.0-fips-aesni.patch
 Patch63: openssl-1.0.0d-xmpp-starttls.patch
+Patch64: openssl-1.0.0d-intelopts.patch
 # Backported fixes including security fixes
 Patch81: openssl-1.0.0d-padlock64.patch
 
@@ -128,19 +126,16 @@ package provides Perl scripts for converting certificates and keys
 from other formats to the formats used by the OpenSSL toolkit.
 
 %prep
-%setup -q -n %{name}-%{version} -a 12
+%setup -q -n %{name}-%{version}
 
 %{SOURCE1} > /dev/null
 %patch0 -p1 -b .redhat
 %patch1 -p1 -b .defaults
 %patch3 -p1 -b .soversion
-%patch4 -p1 -b .enginesdir
+%patch4 -p1 -b .enginesdir %{?_rawbuild}
 %patch5 -p1 -b .no-rpath
 %patch6 -p1 -b .use-localhost
 %patch7 -p1 -b .timezone
-pushd intel-accel-1.3
-%patch10 -p1 -b .iabuild
-popd
 
 %patch23 -p1 -b .default-paths
 %patch24 -p1 -b .bad-mime
@@ -175,6 +170,7 @@ popd
 %patch61 -p1 -b .cavs
 %patch62 -p1 -b .fips-aesni
 %patch63 -p1 -b .starttls
+%patch64 -p1 -b .intelopts
 
 %patch81 -p1 -b .padlock64
 
@@ -224,7 +220,7 @@ sslarch=linux-generic32
 	zlib enable-camellia enable-seed enable-tlsext enable-rfc3779 \
 	enable-cms enable-md2 no-idea no-mdc2 no-rc5 no-ec no-ecdh no-ecdsa \
 	--with-krb5-flavor=MIT --enginesdir=%{_libdir}/openssl/engines \
-	--with-krb5-dir=/usr shared  ${sslarch} fips
+	--with-krb5-dir=/usr shared  ${sslarch} %{?!nofips:fips}
 
 # Add -Wa,--noexecstack here so that libcrypto's assembler modules will be
 # marked as not requiring an executable stack.
@@ -237,12 +233,6 @@ make rehash
 
 # Overwrite FIPS README
 cp -f %{SOURCE11} .
-
-%ifarch %ix86 x86_64
-pushd intel-accel-1.3
-make
-popd
-%endif
 
 %check
 # Verify that what was compiled actually works.
@@ -371,12 +361,6 @@ rm -rf $RPM_BUILD_ROOT/%{_bindir}/openssl_fips_fingerprint
 rm -rf $RPM_BUILD_ROOT/%{_libdir}/fips_premain.*
 rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 
-%ifarch %ix86 x86_64
-pushd intel-accel-1.3
-install -m755 libintel-accel.so $RPM_BUILD_ROOT%{_libdir}/openssl/engines
-popd
-%endif
-
 %clean
 [ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
 
@@ -438,6 +422,12 @@ popd
 %postun -p /sbin/ldconfig
 
 %changelog
+* Wed Aug 24 2011 Tomas Mraz <tmraz@redhat.com> 1.0.0d-8
+- drop the separate engine for Intel acceleration improvements
+  and merge in the AES-NI, SHA1, and RC4 optimizations
+- add support for OPENSSL_DISABLE_AES_NI environment variable
+  that disables the AES-NI support
+
 * Tue Jul 26 2011 Tomas Mraz <tmraz@redhat.com> 1.0.0d-7
 - correct openssl cms help output (#636266)
 - more tolerant starttls detection in XMPP protocol (#608239)
