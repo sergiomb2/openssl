@@ -20,8 +20,8 @@
 
 Summary: A general purpose cryptography library with TLS implementation
 Name: openssl
-Version: 1.0.0d
-Release: 8%{?dist}
+Version: 1.0.0e
+Release: 1%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
 Source: openssl-%{version}-usa.tar.bz2
@@ -61,7 +61,7 @@ Patch45: openssl-0.9.8j-env-nozlib.patch
 Patch47: openssl-1.0.0-beta5-readme-warning.patch
 Patch49: openssl-1.0.0-beta4-algo-doc.patch
 Patch50: openssl-1.0.0-beta4-dtls1-abi.patch
-Patch51: openssl-1.0.0d-version.patch
+Patch51: openssl-1.0.0e-version.patch
 Patch52: openssl-1.0.0b-aesni.patch
 Patch53: openssl-1.0.0-name-hash.patch
 Patch54: openssl-1.0.0c-speed-fips.patch
@@ -422,6 +422,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun -p /sbin/ldconfig
 
 %changelog
+* Wed Sep  7 2011 Tomas Mraz <tmraz@redhat.com> 1.0.0e-1
+- new upstream release fixing CVE-2011-3207 (#736088)
+
 * Wed Aug 24 2011 Tomas Mraz <tmraz@redhat.com> 1.0.0d-8
 - drop the separate engine for Intel acceleration improvements
   and merge in the AES-NI, SHA1, and RC4 optimizations
