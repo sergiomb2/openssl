@@ -21,7 +21,7 @@
 Summary: A general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.0e
-Release: 1%{?dist}
+Release: 2%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
 Source: openssl-%{version}-usa.tar.bz2
@@ -75,6 +75,7 @@ Patch61: openssl-1.0.0d-cavs.patch
 Patch62: openssl-1.0.0-fips-aesni.patch
 Patch63: openssl-1.0.0d-xmpp-starttls.patch
 Patch64: openssl-1.0.0d-intelopts.patch
+Patch65: openssl-1.0.0e-chil-fixes.patch
 # Backported fixes including security fixes
 Patch81: openssl-1.0.0d-padlock64.patch
 
@@ -171,6 +172,7 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch62 -p1 -b .fips-aesni
 %patch63 -p1 -b .starttls
 %patch64 -p1 -b .intelopts
+%patch65 -p1 -b .chil
 
 %patch81 -p1 -b .padlock64
 
@@ -422,6 +424,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun -p /sbin/ldconfig
 
 %changelog
+* Wed Sep 21 2011 Tomas Mraz <tmraz@redhat.com> 1.0.0e-2
+- fix missing initialization of variable in CHIL engine
+
 * Wed Sep  7 2011 Tomas Mraz <tmraz@redhat.com> 1.0.0e-1
 - new upstream release fixing CVE-2011-3207 (#736088)
 
