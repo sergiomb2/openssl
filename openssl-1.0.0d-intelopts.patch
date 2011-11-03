@@ -1,6 +1,6 @@
 diff -up openssl-1.0.0d/crypto/aes/asm/aesni-x86.pl.intelopts openssl-1.0.0d/crypto/aes/asm/aesni-x86.pl
---- openssl-1.0.0d/crypto/aes/asm/aesni-x86.pl.intelopts	2011-08-24 12:36:33.000000000 +0200
-+++ openssl-1.0.0d/crypto/aes/asm/aesni-x86.pl	2011-08-24 12:36:34.000000000 +0200
+--- openssl-1.0.0d/crypto/aes/asm/aesni-x86.pl.intelopts	2011-08-24 12:50:55.000000000 +0200
++++ openssl-1.0.0d/crypto/aes/asm/aesni-x86.pl	2011-08-24 12:50:56.000000000 +0200
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env perl
 +#!/usr/bin/perl
@@ -1021,8 +1021,8 @@ diff -up openssl-1.0.0d/crypto/aes/asm/aesni-x86.pl.intelopts openssl-1.0.0d/cry
  
  	&$movekey	("xmm0",&QWP(0,$key));	# inverse middle
 diff -up openssl-1.0.0d/crypto/aes/asm/aesni-x86_64.pl.intelopts openssl-1.0.0d/crypto/aes/asm/aesni-x86_64.pl
---- openssl-1.0.0d/crypto/aes/asm/aesni-x86_64.pl.intelopts	2011-08-24 12:36:33.000000000 +0200
-+++ openssl-1.0.0d/crypto/aes/asm/aesni-x86_64.pl	2011-08-24 12:36:34.000000000 +0200
+--- openssl-1.0.0d/crypto/aes/asm/aesni-x86_64.pl.intelopts	2011-08-24 12:50:55.000000000 +0200
++++ openssl-1.0.0d/crypto/aes/asm/aesni-x86_64.pl	2011-08-24 12:50:56.000000000 +0200
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env perl
 +#!/usr/bin/perl
@@ -2315,7 +2315,7 @@ diff -up openssl-1.0.0d/crypto/aes/asm/aesni-x86_64.pl.intelopts openssl-1.0.0d/
  ___
 diff -up openssl-1.0.0d/crypto/cryptlib.c.intelopts openssl-1.0.0d/crypto/cryptlib.c
 --- openssl-1.0.0d/crypto/cryptlib.c.intelopts	2010-11-19 01:11:27.000000000 +0100
-+++ openssl-1.0.0d/crypto/cryptlib.c	2011-08-24 12:36:33.000000000 +0200
++++ openssl-1.0.0d/crypto/cryptlib.c	2011-08-24 12:50:55.000000000 +0200
 @@ -662,22 +662,23 @@ const char *CRYPTO_get_lock_name(int typ
  	defined(__x86_64) || defined(__x86_64__) || defined(_M_AMD64) || defined(_M_X64)
  
@@ -2344,8 +2344,8 @@ diff -up openssl-1.0.0d/crypto/cryptlib.c.intelopts openssl-1.0.0d/crypto/cryptl
       * |(1<<10) sets a reserved bit to signal that variable
       * was initialized already... This is to avoid interference
 diff -up openssl-1.0.0d/crypto/engine/eng_aesni.c.intelopts openssl-1.0.0d/crypto/engine/eng_aesni.c
---- openssl-1.0.0d/crypto/engine/eng_aesni.c.intelopts	2011-08-24 12:36:33.000000000 +0200
-+++ openssl-1.0.0d/crypto/engine/eng_aesni.c	2011-08-24 12:36:33.000000000 +0200
+--- openssl-1.0.0d/crypto/engine/eng_aesni.c.intelopts	2011-08-24 12:50:55.000000000 +0200
++++ openssl-1.0.0d/crypto/engine/eng_aesni.c	2011-08-24 12:50:55.000000000 +0200
 @@ -157,16 +157,20 @@ typedef unsigned __int64 IA32CAP;
  typedef unsigned long long IA32CAP;
  #endif
@@ -2373,8 +2373,8 @@ diff -up openssl-1.0.0d/crypto/engine/eng_aesni.c.intelopts openssl-1.0.0d/crypt
  
  	/* Register everything or return with an error */
 diff -up openssl-1.0.0d/crypto/fips/fips_standalone_sha1.c.intelopts openssl-1.0.0d/crypto/fips/fips_standalone_sha1.c
---- openssl-1.0.0d/crypto/fips/fips_standalone_sha1.c.intelopts	2011-08-24 12:36:33.000000000 +0200
-+++ openssl-1.0.0d/crypto/fips/fips_standalone_sha1.c	2011-08-24 12:36:33.000000000 +0200
+--- openssl-1.0.0d/crypto/fips/fips_standalone_sha1.c.intelopts	2011-08-24 12:50:55.000000000 +0200
++++ openssl-1.0.0d/crypto/fips/fips_standalone_sha1.c	2011-08-24 12:50:55.000000000 +0200
 @@ -62,6 +62,8 @@ void OPENSSL_cleanse(void *p,size_t len)
  
  #ifdef OPENSSL_FIPS
@@ -2386,7 +2386,7 @@ diff -up openssl-1.0.0d/crypto/fips/fips_standalone_sha1.c.intelopts openssl-1.0
      {
 diff -up openssl-1.0.0d/crypto/perlasm/x86asm.pl.intelopts openssl-1.0.0d/crypto/perlasm/x86asm.pl
 --- openssl-1.0.0d/crypto/perlasm/x86asm.pl.intelopts	2008-12-17 20:56:47.000000000 +0100
-+++ openssl-1.0.0d/crypto/perlasm/x86asm.pl	2011-08-24 12:36:34.000000000 +0200
++++ openssl-1.0.0d/crypto/perlasm/x86asm.pl	2011-08-24 12:50:56.000000000 +0200
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env perl
 +#!/usr/bin/perl
@@ -2453,7 +2453,7 @@ diff -up openssl-1.0.0d/crypto/perlasm/x86asm.pl.intelopts openssl-1.0.0d/crypto
  $label="000";
 diff -up openssl-1.0.0d/crypto/perlasm/x86gas.pl.intelopts openssl-1.0.0d/crypto/perlasm/x86gas.pl
 --- openssl-1.0.0d/crypto/perlasm/x86gas.pl.intelopts	2008-12-17 20:56:47.000000000 +0100
-+++ openssl-1.0.0d/crypto/perlasm/x86gas.pl	2011-08-24 12:36:34.000000000 +0200
++++ openssl-1.0.0d/crypto/perlasm/x86gas.pl	2011-08-24 12:50:56.000000000 +0200
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env perl
 +#!/usr/bin/perl
@@ -2487,7 +2487,7 @@ diff -up openssl-1.0.0d/crypto/perlasm/x86gas.pl.intelopts openssl-1.0.0d/crypto
  sub ::align
 diff -up openssl-1.0.0d/crypto/perlasm/x86_64-xlate.pl.intelopts openssl-1.0.0d/crypto/perlasm/x86_64-xlate.pl
 --- openssl-1.0.0d/crypto/perlasm/x86_64-xlate.pl.intelopts	2010-10-10 23:14:17.000000000 +0200
-+++ openssl-1.0.0d/crypto/perlasm/x86_64-xlate.pl	2011-08-24 12:36:34.000000000 +0200
++++ openssl-1.0.0d/crypto/perlasm/x86_64-xlate.pl	2011-08-24 12:50:56.000000000 +0200
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env perl
 +#!/usr/bin/perl
@@ -2781,8 +2781,8 @@ diff -up openssl-1.0.0d/crypto/perlasm/x86_64-xlate.pl.intelopts openssl-1.0.0d/
  	    printf "\t%s",$opcode->out();
  	}
 diff -up openssl-1.0.0d/crypto/rc4/asm/rc4-x86_64.pl.intelopts openssl-1.0.0d/crypto/rc4/asm/rc4-x86_64.pl
---- openssl-1.0.0d/crypto/rc4/asm/rc4-x86_64.pl.intelopts	2011-08-24 12:36:33.000000000 +0200
-+++ openssl-1.0.0d/crypto/rc4/asm/rc4-x86_64.pl	2011-08-24 12:49:09.000000000 +0200
+--- openssl-1.0.0d/crypto/rc4/asm/rc4-x86_64.pl.intelopts	2011-08-24 12:50:55.000000000 +0200
++++ openssl-1.0.0d/crypto/rc4/asm/rc4-x86_64.pl	2011-08-24 12:50:56.000000000 +0200
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env perl
 +#!/usr/bin/perl
@@ -3229,8 +3229,8 @@ diff -up openssl-1.0.0d/crypto/rc4/asm/rc4-x86_64.pl.intelopts openssl-1.0.0d/cr
  
  print $code;
 diff -up openssl-1.0.0d/crypto/rc4/asm/rc4-586.pl.intelopts openssl-1.0.0d/crypto/rc4/asm/rc4-586.pl
---- openssl-1.0.0d/crypto/rc4/asm/rc4-586.pl.intelopts	2011-08-24 12:36:33.000000000 +0200
-+++ openssl-1.0.0d/crypto/rc4/asm/rc4-586.pl	2011-08-24 12:50:40.000000000 +0200
+--- openssl-1.0.0d/crypto/rc4/asm/rc4-586.pl.intelopts	2011-08-24 12:50:55.000000000 +0200
++++ openssl-1.0.0d/crypto/rc4/asm/rc4-586.pl	2011-08-24 12:50:56.000000000 +0200
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env perl
 +#!/usr/bin/perl
@@ -3449,7 +3449,7 @@ diff -up openssl-1.0.0d/crypto/rc4/asm/rc4-586.pl.intelopts openssl-1.0.0d/crypt
  &function_end_B("RC4_options");
 diff -up openssl-1.0.0d/crypto/sha/asm/sha1-x86_64.pl.intelopts openssl-1.0.0d/crypto/sha/asm/sha1-x86_64.pl
 --- openssl-1.0.0d/crypto/sha/asm/sha1-x86_64.pl.intelopts	2010-01-17 17:58:56.000000000 +0100
-+++ openssl-1.0.0d/crypto/sha/asm/sha1-x86_64.pl	2011-08-24 12:36:34.000000000 +0200
++++ openssl-1.0.0d/crypto/sha/asm/sha1-x86_64.pl	2011-08-24 12:50:56.000000000 +0200
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env perl
 +#!/usr/bin/perl
@@ -4765,7 +4765,7 @@ diff -up openssl-1.0.0d/crypto/sha/asm/sha1-x86_64.pl.intelopts openssl-1.0.0d/c
  
 diff -up openssl-1.0.0d/crypto/sha/asm/sha1-586.pl.intelopts openssl-1.0.0d/crypto/sha/asm/sha1-586.pl
 --- openssl-1.0.0d/crypto/sha/asm/sha1-586.pl.intelopts	2008-07-17 11:50:56.000000000 +0200
-+++ openssl-1.0.0d/crypto/sha/asm/sha1-586.pl	2011-08-24 12:36:34.000000000 +0200
++++ openssl-1.0.0d/crypto/sha/asm/sha1-586.pl	2011-08-24 12:50:56.000000000 +0200
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env perl
 +#!/usr/bin/perl
@@ -5972,7 +5972,7 @@ diff -up openssl-1.0.0d/crypto/sha/asm/sha1-586.pl.intelopts openssl-1.0.0d/cryp
  &asm_finish();
 diff -up openssl-1.0.0d/crypto/x86cpuid.pl.intelopts openssl-1.0.0d/crypto/x86cpuid.pl
 --- openssl-1.0.0d/crypto/x86cpuid.pl.intelopts	2010-02-12 18:02:12.000000000 +0100
-+++ openssl-1.0.0d/crypto/x86cpuid.pl	2011-08-24 12:36:34.000000000 +0200
++++ openssl-1.0.0d/crypto/x86cpuid.pl	2011-11-03 09:55:42.000000000 +0100
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env perl
 +#!/usr/bin/perl
@@ -6021,7 +6021,7 @@ diff -up openssl-1.0.0d/crypto/x86cpuid.pl.intelopts openssl-1.0.0d/crypto/x86cp
  	
  &set_label("intel");
  	&cmp	("edi",4);
-@@ -85,27 +92,52 @@ for (@ARGV) { $sse2=1 if (/-DOPENSSL_IA3
+@@ -85,27 +92,45 @@ for (@ARGV) { $sse2=1 if (/-DOPENSSL_IA3
  &set_label("nocacheinfo");
  	&mov	("eax",1);
  	&cpuid	();
@@ -6059,20 +6059,13 @@ diff -up openssl-1.0.0d/crypto/x86cpuid.pl.intelopts openssl-1.0.0d/crypto/x86cp
 +	&mov	("esi","edx");
 +	&or	("ebp","ecx");		# merge AMD XOP flag
 +
-+	&bt	("ecx",26);		# check XSAVE bit
-+	&jnc	(&label("done"));
 +	&bt	("ecx",27);		# check OSXSAVE bit
-+	&jnc	(&label("clear_xmm"));
-+	&xor	("ecx","ecx");
++	&jnc	(&label("clear_avx"));
++	&xor	("ecx","ecx");          # XCR0
 +	&data_byte(0x0f,0x01,0xd0);	# xgetbv
-+	&and	("eax",6);
++	&and	("eax",6);              # isolate XMM and YMM state support
 +	&cmp	("eax",6);
 +	&je	(&label("done"));
-+	&cmp	("eax",2);
-+	&je	(&label("clear_avx"));
-+&set_label("clear_xmm");
-+	&and	("ebp",0xfdfffffd);	# clear AESNI and PCLMULQDQ bits
-+	&and	("esi",0xfeffffff);	# clear FXSR
 +&set_label("clear_avx");
 +	&and	("ebp",0xefffe7ff);	# clear AVX, FMA and AMD XOP bits
  &set_label("done");
@@ -6083,7 +6076,7 @@ diff -up openssl-1.0.0d/crypto/x86cpuid.pl.intelopts openssl-1.0.0d/crypto/x86cp
  &function_end("OPENSSL_ia32_cpuid");
  
  &external_label("OPENSSL_ia32cap_P");
-@@ -199,8 +231,9 @@ for (@ARGV) { $sse2=1 if (/-DOPENSSL_IA3
+@@ -199,8 +224,9 @@ for (@ARGV) { $sse2=1 if (/-DOPENSSL_IA3
  	&bt	(&DWP(0,"ecx"),1);
  	&jnc	(&label("no_x87"));
  	if ($sse2) {
@@ -6097,7 +6090,7 @@ diff -up openssl-1.0.0d/crypto/x86cpuid.pl.intelopts openssl-1.0.0d/crypto/x86cp
  		&pxor	("xmm2","xmm2");
 diff -up openssl-1.0.0d/crypto/x86_64cpuid.pl.intelopts openssl-1.0.0d/crypto/x86_64cpuid.pl
 --- openssl-1.0.0d/crypto/x86_64cpuid.pl.intelopts	2010-04-14 21:25:09.000000000 +0200
-+++ openssl-1.0.0d/crypto/x86_64cpuid.pl	2011-08-24 12:36:34.000000000 +0200
++++ openssl-1.0.0d/crypto/x86_64cpuid.pl	2011-08-24 12:50:56.000000000 +0200
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env perl
 +#!/usr/bin/perl
