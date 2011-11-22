@@ -21,7 +21,7 @@
 Summary: A general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.0e
-Release: 3%{?dist}
+Release: 4%{?dist}
 # We remove certain patented algorithms from the openssl source tarball
 # with the hobble-openssl script which is included below.
 Source: openssl-%{version}-usa.tar.bz2
@@ -77,6 +77,7 @@ Patch63: openssl-1.0.0d-xmpp-starttls.patch
 Patch64: openssl-1.0.0d-intelopts.patch
 Patch65: openssl-1.0.0e-chil-fixes.patch
 Patch66: openssl-1.0.0-sha2test.patch
+Patch67: openssl-1.0.0-pkgconfig-private.patch
 # Backported fixes including security fixes
 Patch81: openssl-1.0.0d-padlock64.patch
 
@@ -175,6 +176,7 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch64 -p1 -b .intelopts
 %patch65 -p1 -b .chil
 %patch66 -p1 -b .sha2test
+%patch67 -p1 -b .private
 
 %patch81 -p1 -b .padlock64
 
@@ -426,6 +428,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun -p /sbin/ldconfig
 
 %changelog
+* Tue Nov 22 2011 Tomas Mraz <tmraz@redhat.com> 1.0.0e-4
+- move the libraries needed for static linking to Libs.private
+
 * Thu Nov  3 2011 Tomas Mraz <tmraz@redhat.com> 1.0.0e-3
 - do not use AVX instructions when osxsave bit not set
 - add direct known answer tests for SHA2 algorithms
