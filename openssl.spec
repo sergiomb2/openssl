@@ -22,8 +22,9 @@ Summary: A general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.0e
 Release: 4%{?dist}
-# We remove certain patented algorithms from the openssl source tarball
-# with the hobble-openssl script which is included below.
+# We have to remove certain patented algorithms from the openssl source
+# tarball with the hobble-openssl script which is included below.
+# The original openssl upstream tarball cannot be shipped in the .src.rpm.
 Source: openssl-%{version}-usa.tar.bz2
 Source1: hobble-openssl
 Source2: Makefile.certificate
@@ -131,6 +132,8 @@ from other formats to the formats used by the OpenSSL toolkit.
 %prep
 %setup -q -n %{name}-%{version}
 
+# The hobble_openssl is called here redundantly, just to be sure.
+# The tarball has already the sources removed.
 %{SOURCE1} > /dev/null
 %patch0 -p1 -b .redhat
 %patch1 -p1 -b .defaults
