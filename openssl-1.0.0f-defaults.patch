@@ -1,6 +1,6 @@
-diff -up openssl-1.0.0-beta3/apps/openssl.cnf.defaults openssl-1.0.0-beta3/apps/openssl.cnf
---- openssl-1.0.0-beta3/apps/openssl.cnf.defaults	2009-04-04 20:09:43.000000000 +0200
-+++ openssl-1.0.0-beta3/apps/openssl.cnf	2009-08-04 22:57:16.000000000 +0200
+diff -up openssl-1.0.0f/apps/openssl.cnf.defaults openssl-1.0.0f/apps/openssl.cnf
+--- openssl-1.0.0f/apps/openssl.cnf.defaults	2011-12-06 01:01:00.000000000 +0100
++++ openssl-1.0.0f/apps/openssl.cnf	2012-01-05 13:16:15.000000000 +0100
 @@ -103,7 +103,8 @@ emailAddress		= optional
  
  ####################################################################
@@ -37,7 +37,7 @@ diff -up openssl-1.0.0-beta3/apps/openssl.cnf.defaults openssl-1.0.0-beta3/apps/
  organizationalUnitName		= Organizational Unit Name (eg, section)
  #organizationalUnitName_default	=
  
--commonName			= Common Name (eg, YOUR name)
+-commonName			= Common Name (e.g. server FQDN or YOUR name)
 +commonName			= Common Name (eg, your name or your server\'s hostname)
  commonName_max			= 64
  
