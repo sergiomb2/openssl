@@ -20,8 +20,8 @@
 
 Summary: A general purpose cryptography library with TLS implementation
 Name: openssl
-Version: 1.0.0e
-Release: 4%{?dist}
+Version: 1.0.0f
+Release: 1%{?dist}
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
 # The original openssl upstream tarball cannot be shipped in the .src.rpm.
@@ -35,7 +35,7 @@ Source10: opensslconf-new-warning.h
 Source11: README.FIPS
 # Build changes
 Patch0: openssl-1.0.0-beta4-redhat.patch
-Patch1: openssl-1.0.0-beta3-defaults.patch
+Patch1: openssl-1.0.0f-defaults.patch
 Patch3: openssl-1.0.0-beta3-soversion.patch
 Patch4: openssl-1.0.0-beta5-enginesdir.patch
 Patch5: openssl-0.9.8a-no-rpath.patch
@@ -46,7 +46,6 @@ Patch23: openssl-1.0.0-beta4-default-paths.patch
 Patch24: openssl-0.9.8j-bad-mime.patch
 Patch25: openssl-1.0.0a-manfix.patch
 Patch26: openssl-1.0.0a-load-certs.patch
-Patch27: openssl-1.0.0d-cms-keyid.patch
 # Functionality changes
 Patch32: openssl-0.9.8g-ia64.patch
 Patch33: openssl-1.0.0-beta4-ca-dir.patch
@@ -54,7 +53,7 @@ Patch34: openssl-0.9.6-x509.patch
 Patch35: openssl-0.9.8j-version-add-engines.patch
 Patch38: openssl-1.0.0-beta5-cipher-change.patch
 Patch39: openssl-1.0.0b-ipv6-apps.patch
-Patch40: openssl-1.0.0a-fips.patch
+Patch40: openssl-1.0.0f-fips.patch
 Patch41: openssl-1.0.0-beta3-fipscheck.patch
 Patch43: openssl-1.0.0a-fipsmode.patch
 Patch44: openssl-1.0.0-beta3-fipsrng.patch
@@ -62,7 +61,7 @@ Patch45: openssl-0.9.8j-env-nozlib.patch
 Patch47: openssl-1.0.0-beta5-readme-warning.patch
 Patch49: openssl-1.0.0-beta4-algo-doc.patch
 Patch50: openssl-1.0.0-beta4-dtls1-abi.patch
-Patch51: openssl-1.0.0e-version.patch
+Patch51: openssl-1.0.0f-version.patch
 Patch52: openssl-1.0.0b-aesni.patch
 Patch53: openssl-1.0.0-name-hash.patch
 Patch54: openssl-1.0.0c-speed-fips.patch
@@ -78,7 +77,7 @@ Patch63: openssl-1.0.0d-xmpp-starttls.patch
 Patch64: openssl-1.0.0d-intelopts.patch
 Patch65: openssl-1.0.0e-chil-fixes.patch
 Patch66: openssl-1.0.0-sha2test.patch
-Patch67: openssl-1.0.0-pkgconfig-private.patch
+Patch67: openssl-1.0.0e-pkgconfig-private.patch
 # Backported fixes including security fixes
 Patch81: openssl-1.0.0d-padlock64.patch
 
@@ -147,7 +146,6 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch24 -p1 -b .bad-mime
 %patch25 -p1 -b .manfix
 %patch26 -p1 -b .load-certs
-%patch27 -p1 -b .keyid
 
 %patch32 -p1 -b .ia64
 %patch33 -p1 -b .ca-dir
@@ -431,6 +429,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun -p /sbin/ldconfig
 
 %changelog
+* Thu Jan  5 2012 Tomas Mraz <tmraz@redhat.com> 1.0.0f-1
+- new upstream release fixing multiple CVEs
+
 * Tue Nov 22 2011 Tomas Mraz <tmraz@redhat.com> 1.0.0e-4
 - move the libraries needed for static linking to Libs.private
 
