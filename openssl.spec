@@ -85,9 +85,9 @@ License: OpenSSL
 Group: System Environment/Libraries
 URL: http://www.openssl.org/
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
-BuildRequires: mktemp, krb5-devel, perl, sed, zlib-devel, /usr/bin/cmp
+BuildRequires: coreutils, krb5-devel, perl, sed, zlib-devel, /usr/bin/cmp
 BuildRequires: /usr/bin/rename
-Requires: mktemp, ca-certificates >= 2008-5
+Requires: coreutils, ca-certificates >= 2008-5
 
 %description
 The OpenSSL toolkit provides support for secure communications between
