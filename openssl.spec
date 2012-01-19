@@ -20,12 +20,12 @@
 
 Summary: A general purpose cryptography library with TLS implementation
 Name: openssl
-Version: 1.0.0f
+Version: 1.0.0g
 Release: 1%{?dist}
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
 # The original openssl upstream tarball cannot be shipped in the .src.rpm.
-Source: openssl-%{version}-usa.tar.bz2
+Source: openssl-%{version}-usa.tar.xz
 Source1: hobble-openssl
 Source2: Makefile.certificate
 Source6: make-dummy-cert
@@ -61,7 +61,7 @@ Patch45: openssl-0.9.8j-env-nozlib.patch
 Patch47: openssl-1.0.0-beta5-readme-warning.patch
 Patch49: openssl-1.0.0-beta4-algo-doc.patch
 Patch50: openssl-1.0.0-beta4-dtls1-abi.patch
-Patch51: openssl-1.0.0f-version.patch
+Patch51: openssl-1.0.0g-version.patch
 Patch52: openssl-1.0.0b-aesni.patch
 Patch53: openssl-1.0.0-name-hash.patch
 Patch54: openssl-1.0.0c-speed-fips.patch
@@ -429,6 +429,10 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun -p /sbin/ldconfig
 
 %changelog
+* Thu Jan 19 2012 Tomas Mraz <tmraz@redhat.com> 1.0.0g-1
+- new upstream release fixing CVE-2012-0050 - DoS regression in
+  DTLS support introduced by the previous release (#782795)
+
 * Thu Jan  5 2012 Tomas Mraz <tmraz@redhat.com> 1.0.0f-1
 - new upstream release fixing multiple CVEs
 
