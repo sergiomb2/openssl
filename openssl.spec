@@ -20,12 +20,12 @@
 
 Summary: A general purpose cryptography library with TLS implementation
 Name: openssl
-Version: 1.0.0g
-Release: 1%{?dist}
+Version: 1.0.1
+Release: 0.1.beta2%{?dist}
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
 # The original openssl upstream tarball cannot be shipped in the .src.rpm.
-Source: openssl-%{version}-usa.tar.xz
+Source: openssl-%{version}-beta2-usa.tar.xz
 Source1: hobble-openssl
 Source2: Makefile.certificate
 Source6: make-dummy-cert
@@ -34,9 +34,8 @@ Source9: opensslconf-new.h
 Source10: opensslconf-new-warning.h
 Source11: README.FIPS
 # Build changes
-Patch0: openssl-1.0.0-beta4-redhat.patch
-Patch1: openssl-1.0.0f-defaults.patch
-Patch3: openssl-1.0.0-beta3-soversion.patch
+Patch1: openssl-1.0.1-beta2-rpmbuild.patch
+Patch2: openssl-1.0.0f-defaults.patch
 Patch4: openssl-1.0.0-beta5-enginesdir.patch
 Patch5: openssl-0.9.8a-no-rpath.patch
 Patch6: openssl-0.9.8b-test-use-localhost.patch
@@ -44,42 +43,29 @@ Patch7: openssl-1.0.0-timezone.patch
 # Bug fixes
 Patch23: openssl-1.0.0-beta4-default-paths.patch
 Patch24: openssl-0.9.8j-bad-mime.patch
-Patch25: openssl-1.0.0a-manfix.patch
 Patch26: openssl-1.0.0a-load-certs.patch
 # Functionality changes
-Patch32: openssl-0.9.8g-ia64.patch
 Patch33: openssl-1.0.0-beta4-ca-dir.patch
 Patch34: openssl-0.9.6-x509.patch
 Patch35: openssl-0.9.8j-version-add-engines.patch
-Patch38: openssl-1.0.0-beta5-cipher-change.patch
-Patch39: openssl-1.0.0b-ipv6-apps.patch
-Patch40: openssl-1.0.0f-fips.patch
-Patch41: openssl-1.0.0-beta3-fipscheck.patch
-Patch43: openssl-1.0.0a-fipsmode.patch
-Patch44: openssl-1.0.0-beta3-fipsrng.patch
+Patch36: openssl-1.0.0e-doc-noeof.patch
+Patch38: openssl-1.0.1-beta2-ssl-op-all.patch
+Patch39: openssl-1.0.1-beta2-ipv6-apps.patch
+Patch40: openssl-1.0.1-beta2-fips.patch
+Patch42: openssl-1.0.1-beta2-no-srp.patch
 Patch45: openssl-0.9.8j-env-nozlib.patch
 Patch47: openssl-1.0.0-beta5-readme-warning.patch
 Patch49: openssl-1.0.0-beta4-algo-doc.patch
-Patch50: openssl-1.0.0-beta4-dtls1-abi.patch
-Patch51: openssl-1.0.0g-version.patch
-Patch52: openssl-1.0.0b-aesni.patch
-Patch53: openssl-1.0.0-name-hash.patch
-Patch54: openssl-1.0.0c-speed-fips.patch
-Patch55: openssl-1.0.0c-apps-ipv6listen.patch
+Patch50: openssl-1.0.1-beta2-dtls1-abi.patch
+Patch51: openssl-1.0.1-beta2-version.patch
 Patch56: openssl-1.0.0c-rsa-x931.patch
-Patch57: openssl-1.0.0c-fips186-3.patch
-Patch58: openssl-1.0.0c-fips-md5-allow.patch
-Patch59: openssl-1.0.0c-pkcs12-fips-default.patch
+Patch58: openssl-1.0.1-beta2-fips-md5-allow.patch
 Patch60: openssl-1.0.0d-apps-dgst.patch
-Patch61: openssl-1.0.0d-cavs.patch
-Patch62: openssl-1.0.0-fips-aesni.patch
 Patch63: openssl-1.0.0d-xmpp-starttls.patch
-Patch64: openssl-1.0.0d-intelopts.patch
 Patch65: openssl-1.0.0e-chil-fixes.patch
-Patch66: openssl-1.0.0-sha2test.patch
 Patch67: openssl-1.0.0e-pkgconfig-private.patch
 # Backported fixes including security fixes
-Patch81: openssl-1.0.0d-padlock64.patch
+Patch81: openssl-1.0.1-beta2-padlock64.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -129,14 +115,13 @@ package provides Perl scripts for converting certificates and keys
 from other formats to the formats used by the OpenSSL toolkit.
 
 %prep
-%setup -q -n %{name}-%{version}
+%setup -q -n %{name}-%{version}-beta2
 
 # The hobble_openssl is called here redundantly, just to be sure.
 # The tarball has already the sources removed.
 %{SOURCE1} > /dev/null
-%patch0 -p1 -b .redhat
-%patch1 -p1 -b .defaults
-%patch3 -p1 -b .soversion
+%patch1 -p1 -b .rpmbuild
+%patch2 -p1 -b .defaults
 %patch4 -p1 -b .enginesdir %{?_rawbuild}
 %patch5 -p1 -b .no-rpath
 %patch6 -p1 -b .use-localhost
@@ -144,43 +129,29 @@ from other formats to the formats used by the OpenSSL toolkit.
 
 %patch23 -p1 -b .default-paths
 %patch24 -p1 -b .bad-mime
-%patch25 -p1 -b .manfix
 %patch26 -p1 -b .load-certs
 
-%patch32 -p1 -b .ia64
 %patch33 -p1 -b .ca-dir
 %patch34 -p1 -b .x509
 %patch35 -p1 -b .version-add-engines
-%patch38 -p1 -b .cipher-change
+%patch36 -p1 -b .doc-noeof
+%patch38 -p1 -b .op-all
 %patch39 -p1 -b .ipv6-apps
 %patch40 -p1 -b .fips
-%patch41 -p1 -b .fipscheck
-%patch43 -p1 -b .fipsmode
-%patch44 -p1 -b .fipsrng
+%patch42 -p1 -b .no-srp
 %patch45 -p1 -b .env-nozlib
 %patch47 -p1 -b .warning
 %patch49 -p1 -b .algo-doc
 %patch50 -p1 -b .dtls1-abi
 %patch51 -p1 -b .version
-%patch52 -p1 -b .aesni
-%patch53 -p1 -b .name-hash
-%patch54 -p1 -b .spfips
-%patch55 -p1 -b .ipv6listen
 %patch56 -p1 -b .x931
-%patch57 -p1 -b .fips186-3
 %patch58 -p1 -b .md5-allow
-%patch59 -p1 -b .fips-default
 %patch60 -p1 -b .dgst
-%patch61 -p1 -b .cavs
-%patch62 -p1 -b .fips-aesni
 %patch63 -p1 -b .starttls
-%patch64 -p1 -b .intelopts
 %patch65 -p1 -b .chil
-%patch66 -p1 -b .sha2test
 %patch67 -p1 -b .private
 
 %patch81 -p1 -b .padlock64
-
 # Modify the various perl scripts to reference perl in the right location.
 perl util/perlpath.pl `dirname %{__perl}`
 
@@ -225,7 +196,7 @@ sslarch=linux-generic32
 ./Configure \
 	--prefix=/usr --openssldir=%{_sysconfdir}/pki/tls ${sslflags} \
 	zlib enable-camellia enable-seed enable-tlsext enable-rfc3779 \
-	enable-cms enable-md2 no-idea no-mdc2 no-rc5 no-ec no-ecdh no-ecdsa \
+	enable-cms enable-md2 no-mdc2 no-rc5 no-ec no-ec2m no-ecdh no-ecdsa no-srp \
 	--with-krb5-flavor=MIT --enginesdir=%{_libdir}/openssl/engines \
 	--with-krb5-dir=/usr shared  ${sslarch} %{?!nofips:fips}
 
@@ -266,9 +237,9 @@ make -C test apps tests
     %{?__debug_package:%{__debug_install_post}} \
     %{__arch_install_post} \
     %{__os_install_post} \
-    crypto/fips/fips_standalone_sha1 $RPM_BUILD_ROOT/%{_lib}/libcrypto.so.%{version} >$RPM_BUILD_ROOT/%{_lib}/.libcrypto.so.%{version}.hmac \
+    crypto/fips/fips_standalone_hmac $RPM_BUILD_ROOT/%{_lib}/libcrypto.so.%{version} >$RPM_BUILD_ROOT/%{_lib}/.libcrypto.so.%{version}.hmac \
     ln -sf .libcrypto.so.%{version}.hmac $RPM_BUILD_ROOT/%{_lib}/.libcrypto.so.%{soversion}.hmac \
-    crypto/fips/fips_standalone_sha1 $RPM_BUILD_ROOT%{_libdir}/libssl.so.%{version} >$RPM_BUILD_ROOT%{_libdir}/.libssl.so.%{version}.hmac \
+    crypto/fips/fips_standalone_hmac $RPM_BUILD_ROOT%{_libdir}/libssl.so.%{version} >$RPM_BUILD_ROOT%{_libdir}/.libssl.so.%{version}.hmac \
     ln -sf .libssl.so.%{version}.hmac $RPM_BUILD_ROOT%{_libdir}/.libssl.so.%{soversion}.hmac \
 %{nil}
 
@@ -429,6 +400,10 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun -p /sbin/ldconfig
 
 %changelog
+* Tue Feb  7 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1-0.1.beta2
+- new upstream release from the 1.0.1 branch, ABI compatible
+- add documentation for the -no_ign_eof option
+
 * Thu Jan 19 2012 Tomas Mraz <tmraz@redhat.com> 1.0.0g-1
 - new upstream release fixing CVE-2012-0050 - DoS regression in
   DTLS support introduced by the previous release (#782795)

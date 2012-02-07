@@ -1,7 +1,7 @@
-diff -up openssl-1.0.0d/engines/e_padlock.c.padlock64 openssl-1.0.0d/engines/e_padlock.c
---- openssl-1.0.0d/engines/e_padlock.c.padlock64	2011-01-30 02:05:38.000000000 +0100
-+++ openssl-1.0.0d/engines/e_padlock.c	2011-04-28 21:03:26.000000000 +0200
-@@ -101,10 +101,15 @@
+diff -up openssl-1.0.1-beta2/engines/e_padlock.c.padlock64 openssl-1.0.1-beta2/engines/e_padlock.c
+--- openssl-1.0.1-beta2/engines/e_padlock.c.padlock64	2011-06-21 18:42:15.000000000 +0200
++++ openssl-1.0.1-beta2/engines/e_padlock.c	2012-02-06 20:18:52.039537799 +0100
+@@ -101,7 +101,10 @@
     compiler choice is limited to GCC and Microsoft C. */
  #undef COMPILE_HW_PADLOCK
  #if !defined(I386_ONLY) && !defined(OPENSSL_NO_INLINE_ASM)
@@ -12,13 +12,8 @@ diff -up openssl-1.0.0d/engines/e_padlock.c.padlock64 openssl-1.0.0d/engines/e_p
 +     ) || \
       (defined(_MSC_VER) && defined(_M_IX86))
  #  define COMPILE_HW_PADLOCK
-+#  ifdef OPENSSL_NO_DYNAMIC_ENGINE
- static ENGINE *ENGINE_padlock (void);
-+#  endif
  # endif
- #endif
- 
-@@ -135,7 +140,7 @@ void ENGINE_load_padlock (void)
+@@ -137,7 +140,7 @@ void ENGINE_load_padlock (void)
  # endif
  #elif defined(__GNUC__)
  # ifndef alloca
@@ -27,23 +22,7 @@ diff -up openssl-1.0.0d/engines/e_padlock.c.padlock64 openssl-1.0.0d/engines/e_p
  # endif
  #endif
  
-@@ -197,6 +202,7 @@ padlock_bind_helper(ENGINE *e)
- 	return 1;
- }
- 
-+#ifdef OPENSSL_NO_DYNAMIC_ENGINE
- /* Constructor */
- static ENGINE *
- ENGINE_padlock(void)
-@@ -214,6 +220,7 @@ ENGINE_padlock(void)
- 
- 	return eng;
- }
-+#endif
- 
- /* Check availability of the engine */
- static int
-@@ -298,6 +305,7 @@ static volatile struct padlock_cipher_da
+@@ -304,6 +307,7 @@ static volatile struct padlock_cipher_da
   * =======================================================
   */
  #if defined(__GNUC__) && __GNUC__>=2
@@ -51,7 +30,7 @@ diff -up openssl-1.0.0d/engines/e_padlock.c.padlock64 openssl-1.0.0d/engines/e_p
  /*
   * As for excessive "push %ebx"/"pop %ebx" found all over.
   * When generating position-independent code GCC won't let
-@@ -377,21 +385,6 @@ padlock_available(void)
+@@ -383,21 +387,6 @@ padlock_available(void)
  	return padlock_use_ace + padlock_use_rng;
  }
  
@@ -73,7 +52,7 @@ diff -up openssl-1.0.0d/engines/e_padlock.c.padlock64 openssl-1.0.0d/engines/e_p
  /* Force key reload from memory to the CPU microcode.
     Loading EFLAGS from the stack clears EFLAGS[30] 
     which does the trick. */
-@@ -449,12 +442,127 @@ static inline void *name(size_t cnt,		\
+@@ -455,12 +444,127 @@ static inline void *name(size_t cnt,		\
  		: "edx", "cc", "memory");	\
  	return iv;				\
  }
@@ -88,7 +67,7 @@ diff -up openssl-1.0.0d/engines/e_padlock.c.padlock64 openssl-1.0.0d/engines/e_p
 +{
 +	char vendor_string[16];
 +	unsigned int eax, edx;
-+
+ 
 +	/* Are we running on the Centaur (VIA) CPU? */
 +	eax = 0x00000000;
 +	vendor_string[12] = 0;
@@ -119,7 +98,7 @@ diff -up openssl-1.0.0d/engines/e_padlock.c.padlock64 openssl-1.0.0d/engines/e_p
 +
 +	return padlock_use_ace + padlock_use_rng;
 +}
- 
++
 +/* Force key reload from memory to the CPU microcode.
 +   Loading EFLAGS from the stack clears EFLAGS[30] 
 +   which does the trick. */
@@ -201,7 +180,7 @@ diff -up openssl-1.0.0d/engines/e_padlock.c.padlock64 openssl-1.0.0d/engines/e_p
  #endif
  
  /* The RNG call itself */
-@@ -485,8 +593,8 @@ padlock_xstore(void *addr, unsigned int 
+@@ -491,8 +595,8 @@ padlock_xstore(void *addr, unsigned int
  static inline unsigned char *
  padlock_memcpy(void *dst,const void *src,size_t n)
  {
