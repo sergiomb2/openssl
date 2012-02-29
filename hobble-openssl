@@ -11,7 +11,7 @@ set -e
 # SRP:   ????????? ??/??/20??
 
 # Remove assembler portions of IDEA, MDC2, and RC5.
-(find crypto/{rc5}/asm -type f | xargs -r rm -fv)
+(find crypto/rc5/asm -type f | xargs -r rm -fv)
 
 # RC5, EC, SRP.
 for a in rc5 ec ecdh ecdsa srp; do
