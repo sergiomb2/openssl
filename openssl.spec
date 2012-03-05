@@ -21,7 +21,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1
-Release: 0.2.beta3%{?dist}
+Release: 0.3.beta3%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -84,6 +84,8 @@ protocols.
 Summary: A general purpose cryptography library with TLS implementation
 Group: System Environment/Libraries
 Requires: ca-certificates >= 2008-5
+# Needed obsoletes due to the base/lib subpackage split
+Obsoletes: openssl < 1:1.0.1-0.3.beta3
 
 %description libs
 OpenSSL is a toolkit for supporting cryptography. The openssl-libs
@@ -413,6 +415,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Mon Mar  5 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1-0.3.beta3
+- add obsoletes to assist multilib updates (#799636)
+
 * Wed Feb 29 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1-0.2.beta3
 - epoch bumped to 1 due to revert to 1.0.0g on Fedora 17
 - new upstream release from the 1.0.1 branch
