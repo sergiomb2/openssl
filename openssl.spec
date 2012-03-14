@@ -21,12 +21,12 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1
-Release: 0.3.beta3%{?dist}
+Release: 1%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
 # The original openssl upstream tarball cannot be shipped in the .src.rpm.
-Source: openssl-%{version}-beta3-usa.tar.xz
+Source: openssl-%{version}-usa.tar.xz
 Source1: hobble-openssl
 Source2: Makefile.certificate
 Source6: make-dummy-cert
@@ -56,7 +56,7 @@ Patch45: openssl-0.9.8j-env-nozlib.patch
 Patch47: openssl-1.0.0-beta5-readme-warning.patch
 Patch49: openssl-1.0.0-beta4-algo-doc.patch
 Patch50: openssl-1.0.1-beta2-dtls1-abi.patch
-Patch51: openssl-1.0.1-beta3-version.patch
+Patch51: openssl-1.0.1-version.patch
 Patch56: openssl-1.0.0c-rsa-x931.patch
 Patch58: openssl-1.0.1-beta2-fips-md5-allow.patch
 Patch60: openssl-1.0.0d-apps-dgst.patch
@@ -127,7 +127,7 @@ package provides Perl scripts for converting certificates and keys
 from other formats to the formats used by the OpenSSL toolkit.
 
 %prep
-%setup -q -n %{name}-%{version}-beta3
+%setup -q -n %{name}-%{version}
 
 # The hobble_openssl is called here redundantly, just to be sure.
 # The tarball has already the sources removed.
@@ -415,6 +415,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Wed Mar 14 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1-1
+- new upstream release
+
 * Mon Mar  5 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1-0.3.beta3
 - add obsoletes to assist multilib updates (#799636)
 
