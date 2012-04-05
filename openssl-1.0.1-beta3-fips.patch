@@ -11341,7 +11341,7 @@ diff -up openssl-1.0.1-beta3/crypto/fips/fips_drbg_hmac.c.fips openssl-1.0.1-bet
 diff -up openssl-1.0.1-beta3/crypto/fips/fips_drbg_lib.c.fips openssl-1.0.1-beta3/crypto/fips/fips_drbg_lib.c
 --- openssl-1.0.1-beta3/crypto/fips/fips_drbg_lib.c.fips	2012-02-29 10:33:02.794294898 +0100
 +++ openssl-1.0.1-beta3/crypto/fips/fips_drbg_lib.c	2012-02-29 10:33:02.794294898 +0100
-@@ -0,0 +1,576 @@
+@@ -0,0 +1,578 @@
 +/* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
 + * project.
 + */
@@ -11501,6 +11501,8 @@ diff -up openssl-1.0.1-beta3/crypto/fips/fips_drbg_lib.c.fips openssl-1.0.1-beta
 +		return dctx->get_entropy(dctx, pout, entropy, min_len, max_len);
 +	rv = dctx->get_entropy(dctx, &tout, entropy + bl,
 +				min_len + bl, max_len + bl);
++	if (tout == NULL)
++		return 0;
 +	*pout = tout + bl;
 +	if (rv < (min_len + bl) || (rv % bl))
 +		return 0;

@@ -21,7 +21,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1
-Release: 1%{?dist}
+Release: 2%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -64,6 +64,7 @@ Patch63: openssl-1.0.0d-xmpp-starttls.patch
 Patch65: openssl-1.0.0e-chil-fixes.patch
 # Backported fixes including security fixes
 Patch81: openssl-1.0.1-beta2-padlock64.patch
+Patch82: openssl-1.0.1-backport.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -161,6 +162,7 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch65 -p1 -b .chil
 
 %patch81 -p1 -b .padlock64
+%patch82 -p1 -b .backport
 # Modify the various perl scripts to reference perl in the right location.
 perl util/perlpath.pl `dirname %{__perl}`
 
@@ -415,6 +417,10 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Thu Apr  5 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1-2
+- backports from upstream CVS
+- fix segfault when /dev/urandom is not available (#809586)
+
 * Wed Mar 14 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1-1
 - new upstream release
 
