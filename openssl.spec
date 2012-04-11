@@ -21,7 +21,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1
-Release: 2%{?dist}
+Release: 3%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -62,6 +62,7 @@ Patch58: openssl-1.0.1-beta2-fips-md5-allow.patch
 Patch60: openssl-1.0.0d-apps-dgst.patch
 Patch63: openssl-1.0.0d-xmpp-starttls.patch
 Patch65: openssl-1.0.0e-chil-fixes.patch
+Patch66: openssl-1.0.1-pkgconfig-krb5.patch
 # Backported fixes including security fixes
 Patch81: openssl-1.0.1-beta2-padlock64.patch
 Patch82: openssl-1.0.1-backport.patch
@@ -160,6 +161,7 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch60 -p1 -b .dgst
 %patch63 -p1 -b .starttls
 %patch65 -p1 -b .chil
+%patch66 -p1 -b .krb5
 
 %patch81 -p1 -b .padlock64
 %patch82 -p1 -b .backport
@@ -417,6 +419,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Wed Apr 11 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1-3
+- add Kerberos 5 libraries to pkgconfig for static linking (#807050)
+
 * Thu Apr  5 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1-2
 - backports from upstream CVS
 - fix segfault when /dev/urandom is not available (#809586)
