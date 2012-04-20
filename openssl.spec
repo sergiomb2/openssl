@@ -20,8 +20,8 @@
 
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
-Version: 1.0.1
-Release: 3%{?dist}
+Version: 1.0.1a
+Release: 1%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -43,7 +43,6 @@ Patch6: openssl-0.9.8b-test-use-localhost.patch
 Patch7: openssl-1.0.0-timezone.patch
 # Bug fixes
 Patch23: openssl-1.0.0-beta4-default-paths.patch
-Patch24: openssl-1.0.1-beta3-s390xbuild.patch
 # Functionality changes
 Patch33: openssl-1.0.0-beta4-ca-dir.patch
 Patch34: openssl-0.9.6-x509.patch
@@ -51,10 +50,10 @@ Patch35: openssl-0.9.8j-version-add-engines.patch
 Patch36: openssl-1.0.0e-doc-noeof.patch
 Patch38: openssl-1.0.1-beta2-ssl-op-all.patch
 Patch39: openssl-1.0.1-beta2-ipv6-apps.patch
-Patch40: openssl-1.0.1-beta3-fips.patch
+Patch40: openssl-1.0.1a-fips.patch
 Patch45: openssl-0.9.8j-env-nozlib.patch
 Patch47: openssl-1.0.0-beta5-readme-warning.patch
-Patch49: openssl-1.0.0-beta4-algo-doc.patch
+Patch49: openssl-1.0.1a-algo-doc.patch
 Patch50: openssl-1.0.1-beta2-dtls1-abi.patch
 Patch51: openssl-1.0.1-version.patch
 Patch56: openssl-1.0.0c-rsa-x931.patch
@@ -65,7 +64,7 @@ Patch65: openssl-1.0.0e-chil-fixes.patch
 Patch66: openssl-1.0.1-pkgconfig-krb5.patch
 # Backported fixes including security fixes
 Patch81: openssl-1.0.1-beta2-padlock64.patch
-Patch82: openssl-1.0.1-backport.patch
+Patch82: openssl-1.0.1a-backport.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -142,7 +141,6 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch7 -p1 -b .timezone
 
 %patch23 -p1 -b .default-paths
-%patch24 -p1 -b .s390xbuild
 
 %patch33 -p1 -b .ca-dir
 %patch34 -p1 -b .x509
@@ -165,6 +163,7 @@ from other formats to the formats used by the OpenSSL toolkit.
 
 %patch81 -p1 -b .padlock64
 %patch82 -p1 -b .backport
+
 # Modify the various perl scripts to reference perl in the right location.
 perl util/perlpath.pl `dirname %{__perl}`
 
@@ -419,6 +418,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Fri Apr 20 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1a-1
+- new upstream version fixing CVE-2012-2110
+
 * Wed Apr 11 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1-3
 - add Kerberos 5 libraries to pkgconfig for static linking (#807050)
 
