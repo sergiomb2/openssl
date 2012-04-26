@@ -20,7 +20,7 @@
 
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
-Version: 1.0.1a
+Version: 1.0.1b
 # Do not forget to bump SHLIB_VERSION on version upgrades
 Release: 1%{?dist}
 Epoch: 1
@@ -51,7 +51,7 @@ Patch35: openssl-0.9.8j-version-add-engines.patch
 Patch36: openssl-1.0.0e-doc-noeof.patch
 Patch38: openssl-1.0.1-beta2-ssl-op-all.patch
 Patch39: openssl-1.0.1-beta2-ipv6-apps.patch
-Patch40: openssl-1.0.1a-fips.patch
+Patch40: openssl-1.0.1b-fips.patch
 Patch45: openssl-0.9.8j-env-nozlib.patch
 Patch47: openssl-1.0.0-beta5-readme-warning.patch
 Patch49: openssl-1.0.1a-algo-doc.patch
@@ -63,9 +63,9 @@ Patch60: openssl-1.0.0d-apps-dgst.patch
 Patch63: openssl-1.0.0d-xmpp-starttls.patch
 Patch65: openssl-1.0.0e-chil-fixes.patch
 Patch66: openssl-1.0.1-pkgconfig-krb5.patch
+Patch67: openssl-1.0.0-fips-pkcs8.patch
 # Backported fixes including security fixes
 Patch81: openssl-1.0.1-beta2-padlock64.patch
-Patch82: openssl-1.0.1a-backport.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -161,9 +161,9 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch63 -p1 -b .starttls
 %patch65 -p1 -b .chil
 %patch66 -p1 -b .krb5
+%patch67 -p1 -b .pkcs8
 
 %patch81 -p1 -b .padlock64
-%patch82 -p1 -b .backport
 
 # Modify the various perl scripts to reference perl in the right location.
 perl util/perlpath.pl `dirname %{__perl}`
@@ -419,6 +419,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Thu Apr 26 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1b-1
+- new upstream version
+
 * Fri Apr 20 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1a-1
 - new upstream version fixing CVE-2012-2110
 
