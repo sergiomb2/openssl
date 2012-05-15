@@ -421,6 +421,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Tue May 15 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1c-1
+- new upstream version
+
 * Thu Apr 26 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1b-1
 - new upstream version
 
