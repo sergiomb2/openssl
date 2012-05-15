@@ -20,7 +20,7 @@
 
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
-Version: 1.0.1b
+Version: 1.0.1c
 # Do not forget to bump SHLIB_VERSION on version upgrades
 Release: 1%{?dist}
 Epoch: 1
@@ -66,6 +66,7 @@ Patch66: openssl-1.0.1-pkgconfig-krb5.patch
 Patch67: openssl-1.0.0-fips-pkcs8.patch
 # Backported fixes including security fixes
 Patch81: openssl-1.0.1-beta2-padlock64.patch
+Patch82: openssl-1.0.1c-backports.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -164,6 +165,7 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch67 -p1 -b .pkcs8
 
 %patch81 -p1 -b .padlock64
+%patch82 -p1 -b .backports
 
 # Modify the various perl scripts to reference perl in the right location.
 perl util/perlpath.pl `dirname %{__perl}`
