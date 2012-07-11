@@ -42,6 +42,7 @@ Patch4: openssl-1.0.0-beta5-enginesdir.patch
 Patch5: openssl-0.9.8a-no-rpath.patch
 Patch6: openssl-0.9.8b-test-use-localhost.patch
 Patch7: openssl-1.0.0-timezone.patch
+Patch8: openssl-1.0.1c-perlfind.patch
 # Bug fixes
 Patch23: openssl-1.0.0-beta4-default-paths.patch
 # Functionality changes
@@ -141,6 +142,7 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch5 -p1 -b .no-rpath
 %patch6 -p1 -b .use-localhost
 %patch7 -p1 -b .timezone
+%patch8 -p1 -b .perlfind
 
 %patch23 -p1 -b .default-paths
 
@@ -423,6 +425,7 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %changelog
 * Wed Jul 11 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1c-2
 - fix s_server with new glibc when no global IPv6 address (#839031)
+- make it build with new Perl
 
 * Tue May 15 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1c-1
 - new upstream version
