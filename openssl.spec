@@ -22,7 +22,7 @@ Summary: Utilities from the general purpose cryptography library with TLS implem
 Name: openssl
 Version: 1.0.1c
 # Do not forget to bump SHLIB_VERSION on version upgrades
-Release: 1%{?dist}
+Release: 2%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -50,7 +50,7 @@ Patch34: openssl-0.9.6-x509.patch
 Patch35: openssl-0.9.8j-version-add-engines.patch
 Patch36: openssl-1.0.0e-doc-noeof.patch
 Patch38: openssl-1.0.1-beta2-ssl-op-all.patch
-Patch39: openssl-1.0.1-beta2-ipv6-apps.patch
+Patch39: openssl-1.0.1c-ipv6-apps.patch
 Patch40: openssl-1.0.1b-fips.patch
 Patch45: openssl-0.9.8j-env-nozlib.patch
 Patch47: openssl-1.0.0-beta5-readme-warning.patch
@@ -421,6 +421,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Wed Jul 11 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1c-2
+- fix s_server with new glibc when no global IPv6 address (#839031)
+
 * Tue May 15 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1c-1
 - new upstream version
 
