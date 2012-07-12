@@ -16,13 +16,13 @@
 
 # Arches on which we need to prevent arch conflicts on opensslconf.h, must
 # also be handled in opensslconf-new.h.
-%define multilib_arches %{ix86} ia64 ppc ppc64 s390 s390x sparcv9 sparc64 x86_64
+%define multilib_arches %{ix86} ia64 ppc %{power64} s390 s390x sparcv9 sparc64 x86_64
 
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1c
 # Do not forget to bump SHLIB_VERSION on version upgrades
-Release: 2%{?dist}
+Release: 3%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -52,7 +52,7 @@ Patch35: openssl-0.9.8j-version-add-engines.patch
 Patch36: openssl-1.0.0e-doc-noeof.patch
 Patch38: openssl-1.0.1-beta2-ssl-op-all.patch
 Patch39: openssl-1.0.1c-ipv6-apps.patch
-Patch40: openssl-1.0.1b-fips.patch
+Patch40: openssl-1.0.1c-fips.patch
 Patch45: openssl-0.9.8j-env-nozlib.patch
 Patch47: openssl-1.0.0-beta5-readme-warning.patch
 Patch49: openssl-1.0.1a-algo-doc.patch
@@ -206,7 +206,11 @@ sslarch="linux64-s390x"
 %ifarch %{arm} sh3 sh4
 sslarch=linux-generic32
 %endif
-# ia64, x86_64, ppc, ppc64 are OK by default
+%ifarch %{power64}
+sslarch=linux-ppc64
+%endif
+
+# ia64, x86_64, ppc are OK by default
 # Configure the build tree.  Override OpenSSL defaults with known-good defaults
 # usable on all platforms.  The Configure script already knows to use -fPIC and
 # RPM_OPT_FLAGS, so we can skip specifiying them here.
@@ -423,6 +427,11 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Thu Jul 12 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1c-3
+- fix DSA key generation in FIPS mode (#833866)
+- allow duplicate FIPS_mode_set(1)
+- enable build on ppc64 subarch (#834652)
+
 * Wed Jul 11 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1c-2
 - fix s_server with new glibc when no global IPv6 address (#839031)
 - make it build with new Perl
