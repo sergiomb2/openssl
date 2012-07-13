@@ -43,6 +43,7 @@ Patch5: openssl-0.9.8a-no-rpath.patch
 Patch6: openssl-0.9.8b-test-use-localhost.patch
 Patch7: openssl-1.0.0-timezone.patch
 Patch8: openssl-1.0.1c-perlfind.patch
+Patch9: openssl-1.0.1c-aliasing.patch
 # Bug fixes
 Patch23: openssl-1.0.0-beta4-default-paths.patch
 # Functionality changes
@@ -65,6 +66,7 @@ Patch63: openssl-1.0.0d-xmpp-starttls.patch
 Patch65: openssl-1.0.0e-chil-fixes.patch
 Patch66: openssl-1.0.1-pkgconfig-krb5.patch
 Patch67: openssl-1.0.0-fips-pkcs8.patch
+Patch68: openssl-1.0.1c-secure-getenv.patch
 # Backported fixes including security fixes
 Patch81: openssl-1.0.1-beta2-padlock64.patch
 Patch82: openssl-1.0.1c-backports.patch
@@ -143,6 +145,7 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch6 -p1 -b .use-localhost
 %patch7 -p1 -b .timezone
 %patch8 -p1 -b .perlfind
+%patch9 -p1 -b .aliasing
 
 %patch23 -p1 -b .default-paths
 
@@ -165,6 +168,7 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch65 -p1 -b .chil
 %patch66 -p1 -b .krb5
 %patch67 -p1 -b .pkcs8
+%patch68 -p1 -b .secure-getenv
 
 %patch81 -p1 -b .padlock64
 %patch82 -p1 -b .backports
@@ -260,8 +264,8 @@ make -C test apps tests
     %{?__debug_package:%{__debug_install_post}} \
     %{__arch_install_post} \
     %{__os_install_post} \
-    crypto/fips/fips_standalone_hmac $RPM_BUILD_ROOT/%{_lib}/libcrypto.so.%{version} >$RPM_BUILD_ROOT/%{_lib}/.libcrypto.so.%{version}.hmac \
-    ln -sf .libcrypto.so.%{version}.hmac $RPM_BUILD_ROOT/%{_lib}/.libcrypto.so.%{soversion}.hmac \
+    crypto/fips/fips_standalone_hmac $RPM_BUILD_ROOT%{_libdir}/libcrypto.so.%{version} >$RPM_BUILD_ROOT%{_libdir}/.libcrypto.so.%{version}.hmac \
+    ln -sf .libcrypto.so.%{version}.hmac $RPM_BUILD_ROOT%{_libdir}/.libcrypto.so.%{soversion}.hmac \
     crypto/fips/fips_standalone_hmac $RPM_BUILD_ROOT%{_libdir}/libssl.so.%{version} >$RPM_BUILD_ROOT%{_libdir}/.libssl.so.%{version}.hmac \
     ln -sf .libssl.so.%{version}.hmac $RPM_BUILD_ROOT%{_libdir}/.libssl.so.%{soversion}.hmac \
 %{nil}
@@ -279,16 +283,10 @@ mv $RPM_BUILD_ROOT%{_sysconfdir}/pki/tls/man/* $RPM_BUILD_ROOT%{_mandir}/
 rmdir $RPM_BUILD_ROOT%{_sysconfdir}/pki/tls/man
 rename so.%{soversion} so.%{version} $RPM_BUILD_ROOT%{_libdir}/*.so.%{soversion}
 mkdir $RPM_BUILD_ROOT/%{_lib}
-mv $RPM_BUILD_ROOT%{_libdir}/libcrypto.so.%{version} $RPM_BUILD_ROOT/%{_lib}
 for lib in $RPM_BUILD_ROOT%{_libdir}/*.so.%{version} ; do
 	chmod 755 ${lib}
 	ln -s -f `basename ${lib}` $RPM_BUILD_ROOT%{_libdir}/`basename ${lib} .%{version}`
 	ln -s -f `basename ${lib}` $RPM_BUILD_ROOT%{_libdir}/`basename ${lib} .%{version}`.%{soversion}
-done
-for lib in $RPM_BUILD_ROOT/%{_lib}/*.so.%{version} ; do
-	chmod 755 ${lib}
-	ln -s -f ../../%{_lib}/`basename ${lib}` $RPM_BUILD_ROOT%{_libdir}/`basename ${lib} .%{version}`
-	ln -s -f `basename ${lib}` $RPM_BUILD_ROOT/%{_lib}/`basename ${lib} .%{version}`.%{soversion}
 done
 
 # Install a makefile for generating keys and self-signed certs, and a script
@@ -396,11 +394,11 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %dir %{_sysconfdir}/pki/tls/misc
 %dir %{_sysconfdir}/pki/tls/private
 %config(noreplace) %{_sysconfdir}/pki/tls/openssl.cnf
-%attr(0755,root,root) /%{_lib}/libcrypto.so.%{version}
-%attr(0755,root,root) /%{_lib}/libcrypto.so.%{soversion}
+%attr(0755,root,root) %{_libdir}/libcrypto.so.%{version}
+%attr(0755,root,root) %{_libdir}/libcrypto.so.%{soversion}
 %attr(0755,root,root) %{_libdir}/libssl.so.%{version}
 %attr(0755,root,root) %{_libdir}/libssl.so.%{soversion}
-%attr(0644,root,root) /%{_lib}/.libcrypto.so.*.hmac
+%attr(0644,root,root) %{_libdir}/.libcrypto.so.*.hmac
 %attr(0644,root,root) %{_libdir}/.libssl.so.*.hmac
 %attr(0755,root,root) %{_libdir}/openssl
 
@@ -427,6 +425,11 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Fri Jul 13 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1c-4
+- do not move libcrypto to /lib
+- do not use environment variables if __libc_enable_secure is on
+- fix strict aliasing problems in modes
+
 * Thu Jul 12 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1c-3
 - fix DSA key generation in FIPS mode (#833866)
 - allow duplicate FIPS_mode_set(1)
