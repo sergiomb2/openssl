@@ -22,7 +22,7 @@ Summary: Utilities from the general purpose cryptography library with TLS implem
 Name: openssl
 Version: 1.0.1c
 # Do not forget to bump SHLIB_VERSION on version upgrades
-Release: 5%{?dist}
+Release: 6%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -425,6 +425,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Fri Jul 20 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1:1.0.1c-6
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
+
 * Fri Jul 13 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1c-5
 - use __getenv_secure() instead of __libc_enable_secure
 
