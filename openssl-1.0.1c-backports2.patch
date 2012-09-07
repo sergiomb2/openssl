@@ -1,0 +1,103 @@
+diff -up openssl-1.0.1c/apps/cms.c.backports2 openssl-1.0.1c/apps/cms.c
+--- openssl-1.0.1c/apps/cms.c.backports2	2012-01-05 14:46:27.000000000 +0100
++++ openssl-1.0.1c/apps/cms.c	2012-09-07 10:34:42.000000000 +0200
+@@ -233,6 +233,8 @@ int MAIN(int argc, char **argv)
+ 		else if (!strcmp(*args,"-camellia256"))
+ 				cipher = EVP_camellia_256_cbc();
+ #endif
++		else if (!strcmp (*args, "-debug_decrypt")) 
++				flags |= CMS_DEBUG_DECRYPT;
+ 		else if (!strcmp (*args, "-text")) 
+ 				flags |= CMS_TEXT;
+ 		else if (!strcmp (*args, "-nointern")) 
+@@ -1039,6 +1041,8 @@ int MAIN(int argc, char **argv)
+ 	ret = 4;
+ 	if (operation == SMIME_DECRYPT)
+ 		{
++		if (flags & CMS_DEBUG_DECRYPT)
++			CMS_decrypt(cms, NULL, NULL, NULL, NULL, flags);
+ 
+ 		if (secret_key)
+ 			{
+diff -up openssl-1.0.1c/crypto/bn/bn_lcl.h.backports2 openssl-1.0.1c/crypto/bn/bn_lcl.h
+--- openssl-1.0.1c/crypto/bn/bn_lcl.h.backports2	2012-09-06 17:25:22.000000000 +0200
++++ openssl-1.0.1c/crypto/bn/bn_lcl.h	2012-09-07 10:22:43.000000000 +0200
+@@ -282,16 +282,23 @@ extern "C" {
+ #  endif
+ # elif defined(__mips) && (defined(SIXTY_FOUR_BIT) || defined(SIXTY_FOUR_BIT_LONG))
+ #  if defined(__GNUC__) && __GNUC__>=2
+-#   define BN_UMULT_HIGH(a,b)	({	\
++#   if __GNUC__>=4 && __GNUC_MINOR__>=4 /* "h" constraint is no more since 4.4 */
++#     define BN_UMULT_HIGH(a,b)		 (((__uint128_t)(a)*(b))>>64)
++#     define BN_UMULT_LOHI(low,high,a,b) ({	\
++	__uint128_t ret=(__uint128_t)(a)*(b);	\
++	(high)=ret>>64; (low)=ret;	 })
++#   else
++#     define BN_UMULT_HIGH(a,b)	({	\
+ 	register BN_ULONG ret;		\
+ 	asm ("dmultu	%1,%2"		\
+ 	     : "=h"(ret)		\
+ 	     : "r"(a), "r"(b) : "l");	\
+ 	ret;			})
+-#   define BN_UMULT_LOHI(low,high,a,b)	\
++#     define BN_UMULT_LOHI(low,high,a,b)\
+ 	asm ("dmultu	%2,%3"		\
+ 	     : "=l"(low),"=h"(high)	\
+ 	     : "r"(a), "r"(b));
++#    endif
+ #  endif
+ # endif		/* cpu */
+ #endif		/* OPENSSL_NO_ASM */
+diff -up openssl-1.0.1c/crypto/modes/gcm128.c.backports2 openssl-1.0.1c/crypto/modes/gcm128.c
+--- openssl-1.0.1c/crypto/modes/gcm128.c.backports2	2012-01-25 18:56:24.000000000 +0100
++++ openssl-1.0.1c/crypto/modes/gcm128.c	2012-09-07 10:24:56.000000000 +0200
+@@ -1398,7 +1398,7 @@ int CRYPTO_gcm128_finish(GCM128_CONTEXT
+ 	void (*gcm_gmult_p)(u64 Xi[2],const u128 Htable[16])	= ctx->gmult;
+ #endif
+ 
+-	if (ctx->mres)
++	if (ctx->mres || ctx->ares)
+ 		GCM_MUL(ctx,Xi);
+ 
+ 	if (is_endian.little) {
+diff -up openssl-1.0.1c/ssl/ssl_cert.c.backports2 openssl-1.0.1c/ssl/ssl_cert.c
+--- openssl-1.0.1c/ssl/ssl_cert.c.backports2	2011-05-11 15:37:52.000000000 +0200
++++ openssl-1.0.1c/ssl/ssl_cert.c	2012-09-07 10:33:54.000000000 +0200
+@@ -164,14 +164,14 @@ static void ssl_cert_set_default_md(CERT
+ 	{
+ 	/* Set digest values to defaults */
+ #ifndef OPENSSL_NO_DSA
+-	cert->pkeys[SSL_PKEY_DSA_SIGN].digest = EVP_dss1();
++	cert->pkeys[SSL_PKEY_DSA_SIGN].digest = EVP_sha1();
+ #endif
+ #ifndef OPENSSL_NO_RSA
+ 	cert->pkeys[SSL_PKEY_RSA_SIGN].digest = EVP_sha1();
+ 	cert->pkeys[SSL_PKEY_RSA_ENC].digest = EVP_sha1();
+ #endif
+ #ifndef OPENSSL_NO_ECDSA
+-	cert->pkeys[SSL_PKEY_ECC].digest = EVP_ecdsa();
++	cert->pkeys[SSL_PKEY_ECC].digest = EVP_sha1();
+ #endif
+ 	}
+ 
+diff -up openssl-1.0.1c/ssl/t1_lib.c.backports2 openssl-1.0.1c/ssl/t1_lib.c
+--- openssl-1.0.1c/ssl/t1_lib.c.backports2	2012-03-21 22:32:57.000000000 +0100
++++ openssl-1.0.1c/ssl/t1_lib.c	2012-09-07 10:33:54.000000000 +0200
+@@ -2414,7 +2414,7 @@ int tls1_process_sigalgs(SSL *s, const u
+ 	 */
+ #ifndef OPENSSL_NO_DSA
+ 	if (!c->pkeys[SSL_PKEY_DSA_SIGN].digest)
+-		c->pkeys[SSL_PKEY_DSA_SIGN].digest = EVP_dss1();
++		c->pkeys[SSL_PKEY_DSA_SIGN].digest = EVP_sha1();
+ #endif
+ #ifndef OPENSSL_NO_RSA
+ 	if (!c->pkeys[SSL_PKEY_RSA_SIGN].digest)
+@@ -2425,7 +2425,7 @@ int tls1_process_sigalgs(SSL *s, const u
+ #endif
+ #ifndef OPENSSL_NO_ECDSA
+ 	if (!c->pkeys[SSL_PKEY_ECC].digest)
+-		c->pkeys[SSL_PKEY_ECC].digest = EVP_ecdsa();
++		c->pkeys[SSL_PKEY_ECC].digest = EVP_sha1();
+ #endif
+ 	return 1;
+ 	}

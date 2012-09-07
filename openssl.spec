@@ -22,7 +22,7 @@ Summary: Utilities from the general purpose cryptography library with TLS implem
 Name: openssl
 Version: 1.0.1c
 # Do not forget to bump SHLIB_VERSION on version upgrades
-Release: 6%{?dist}
+Release: 7%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -70,6 +70,8 @@ Patch68: openssl-1.0.1c-secure-getenv.patch
 # Backported fixes including security fixes
 Patch81: openssl-1.0.1-beta2-padlock64.patch
 Patch82: openssl-1.0.1c-backports.patch
+Patch83: openssl-1.0.1c-ccm-init-str.patch
+Patch84: openssl-1.0.1c-backports2.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -172,6 +174,8 @@ from other formats to the formats used by the OpenSSL toolkit.
 
 %patch81 -p1 -b .padlock64
 %patch82 -p1 -b .backports
+%patch83 -p1 -b .init-str
+%patch84 -p1 -b .backports2
 
 # Modify the various perl scripts to reference perl in the right location.
 perl util/perlpath.pl `dirname %{__perl}`
@@ -425,6 +429,10 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Fri Sep  7 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1c-7
+- add missing initialization of str in aes_ccm_init_key (#853963)
+- add important patches from upstream CVS
+
 * Fri Jul 20 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1:1.0.1c-6
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
 
