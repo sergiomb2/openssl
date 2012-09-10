@@ -429,9 +429,10 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
-* Fri Sep  7 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1c-7
+* Mon Sep 10 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1c-7
 - add missing initialization of str in aes_ccm_init_key (#853963)
 - add important patches from upstream CVS
+- use the secure_getenv() with new glibc
 
 * Fri Jul 20 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1:1.0.1c-6
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
