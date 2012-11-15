@@ -22,7 +22,7 @@ Summary: Utilities from the general purpose cryptography library with TLS implem
 Name: openssl
 Version: 1.0.1c
 # Do not forget to bump SHLIB_VERSION on version upgrades
-Release: 7%{?dist}
+Release: 8%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -67,6 +67,7 @@ Patch65: openssl-1.0.0e-chil-fixes.patch
 Patch66: openssl-1.0.1-pkgconfig-krb5.patch
 Patch67: openssl-1.0.0-fips-pkcs8.patch
 Patch68: openssl-1.0.1c-secure-getenv.patch
+Patch69: openssl-1.0.1c-dh-1024.patch
 # Backported fixes including security fixes
 Patch81: openssl-1.0.1-beta2-padlock64.patch
 Patch82: openssl-1.0.1c-backports.patch
@@ -171,6 +172,7 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch66 -p1 -b .krb5
 %patch67 -p1 -b .pkcs8
 %patch68 -p1 -b .secure-getenv
+%patch69 -p1 -b .dh1024
 
 %patch81 -p1 -b .padlock64
 %patch82 -p1 -b .backports
@@ -429,6 +431,10 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Thu Nov 15 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1c-8
+- use 1024 bit DH parameters in s_server as 512 bit is not allowed
+  in FIPS mode and it is quite weak anyway
+
 * Mon Sep 10 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1c-7
 - add missing initialization of str in aes_ccm_init_key (#853963)
 - add important patches from upstream CVS
