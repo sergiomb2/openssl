@@ -147,7 +147,7 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch5 -p1 -b .no-rpath
 %patch6 -p1 -b .use-localhost
 %patch7 -p1 -b .timezone
-%patch8 -p1 -b .perlfind
+%patch8 -p1 -b .perlfind %{?_rawbuild}
 %patch9 -p1 -b .aliasing
 
 %patch23 -p1 -b .default-paths
