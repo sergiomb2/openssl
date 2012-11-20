@@ -945,7 +945,7 @@ diff -up openssl-1.0.1c/crypto/dsa/dsa_key.c.fips openssl-1.0.1c/crypto/dsa/dsa_
 +	unsigned char tbs[] = "DSA Pairwise Check Data";
 +	int ret = 0;
 +
-+	if ((pk=EVP_PKEY_new()) != NULL)
++	if ((pk=EVP_PKEY_new()) == NULL)
 +		goto err;
 +
 +	EVP_PKEY_set1_DSA(pk, dsa);

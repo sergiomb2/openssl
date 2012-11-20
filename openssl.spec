@@ -22,7 +22,7 @@ Summary: Utilities from the general purpose cryptography library with TLS implem
 Name: openssl
 Version: 1.0.1c
 # Do not forget to bump SHLIB_VERSION on version upgrades
-Release: 8%{?dist}
+Release: 9%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -431,6 +431,10 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Tue Nov 20 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1c-9
+- more fixes from upstream CVS
+- fix DSA key pairwise check (#878597)
+
 * Thu Nov 15 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1c-8
 - use 1024 bit DH parameters in s_server as 512 bit is not allowed
   in FIPS mode and it is quite weak anyway
