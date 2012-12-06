@@ -22,7 +22,7 @@ Summary: Utilities from the general purpose cryptography library with TLS implem
 Name: openssl
 Version: 1.0.1c
 # Do not forget to bump SHLIB_VERSION on version upgrades
-Release: 9%{?dist}
+Release: 10%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -45,7 +45,7 @@ Patch7: openssl-1.0.0-timezone.patch
 Patch8: openssl-1.0.1c-perlfind.patch
 Patch9: openssl-1.0.1c-aliasing.patch
 # Bug fixes
-Patch23: openssl-1.0.0-beta4-default-paths.patch
+Patch23: openssl-1.0.1c-default-paths.patch
 # Functionality changes
 Patch33: openssl-1.0.0-beta4-ca-dir.patch
 Patch34: openssl-0.9.6-x509.patch
@@ -431,6 +431,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Thu Dec  6 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1c-10
+- do not load default verify paths if CApath or CAfile specified (#884305)
+
 * Tue Nov 20 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1c-9
 - more fixes from upstream CVS
 - fix DSA key pairwise check (#878597)
