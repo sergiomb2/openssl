@@ -720,7 +720,7 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 - add support for multiple CRLs with same subject
 - load only dynamic engine support in FIPS mode
 
-* Thu Mar 25 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8k-1
+* Wed Mar 25 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8k-1
 - update to new upstream release (minor bug fixes, security
   fixes and machine code optimizations only)
 
@@ -743,10 +743,10 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 - fix the pkgconfig files and drop the unnecessary buildrequires
   on pkgconfig as it is a rpmbuild dependency (#481419)
 
-* Sat Jan 16 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8j-5
+* Sat Jan 17 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8j-5
 - add temporary triggerpostun to reinstate the symlinks
 
-* Sat Jan 16 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8j-4
+* Sat Jan 17 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8j-4
 - no pairwise key tests in non-fips mode (#479817)
 
 * Fri Jan 16 2009 Tomas Mraz <tmraz@redhat.com> 0.9.8j-3
@@ -1026,7 +1026,7 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 * Tue Mar 16 2004 Phil Knirsch <pknirsch@redhat.com>
 - Fixed libica filespec.
 
-* Thu Mar 10 2004 Nalin Dahyabhai <nalin@redhat.com> 0.9.7a-34
+* Thu Mar 11 2004 Nalin Dahyabhai <nalin@redhat.com> 0.9.7a-34
 - ppc/ppc64 define __powerpc__/__powerpc64__, not __ppc__/__ppc64__, fix
   the intermediate header
 
@@ -1118,7 +1118,7 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 * Tue Jul 15 2003 Nalin Dahyabhai <nalin@redhat.com> 0.9.7a-10.9
 - free the kssl_ctx structure when we free an SSL structure (#99066)
 
-* Fri Jul 10 2003 Nalin Dahyabhai <nalin@redhat.com> 0.9.7a-16
+* Fri Jul 11 2003 Nalin Dahyabhai <nalin@redhat.com> 0.9.7a-16
 - rebuild
 
 * Thu Jul 10 2003 Nalin Dahyabhai <nalin@redhat.com> 0.9.7a-15
@@ -1369,7 +1369,7 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 - adjust the hobble script to not disturb symlinks in include/ (fix from
   Joe Orton)
 
-* Fri Apr 26 2001 Nalin Dahyabhai <nalin@redhat.com>
+* Fri Apr 27 2001 Nalin Dahyabhai <nalin@redhat.com>
 - drop the m2crypo patch we weren't using
 
 * Tue Apr 24 2001 Nalin Dahyabhai <nalin@redhat.com>
