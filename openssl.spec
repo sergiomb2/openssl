@@ -383,6 +383,7 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %doc doc/ssleay.txt
 %doc README.FIPS
 %{_sysconfdir}/pki/tls/certs/make-dummy-cert
+%{_sysconfdir}/pki/tls/certs/renew-dummy-cert
 %{_sysconfdir}/pki/tls/certs/Makefile
 %{_sysconfdir}/pki/tls/misc/CA
 %dir %{_sysconfdir}/pki/CA
