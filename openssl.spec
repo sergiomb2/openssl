@@ -22,7 +22,7 @@ Summary: Utilities from the general purpose cryptography library with TLS implem
 Name: openssl
 Version: 1.0.1c
 # Do not forget to bump SHLIB_VERSION on version upgrades
-Release: 10%{?dist}
+Release: 11%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -31,6 +31,7 @@ Source: openssl-%{version}-usa.tar.xz
 Source1: hobble-openssl
 Source2: Makefile.certificate
 Source6: make-dummy-cert
+Source7: renew-dummy-cert
 Source8: openssl-thread-test.c
 Source9: opensslconf-new.h
 Source10: opensslconf-new-warning.h
@@ -46,6 +47,7 @@ Patch8: openssl-1.0.1c-perlfind.patch
 Patch9: openssl-1.0.1c-aliasing.patch
 # Bug fixes
 Patch23: openssl-1.0.1c-default-paths.patch
+Patch24: openssl-1.0.1c-issuer-hash.patch
 # Functionality changes
 Patch33: openssl-1.0.0-beta4-ca-dir.patch
 Patch34: openssl-0.9.6-x509.patch
@@ -151,6 +153,7 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch9 -p1 -b .aliasing
 
 %patch23 -p1 -b .default-paths
+%patch24 -p1 -b .issuer-hash
 
 %patch33 -p1 -b .ca-dir
 %patch34 -p1 -b .x509
@@ -300,6 +303,7 @@ done
 mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/pki/tls/certs
 install -m644 %{SOURCE2} $RPM_BUILD_ROOT%{_sysconfdir}/pki/tls/certs/Makefile
 install -m755 %{SOURCE6} $RPM_BUILD_ROOT%{_sysconfdir}/pki/tls/certs/make-dummy-cert
+install -m755 %{SOURCE7} $RPM_BUILD_ROOT%{_sysconfdir}/pki/tls/certs/renew-dummy-cert
 
 # Make sure we actually include the headers we built against.
 for header in $RPM_BUILD_ROOT%{_includedir}/openssl/* ; do
@@ -431,6 +435,11 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Fri Dec 21 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1c-11
+- add script for renewal of a self-signed cert by Philip Prindeville (#871566)
+- allow X509_issuer_and_serial_hash() produce correct result in
+  the FIPS mode (#881336)
+
 * Thu Dec  6 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1c-10
 - do not load default verify paths if CApath or CAfile specified (#884305)
 
