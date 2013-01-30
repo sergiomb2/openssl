@@ -22,7 +22,7 @@ Summary: Utilities from the general purpose cryptography library with TLS implem
 Name: openssl
 Version: 1.0.1c
 # Do not forget to bump SHLIB_VERSION on version upgrades
-Release: 11%{?dist}
+Release: 12%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -75,6 +75,8 @@ Patch81: openssl-1.0.1-beta2-padlock64.patch
 Patch82: openssl-1.0.1c-backports.patch
 Patch83: openssl-1.0.1c-ccm-init-str.patch
 Patch84: openssl-1.0.1c-backports2.patch
+Patch85: openssl-1.0.1c-manfix.patch
+Patch86: openssl-1.0.1c-verify-error.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -181,6 +183,8 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch82 -p1 -b .backports
 %patch83 -p1 -b .init-str
 %patch84 -p1 -b .backports2
+%patch85 -p1 -b .manfix
+%patch86 -p1 -b .verify
 
 # Modify the various perl scripts to reference perl in the right location.
 perl util/perlpath.pl `dirname %{__perl}`
@@ -436,6 +440,10 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Wed Jan 30 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1c-12
+- more fixes from upstream
+- fix errors in manual causing build failure (#904777)
+
 * Fri Dec 21 2012 Tomas Mraz <tmraz@redhat.com> 1.0.1c-11
 - add script for renewal of a self-signed cert by Philip Prindeville (#871566)
 - allow X509_issuer_and_serial_hash() produce correct result in

@@ -1,0 +1,474 @@
+diff -up openssl-1.0.1c/doc/apps/verify.pod.manfix openssl-1.0.1c/doc/apps/verify.pod
+--- openssl-1.0.1c/doc/apps/verify.pod.manfix	2010-02-23 15:09:22.000000000 +0100
++++ openssl-1.0.1c/doc/apps/verify.pod	2013-01-30 17:36:15.277264650 +0100
+@@ -54,35 +54,37 @@ in PEM format concatenated together.
+ =item B<-untrusted file>
+ 
+ A file of untrusted certificates. The file should contain multiple certificates
++in PEM format concatenated together.
+ 
+ =item B<-purpose purpose>
+ 
+-the intended use for the certificate. Without this option no chain verification
+-will be done. Currently accepted uses are B<sslclient>, B<sslserver>,
+-B<nssslserver>, B<smimesign>, B<smimeencrypt>. See the B<VERIFY OPERATION>
+-section for more information.
++The intended use for the certificate. If this option is not specified,
++B<verify> will not consider certificate purpose during chain verification.
++Currently accepted uses are B<sslclient>, B<sslserver>, B<nssslserver>,
++B<smimesign>, B<smimeencrypt>. See the B<VERIFY OPERATION> section for more
++information.
+ 
+ =item B<-help>
+ 
+-prints out a usage message.
++Print out a usage message.
+ 
+ =item B<-verbose>
+ 
+-print extra information about the operations being performed.
++Print extra information about the operations being performed.
+ 
+ =item B<-issuer_checks>
+ 
+-print out diagnostics relating to searches for the issuer certificate
+-of the current certificate. This shows why each candidate issuer
+-certificate was rejected. However the presence of rejection messages
+-does not itself imply that anything is wrong: during the normal
+-verify process several rejections may take place.
++Print out diagnostics relating to searches for the issuer certificate of the
++current certificate. This shows why each candidate issuer certificate was
++rejected. The presence of rejection messages does not itself imply that
++anything is wrong; during the normal verification process, several
++rejections may take place.
+ 
+ =item B<-policy arg>
+ 
+-Enable policy processing and add B<arg> to the user-initial-policy-set
+-(see RFC3280 et al). The policy B<arg> can be an object name an OID in numeric
+-form. This argument can appear more than once.
++Enable policy processing and add B<arg> to the user-initial-policy-set (see
++RFC5280). The policy B<arg> can be an object name an OID in numeric form.
++This argument can appear more than once.
+ 
+ =item B<-policy_check>
+ 
+@@ -90,41 +92,40 @@ Enables certificate policy processing.
+ 
+ =item B<-explicit_policy>
+ 
+-Set policy variable require-explicit-policy (see RFC3280 et al).
++Set policy variable require-explicit-policy (see RFC5280).
+ 
+ =item B<-inhibit_any>
+ 
+-Set policy variable inhibit-any-policy (see RFC3280 et al).
++Set policy variable inhibit-any-policy (see RFC5280).
+ 
+ =item B<-inhibit_map>
+ 
+-Set policy variable inhibit-policy-mapping (see RFC3280 et al).
++Set policy variable inhibit-policy-mapping (see RFC5280).
+ 
+ =item B<-policy_print>
+ 
+-Print out diagnostics, related to policy checking
++Print out diagnostics related to policy processing.
+ 
+ =item B<-crl_check>
+ 
+-Checks end entity certificate validity by attempting to lookup a valid CRL.
++Checks end entity certificate validity by attempting to look up a valid CRL.
+ If a valid CRL cannot be found an error occurs. 
+ 
+ =item B<-crl_check_all>
+ 
+ Checks the validity of B<all> certificates in the chain by attempting
+-to lookup valid CRLs.
++to look up valid CRLs.
+ 
+ =item B<-ignore_critical>
+ 
+ Normally if an unhandled critical extension is present which is not
+-supported by OpenSSL the certificate is rejected (as required by
+-RFC3280 et al). If this option is set critical extensions are
+-ignored.
++supported by OpenSSL the certificate is rejected (as required by RFC5280).
++If this option is set critical extensions are ignored.
+ 
+ =item B<-x509_strict>
+ 
+-Disable workarounds for broken certificates which have to be disabled
+-for strict X.509 compliance.
++For strict X.509 compliance, disable non-compliant workarounds for broken
++certificates.
+ 
+ =item B<-extended_crl>
+ 
+@@ -142,16 +143,15 @@ because it doesn't add any security.
+ 
+ =item B<->
+ 
+-marks the last option. All arguments following this are assumed to be
++Indicates the last option. All arguments following this are assumed to be
+ certificate files. This is useful if the first certificate filename begins
+ with a B<->.
+ 
+ =item B<certificates>
+ 
+-one or more certificates to verify. If no certificate filenames are included
+-then an attempt is made to read a certificate from standard input. They should
+-all be in PEM format.
+-
++One or more certificates to verify. If no certificates are given, B<verify>
++will attempt to read a certificate from standard input. Certificates must be
++in PEM format.
+ 
+ =back
+ 
+diff -up openssl-1.0.1c/doc/apps/x509.pod.manfix openssl-1.0.1c/doc/apps/x509.pod
+--- openssl-1.0.1c/doc/apps/x509.pod.manfix	2013-01-10 10:26:11.000000000 +0100
++++ openssl-1.0.1c/doc/apps/x509.pod	2013-01-30 17:35:38.952458133 +0100
+@@ -29,6 +29,7 @@ B<openssl> B<x509>
+ [B<-purpose>]
+ [B<-dates>]
+ [B<-modulus>]
++[B<-pubkey>]
+ [B<-fingerprint>]
+ [B<-alias>]
+ [B<-noout>]
+@@ -136,6 +137,10 @@ section for more information.
+ 
+ this option prevents output of the encoded version of the request.
+ 
++=item B<-pubkey>
++
++outputs the the certificate's SubjectPublicKeyInfo block in PEM format.
++
+ =item B<-modulus>
+ 
+ this option prints out the value of the modulus of the public key
+diff -up openssl-1.0.1c/doc/crypto/EVP_PKEY_CTX_ctrl.pod.manfix openssl-1.0.1c/doc/crypto/EVP_PKEY_CTX_ctrl.pod
+--- openssl-1.0.1c/doc/crypto/EVP_PKEY_CTX_ctrl.pod.manfix	2009-10-01 01:40:47.000000000 +0200
++++ openssl-1.0.1c/doc/crypto/EVP_PKEY_CTX_ctrl.pod	2013-01-30 17:36:05.381045128 +0100
+@@ -117,7 +117,7 @@ L<EVP_PKEY_encrypt(3)|EVP_PKEY_encrypt(3
+ L<EVP_PKEY_decrypt(3)|EVP_PKEY_decrypt(3)>,
+ L<EVP_PKEY_sign(3)|EVP_PKEY_sign(3)>,
+ L<EVP_PKEY_verify(3)|EVP_PKEY_verify(3)>,
+-L<EVP_PKEY_verifyrecover(3)|EVP_PKEY_verifyrecover(3)>,
++L<EVP_PKEY_verify_recover(3)|EVP_PKEY_verify_recover(3)>,
+ L<EVP_PKEY_derive(3)|EVP_PKEY_derive(3)> 
+ L<EVP_PKEY_keygen(3)|EVP_PKEY_keygen(3)> 
+ 
+diff -up openssl-1.0.1c/doc/crypto/EVP_PKEY_decrypt.pod.manfix openssl-1.0.1c/doc/crypto/EVP_PKEY_decrypt.pod
+--- openssl-1.0.1c/doc/crypto/EVP_PKEY_decrypt.pod.manfix	2009-10-01 01:40:48.000000000 +0200
++++ openssl-1.0.1c/doc/crypto/EVP_PKEY_decrypt.pod	2013-01-30 17:36:05.381045128 +0100
+@@ -83,7 +83,7 @@ L<EVP_PKEY_CTX_new(3)|EVP_PKEY_CTX_new(3
+ L<EVP_PKEY_encrypt(3)|EVP_PKEY_encrypt(3)>,
+ L<EVP_PKEY_sign(3)|EVP_PKEY_sign(3)>,
+ L<EVP_PKEY_verify(3)|EVP_PKEY_verify(3)>,
+-L<EVP_PKEY_verifyrecover(3)|EVP_PKEY_verifyrecover(3)>,
++L<EVP_PKEY_verify_recover(3)|EVP_PKEY_verify_recover(3)>,
+ L<EVP_PKEY_derive(3)|EVP_PKEY_derive(3)> 
+ 
+ =head1 HISTORY
+diff -up openssl-1.0.1c/doc/crypto/EVP_PKEY_derive.pod.manfix openssl-1.0.1c/doc/crypto/EVP_PKEY_derive.pod
+--- openssl-1.0.1c/doc/crypto/EVP_PKEY_derive.pod.manfix	2009-10-01 01:40:48.000000000 +0200
++++ openssl-1.0.1c/doc/crypto/EVP_PKEY_derive.pod	2013-01-30 17:36:05.381045128 +0100
+@@ -84,7 +84,7 @@ L<EVP_PKEY_encrypt(3)|EVP_PKEY_encrypt(3
+ L<EVP_PKEY_decrypt(3)|EVP_PKEY_decrypt(3)>,
+ L<EVP_PKEY_sign(3)|EVP_PKEY_sign(3)>,
+ L<EVP_PKEY_verify(3)|EVP_PKEY_verify(3)>,
+-L<EVP_PKEY_verifyrecover(3)|EVP_PKEY_verifyrecover(3)>,
++L<EVP_PKEY_verify_recover(3)|EVP_PKEY_verify_recover(3)>,
+ 
+ =head1 HISTORY
+ 
+diff -up openssl-1.0.1c/doc/crypto/EVP_PKEY_encrypt.pod.manfix openssl-1.0.1c/doc/crypto/EVP_PKEY_encrypt.pod
+--- openssl-1.0.1c/doc/crypto/EVP_PKEY_encrypt.pod.manfix	2009-10-01 01:40:48.000000000 +0200
++++ openssl-1.0.1c/doc/crypto/EVP_PKEY_encrypt.pod	2013-01-30 17:36:05.382045143 +0100
+@@ -83,7 +83,7 @@ L<EVP_PKEY_CTX_new(3)|EVP_PKEY_CTX_new(3
+ L<EVP_PKEY_decrypt(3)|EVP_PKEY_decrypt(3)>,
+ L<EVP_PKEY_sign(3)|EVP_PKEY_sign(3)>,
+ L<EVP_PKEY_verify(3)|EVP_PKEY_verify(3)>,
+-L<EVP_PKEY_verifyrecover(3)|EVP_PKEY_verifyrecover(3)>,
++L<EVP_PKEY_verify_recover(3)|EVP_PKEY_verify_recover(3)>,
+ L<EVP_PKEY_derive(3)|EVP_PKEY_derive(3)> 
+ 
+ =head1 HISTORY
+diff -up openssl-1.0.1c/doc/crypto/EVP_PKEY_get_default_digest.pod.manfix openssl-1.0.1c/doc/crypto/EVP_PKEY_get_default_digest.pod
+--- openssl-1.0.1c/doc/crypto/EVP_PKEY_get_default_digest.pod.manfix	2009-10-01 01:40:48.000000000 +0200
++++ openssl-1.0.1c/doc/crypto/EVP_PKEY_get_default_digest.pod	2013-01-30 17:36:05.382045143 +0100
+@@ -32,7 +32,7 @@ public key algorithm.
+ L<EVP_PKEY_CTX_new(3)|EVP_PKEY_CTX_new(3)>,
+ L<EVP_PKEY_sign(3)|EVP_PKEY_sign(3)>,
+ L<EVP_PKEY_verify(3)|EVP_PKEY_verify(3)>,
+-L<EVP_PKEY_verifyrecover(3)|EVP_PKEY_verifyrecover(3)>,
++L<EVP_PKEY_verify_recover(3)|EVP_PKEY_verify_recover(3)>,
+ 
+ =head1 HISTORY
+ 
+diff -up openssl-1.0.1c/doc/crypto/EVP_PKEY_keygen.pod.manfix openssl-1.0.1c/doc/crypto/EVP_PKEY_keygen.pod
+--- openssl-1.0.1c/doc/crypto/EVP_PKEY_keygen.pod.manfix	2009-10-01 01:40:49.000000000 +0200
++++ openssl-1.0.1c/doc/crypto/EVP_PKEY_keygen.pod	2013-01-30 17:36:05.382045143 +0100
+@@ -151,7 +151,7 @@ L<EVP_PKEY_encrypt(3)|EVP_PKEY_encrypt(3
+ L<EVP_PKEY_decrypt(3)|EVP_PKEY_decrypt(3)>,
+ L<EVP_PKEY_sign(3)|EVP_PKEY_sign(3)>,
+ L<EVP_PKEY_verify(3)|EVP_PKEY_verify(3)>,
+-L<EVP_PKEY_verifyrecover(3)|EVP_PKEY_verifyrecover(3)>,
++L<EVP_PKEY_verify_recover(3)|EVP_PKEY_verify_recover(3)>,
+ L<EVP_PKEY_derive(3)|EVP_PKEY_derive(3)> 
+ 
+ =head1 HISTORY
+diff -up openssl-1.0.1c/doc/crypto/EVP_PKEY_sign.pod.manfix openssl-1.0.1c/doc/crypto/EVP_PKEY_sign.pod
+--- openssl-1.0.1c/doc/crypto/EVP_PKEY_sign.pod.manfix	2009-10-01 01:40:50.000000000 +0200
++++ openssl-1.0.1c/doc/crypto/EVP_PKEY_sign.pod	2013-01-30 17:36:05.383045149 +0100
+@@ -86,7 +86,7 @@ L<EVP_PKEY_CTX_new(3)|EVP_PKEY_CTX_new(3
+ L<EVP_PKEY_encrypt(3)|EVP_PKEY_encrypt(3)>,
+ L<EVP_PKEY_decrypt(3)|EVP_PKEY_decrypt(3)>,
+ L<EVP_PKEY_verify(3)|EVP_PKEY_verify(3)>,
+-L<EVP_PKEY_verifyrecover(3)|EVP_PKEY_verifyrecover(3)>,
++L<EVP_PKEY_verify_recover(3)|EVP_PKEY_verify_recover(3)>,
+ L<EVP_PKEY_derive(3)|EVP_PKEY_derive(3)> 
+ 
+ =head1 HISTORY
+diff -up openssl-1.0.1c/doc/crypto/EVP_PKEY_verify.pod.manfix openssl-1.0.1c/doc/crypto/EVP_PKEY_verify.pod
+--- openssl-1.0.1c/doc/crypto/EVP_PKEY_verify.pod.manfix	2010-12-02 14:45:25.000000000 +0100
++++ openssl-1.0.1c/doc/crypto/EVP_PKEY_verify.pod	2013-01-30 17:36:05.383045149 +0100
+@@ -81,7 +81,7 @@ L<EVP_PKEY_CTX_new(3)|EVP_PKEY_CTX_new(3
+ L<EVP_PKEY_encrypt(3)|EVP_PKEY_encrypt(3)>,
+ L<EVP_PKEY_decrypt(3)|EVP_PKEY_decrypt(3)>,
+ L<EVP_PKEY_sign(3)|EVP_PKEY_sign(3)>,
+-L<EVP_PKEY_verifyrecover(3)|EVP_PKEY_verifyrecover(3)>,
++L<EVP_PKEY_verify_recover(3)|EVP_PKEY_verify_recover(3)>,
+ L<EVP_PKEY_derive(3)|EVP_PKEY_derive(3)> 
+ 
+ =head1 HISTORY
+diff -up openssl-1.0.1c/doc/crypto/EVP_PKEY_verify_recover.pod.manfix openssl-1.0.1c/doc/crypto/EVP_PKEY_verify_recover.pod
+--- openssl-1.0.1c/doc/crypto/EVP_PKEY_verify_recover.pod.manfix	2013-01-30 17:36:05.383045149 +0100
++++ openssl-1.0.1c/doc/crypto/EVP_PKEY_verify_recover.pod	2013-01-30 17:36:05.383045149 +0100
+@@ -0,0 +1,103 @@
++=pod
++
++=head1 NAME
++
++EVP_PKEY_verify_recover_init, EVP_PKEY_verify_recover - recover signature using a public key algorithm
++
++=head1 SYNOPSIS
++
++ #include <openssl/evp.h>
++
++ int EVP_PKEY_verify_recover_init(EVP_PKEY_CTX *ctx);
++ int EVP_PKEY_verify_recover(EVP_PKEY_CTX *ctx,
++			unsigned char *rout, size_t *routlen,
++			const unsigned char *sig, size_t siglen);
++
++=head1 DESCRIPTION
++
++The EVP_PKEY_verify_recover_init() function initializes a public key algorithm
++context using key B<pkey> for a verify recover operation.
++
++The EVP_PKEY_verify_recover() function recovers signed data
++using B<ctx>. The signature is specified using the B<sig> and
++B<siglen> parameters. If B<rout> is B<NULL> then the maximum size of the output
++buffer is written to the B<routlen> parameter. If B<rout> is not B<NULL> then
++before the call the B<routlen> parameter should contain the length of the
++B<rout> buffer, if the call is successful recovered data is written to
++B<rout> and the amount of data written to B<routlen>.
++
++=head1 NOTES
++
++Normally an application is only interested in whether a signature verification
++operation is successful in those cases the EVP_verify() function should be 
++used.
++
++Sometimes however it is useful to obtain the data originally signed using a
++signing operation. Only certain public key algorithms can recover a signature
++in this way (for example RSA in PKCS padding mode).
++
++After the call to EVP_PKEY_verify_recover_init() algorithm specific control
++operations can be performed to set any appropriate parameters for the
++operation.
++
++The function EVP_PKEY_verify_recover() can be called more than once on the same
++context if several operations are performed using the same parameters.
++
++=head1 RETURN VALUES
++
++EVP_PKEY_verify_recover_init() and EVP_PKEY_verify_recover() return 1 for success
++and 0 or a negative value for failure. In particular a return value of -2
++indicates the operation is not supported by the public key algorithm.
++
++=head1 EXAMPLE
++
++Recover digest originally signed using PKCS#1 and SHA256 digest:
++
++ #include <openssl/evp.h>
++ #include <openssl/rsa.h>
++
++ EVP_PKEY_CTX *ctx;
++ unsigned char *rout, *sig;
++ size_t routlen, siglen; 
++ EVP_PKEY *verify_key;
++ /* NB: assumes verify_key, sig and siglen are already set up
++  * and that verify_key is an RSA public key
++  */
++ ctx = EVP_PKEY_CTX_new(verify_key);
++ if (!ctx)
++	/* Error occurred */
++ if (EVP_PKEY_verify_recover_init(ctx) <= 0)
++	/* Error */
++ if (EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_PADDING) <= 0)
++	/* Error */
++ if (EVP_PKEY_CTX_set_signature_md(ctx, EVP_sha256()) <= 0)
++	/* Error */
++
++ /* Determine buffer length */
++ if (EVP_PKEY_verify_recover(ctx, NULL, &routlen, sig, siglen) <= 0)
++	/* Error */
++
++ rout = OPENSSL_malloc(routlen);
++
++ if (!rout)
++	/* malloc failure */
++ 
++ if (EVP_PKEY_verify_recover(ctx, rout, &routlen, sig, siglen) <= 0)
++	/* Error */
++
++ /* Recovered data is routlen bytes written to buffer rout */
++
++=head1 SEE ALSO
++
++L<EVP_PKEY_CTX_new(3)|EVP_PKEY_CTX_new(3)>,
++L<EVP_PKEY_encrypt(3)|EVP_PKEY_encrypt(3)>,
++L<EVP_PKEY_decrypt(3)|EVP_PKEY_decrypt(3)>,
++L<EVP_PKEY_sign(3)|EVP_PKEY_sign(3)>,
++L<EVP_PKEY_verify(3)|EVP_PKEY_verify(3)>,
++L<EVP_PKEY_derive(3)|EVP_PKEY_derive(3)> 
++
++=head1 HISTORY
++
++These functions were first added to OpenSSL 1.0.0.
++
++=cut
+diff -up openssl-1.0.1c/doc/crypto/X509_STORE_CTX_get_error.pod.manfix openssl-1.0.1c/doc/crypto/X509_STORE_CTX_get_error.pod
+--- openssl-1.0.1c/doc/crypto/X509_STORE_CTX_get_error.pod.manfix	2009-10-18 17:28:59.000000000 +0200
++++ openssl-1.0.1c/doc/crypto/X509_STORE_CTX_get_error.pod	2013-01-30 17:34:16.315630759 +0100
+@@ -278,6 +278,8 @@ happen if extended CRL checking is enabl
+ an application specific error. This will never be returned unless explicitly
+ set by an application.
+ 
++=back
++
+ =head1 NOTES
+ 
+ The above functions should be used instead of directly referencing the fields
+diff -up openssl-1.0.1c/doc/crypto/EVP_PKEY_verifyrecover.pod /dev/null
+--- openssl-1.0.1c/doc/crypto/EVP_PKEY_verifyrecover.pod
++++ /dev/null
+@@ -1,103 +0,0 @@
+-=pod
+-
+-=head1 NAME
+-
+-EVP_PKEY_verifyrecover_init, EVP_PKEY_verifyrecover - recover signature using a public key algorithm
+-
+-=head1 SYNOPSIS
+-
+- #include <openssl/evp.h>
+-
+- int EVP_PKEY_verifyrecover_init(EVP_PKEY_CTX *ctx);
+- int EVP_PKEY_verifyrecover(EVP_PKEY_CTX *ctx,
+-			unsigned char *rout, size_t *routlen,
+-			const unsigned char *sig, size_t siglen);
+-
+-=head1 DESCRIPTION
+-
+-The EVP_PKEY_verifyrecover_init() function initializes a public key algorithm
+-context using key B<pkey> for a verify recover operation.
+-
+-The EVP_PKEY_verifyrecover() function recovers signed data
+-using B<ctx>. The signature is specified using the B<sig> and
+-B<siglen> parameters. If B<rout> is B<NULL> then the maximum size of the output
+-buffer is written to the B<routlen> parameter. If B<rout> is not B<NULL> then
+-before the call the B<routlen> parameter should contain the length of the
+-B<rout> buffer, if the call is successful recovered data is written to
+-B<rout> and the amount of data written to B<routlen>.
+-
+-=head1 NOTES
+-
+-Normally an application is only interested in whether a signature verification
+-operation is successful in those cases the EVP_verify() function should be 
+-used.
+-
+-Sometimes however it is useful to obtain the data originally signed using a
+-signing operation. Only certain public key algorithms can recover a signature
+-in this way (for example RSA in PKCS padding mode).
+-
+-After the call to EVP_PKEY_verifyrecover_init() algorithm specific control
+-operations can be performed to set any appropriate parameters for the
+-operation.
+-
+-The function EVP_PKEY_verifyrecover() can be called more than once on the same
+-context if several operations are performed using the same parameters.
+-
+-=head1 RETURN VALUES
+-
+-EVP_PKEY_verifyrecover_init() and EVP_PKEY_verifyrecover() return 1 for success
+-and 0 or a negative value for failure. In particular a return value of -2
+-indicates the operation is not supported by the public key algorithm.
+-
+-=head1 EXAMPLE
+-
+-Recover digest originally signed using PKCS#1 and SHA256 digest:
+-
+- #include <openssl/evp.h>
+- #include <openssl/rsa.h>
+-
+- EVP_PKEY_CTX *ctx;
+- unsigned char *rout, *sig;
+- size_t routlen, siglen; 
+- EVP_PKEY *verify_key;
+- /* NB: assumes verify_key, sig and siglen are already set up
+-  * and that verify_key is an RSA public key
+-  */
+- ctx = EVP_PKEY_CTX_new(verify_key);
+- if (!ctx)
+-	/* Error occurred */
+- if (EVP_PKEY_verifyrecover_init(ctx) <= 0)
+-	/* Error */
+- if (EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_PADDING) <= 0)
+-	/* Error */
+- if (EVP_PKEY_CTX_set_signature_md(ctx, EVP_sha256()) <= 0)
+-	/* Error */
+-
+- /* Determine buffer length */
+- if (EVP_PKEY_verifyrecover(ctx, NULL, &routlen, sig, siglen) <= 0)
+-	/* Error */
+-
+- rout = OPENSSL_malloc(routlen);
+-
+- if (!rout)
+-	/* malloc failure */
+- 
+- if (EVP_PKEY_verifyrecover(ctx, rout, &routlen, sig, siglen) <= 0)
+-	/* Error */
+-
+- /* Recovered data is routlen bytes written to buffer rout */
+-
+-=head1 SEE ALSO
+-
+-L<EVP_PKEY_CTX_new(3)|EVP_PKEY_CTX_new(3)>,
+-L<EVP_PKEY_encrypt(3)|EVP_PKEY_encrypt(3)>,
+-L<EVP_PKEY_decrypt(3)|EVP_PKEY_decrypt(3)>,
+-L<EVP_PKEY_sign(3)|EVP_PKEY_sign(3)>,
+-L<EVP_PKEY_verify(3)|EVP_PKEY_verify(3)>,
+-L<EVP_PKEY_derive(3)|EVP_PKEY_derive(3)> 
+-
+-=head1 HISTORY
+-
+-These functions were first added to OpenSSL 1.0.0.
+-
+-=cut
+-- 
+
