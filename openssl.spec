@@ -22,7 +22,7 @@ Summary: Utilities from the general purpose cryptography library with TLS implem
 Name: openssl
 Version: 1.0.1e
 # Do not forget to bump SHLIB_VERSION on version upgrades
-Release: 1%{?dist}
+Release: 2%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -56,7 +56,7 @@ Patch36: openssl-1.0.0e-doc-noeof.patch
 Patch38: openssl-1.0.1-beta2-ssl-op-all.patch
 Patch39: openssl-1.0.1c-ipv6-apps.patch
 Patch40: openssl-1.0.1e-fips.patch
-Patch45: openssl-0.9.8j-env-nozlib.patch
+Patch45: openssl-1.0.1e-env-zlib.patch
 Patch47: openssl-1.0.0-beta5-readme-warning.patch
 Patch49: openssl-1.0.1a-algo-doc.patch
 Patch50: openssl-1.0.1-beta2-dtls1-abi.patch
@@ -159,7 +159,7 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch38 -p1 -b .op-all
 %patch39 -p1 -b .ipv6-apps
 %patch40 -p1 -b .fips
-%patch45 -p1 -b .env-nozlib
+%patch45 -p1 -b .env-zlib
 %patch47 -p1 -b .warning
 %patch49 -p1 -b .algo-doc
 %patch50 -p1 -b .dtls1-abi
@@ -430,6 +430,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Tue Feb 19 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-2
+- disable ZLIB loading by default (due to CRIME attack)
+
 * Tue Feb 19 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-1
 - new upstream version
 
