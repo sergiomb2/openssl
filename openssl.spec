@@ -21,8 +21,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1e
-# Do not forget to bump SHLIB_VERSION on version upgrades
-Release: 2%{?dist}
+Release: 3%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -175,6 +174,8 @@ from other formats to the formats used by the OpenSSL toolkit.
 
 %patch81 -p1 -b .padlock64
 %patch82 -p1 -b .backports
+
+sed -i 's/SHLIB_VERSION_NUMBER "1.0.0"/SHLIB_VERSION_NUMBER "%{version}"/' crypto/opensslv.h
 
 # Modify the various perl scripts to reference perl in the right location.
 perl util/perlpath.pl `dirname %{__perl}`
@@ -430,6 +431,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Tue Feb 19 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-3
+- fix up the SHLIB_VERSION_NUMBER
+
 * Tue Feb 19 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-2
 - disable ZLIB loading by default (due to CRIME attack)
 
