@@ -20,9 +20,9 @@
 
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
-Version: 1.0.1c
+Version: 1.0.1e
 # Do not forget to bump SHLIB_VERSION on version upgrades
-Release: 12%{?dist}
+Release: 1%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -47,7 +47,7 @@ Patch8: openssl-1.0.1c-perlfind.patch
 Patch9: openssl-1.0.1c-aliasing.patch
 # Bug fixes
 Patch23: openssl-1.0.1c-default-paths.patch
-Patch24: openssl-1.0.1c-issuer-hash.patch
+Patch24: openssl-1.0.1e-issuer-hash.patch
 # Functionality changes
 Patch33: openssl-1.0.0-beta4-ca-dir.patch
 Patch34: openssl-0.9.6-x509.patch
@@ -55,7 +55,7 @@ Patch35: openssl-0.9.8j-version-add-engines.patch
 Patch36: openssl-1.0.0e-doc-noeof.patch
 Patch38: openssl-1.0.1-beta2-ssl-op-all.patch
 Patch39: openssl-1.0.1c-ipv6-apps.patch
-Patch40: openssl-1.0.1c-fips.patch
+Patch40: openssl-1.0.1e-fips.patch
 Patch45: openssl-0.9.8j-env-nozlib.patch
 Patch47: openssl-1.0.0-beta5-readme-warning.patch
 Patch49: openssl-1.0.1a-algo-doc.patch
@@ -67,16 +67,11 @@ Patch60: openssl-1.0.0d-apps-dgst.patch
 Patch63: openssl-1.0.0d-xmpp-starttls.patch
 Patch65: openssl-1.0.0e-chil-fixes.patch
 Patch66: openssl-1.0.1-pkgconfig-krb5.patch
-Patch67: openssl-1.0.0-fips-pkcs8.patch
-Patch68: openssl-1.0.1c-secure-getenv.patch
+Patch68: openssl-1.0.1e-secure-getenv.patch
 Patch69: openssl-1.0.1c-dh-1024.patch
 # Backported fixes including security fixes
 Patch81: openssl-1.0.1-beta2-padlock64.patch
-Patch82: openssl-1.0.1c-backports.patch
-Patch83: openssl-1.0.1c-ccm-init-str.patch
-Patch84: openssl-1.0.1c-backports2.patch
-Patch85: openssl-1.0.1c-manfix.patch
-Patch86: openssl-1.0.1c-verify-error.patch
+Patch82: openssl-1.0.1e-backports.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -175,16 +170,11 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch63 -p1 -b .starttls
 %patch65 -p1 -b .chil
 %patch66 -p1 -b .krb5
-%patch67 -p1 -b .pkcs8
 %patch68 -p1 -b .secure-getenv
 %patch69 -p1 -b .dh1024
 
 %patch81 -p1 -b .padlock64
 %patch82 -p1 -b .backports
-%patch83 -p1 -b .init-str
-%patch84 -p1 -b .backports2
-%patch85 -p1 -b .manfix
-%patch86 -p1 -b .verify
 
 # Modify the various perl scripts to reference perl in the right location.
 perl util/perlpath.pl `dirname %{__perl}`
@@ -440,6 +430,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Tue Feb 19 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-1
+- new upstream version
+
 * Wed Jan 30 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1c-12
 - more fixes from upstream
 - fix errors in manual causing build failure (#904777)

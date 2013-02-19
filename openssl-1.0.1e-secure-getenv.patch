@@ -1,6 +1,6 @@
-diff -up openssl-1.0.1c/crypto/conf/conf_api.c.secure-getenv openssl-1.0.1c/crypto/conf/conf_api.c
---- openssl-1.0.1c/crypto/conf/conf_api.c.secure-getenv	2011-09-02 13:20:32.000000000 +0200
-+++ openssl-1.0.1c/crypto/conf/conf_api.c	2012-09-10 20:20:24.803968961 +0200
+diff -up openssl-1.0.1e/crypto/conf/conf_api.c.secure-getenv openssl-1.0.1e/crypto/conf/conf_api.c
+--- openssl-1.0.1e/crypto/conf/conf_api.c.secure-getenv	2013-02-11 16:26:04.000000000 +0100
++++ openssl-1.0.1e/crypto/conf/conf_api.c	2013-02-19 13:02:02.531188124 +0100
 @@ -63,6 +63,8 @@
  # define NDEBUG
  #endif
@@ -28,9 +28,9 @@ diff -up openssl-1.0.1c/crypto/conf/conf_api.c.secure-getenv openssl-1.0.1c/cryp
  	}
  
  #if 0 /* There's no way to provide error checking with this function, so
-diff -up openssl-1.0.1c/crypto/conf/conf_mod.c.secure-getenv openssl-1.0.1c/crypto/conf/conf_mod.c
---- openssl-1.0.1c/crypto/conf/conf_mod.c.secure-getenv	2008-11-05 19:38:55.000000000 +0100
-+++ openssl-1.0.1c/crypto/conf/conf_mod.c	2012-09-10 20:22:46.228970661 +0200
+diff -up openssl-1.0.1e/crypto/conf/conf_mod.c.secure-getenv openssl-1.0.1e/crypto/conf/conf_mod.c
+--- openssl-1.0.1e/crypto/conf/conf_mod.c.secure-getenv	2013-02-11 16:26:04.000000000 +0100
++++ openssl-1.0.1e/crypto/conf/conf_mod.c	2013-02-19 13:02:02.531188124 +0100
 @@ -56,6 +56,8 @@
   *
   */
@@ -51,9 +51,9 @@ diff -up openssl-1.0.1c/crypto/conf/conf_mod.c.secure-getenv openssl-1.0.1c/cryp
  		return BUF_strdup(file);
  
  	len = strlen(X509_get_default_cert_area());
-diff -up openssl-1.0.1c/crypto/engine/eng_list.c.secure-getenv openssl-1.0.1c/crypto/engine/eng_list.c
---- openssl-1.0.1c/crypto/engine/eng_list.c.secure-getenv	2010-03-27 19:28:13.000000000 +0100
-+++ openssl-1.0.1c/crypto/engine/eng_list.c	2012-09-10 20:20:46.106452027 +0200
+diff -up openssl-1.0.1e/crypto/engine/eng_list.c.secure-getenv openssl-1.0.1e/crypto/engine/eng_list.c
+--- openssl-1.0.1e/crypto/engine/eng_list.c.secure-getenv	2013-02-11 16:26:04.000000000 +0100
++++ openssl-1.0.1e/crypto/engine/eng_list.c	2013-02-19 13:02:02.536188233 +0100
 @@ -61,6 +61,8 @@
   * SUN MICROSYSTEMS, INC., and contributed to the OpenSSL project.
   */
@@ -75,9 +75,9 @@ diff -up openssl-1.0.1c/crypto/engine/eng_list.c.secure-getenv openssl-1.0.1c/cr
  #endif
  		iterator = ENGINE_by_id("dynamic");
  		if(!iterator || !ENGINE_ctrl_cmd_string(iterator, "ID", id, 0) ||
-diff -up openssl-1.0.1c/crypto/md5/md5_dgst.c.secure-getenv openssl-1.0.1c/crypto/md5/md5_dgst.c
---- openssl-1.0.1c/crypto/md5/md5_dgst.c.secure-getenv	2012-09-10 20:10:26.079391932 +0200
-+++ openssl-1.0.1c/crypto/md5/md5_dgst.c	2012-09-10 20:20:31.383118153 +0200
+diff -up openssl-1.0.1e/crypto/md5/md5_dgst.c.secure-getenv openssl-1.0.1e/crypto/md5/md5_dgst.c
+--- openssl-1.0.1e/crypto/md5/md5_dgst.c.secure-getenv	2013-02-19 13:02:02.492187275 +0100
++++ openssl-1.0.1e/crypto/md5/md5_dgst.c	2013-02-19 13:02:02.537188254 +0100
 @@ -56,6 +56,8 @@
   * [including the GNU Public Licence.]
   */
@@ -96,9 +96,9 @@ diff -up openssl-1.0.1c/crypto/md5/md5_dgst.c.secure-getenv openssl-1.0.1c/crypt
  		OpenSSLDie(__FILE__, __LINE__, \
                  "Digest MD5 forbidden in FIPS mode!");
  	return private_MD5_Init(c);
-diff -up openssl-1.0.1c/crypto/o_init.c.secure-getenv openssl-1.0.1c/crypto/o_init.c
---- openssl-1.0.1c/crypto/o_init.c.secure-getenv	2012-09-10 20:10:26.066391638 +0200
-+++ openssl-1.0.1c/crypto/o_init.c	2012-09-10 20:23:27.634908822 +0200
+diff -up openssl-1.0.1e/crypto/o_init.c.secure-getenv openssl-1.0.1e/crypto/o_init.c
+--- openssl-1.0.1e/crypto/o_init.c.secure-getenv	2013-02-19 13:02:02.428185882 +0100
++++ openssl-1.0.1e/crypto/o_init.c	2013-02-19 13:02:02.538188276 +0100
 @@ -52,6 +52,8 @@
   *
   */
@@ -117,19 +117,19 @@ diff -up openssl-1.0.1c/crypto/o_init.c.secure-getenv openssl-1.0.1c/crypto/o_in
  		{
  		buf[0] = '1';
  		}
-diff -up openssl-1.0.1c/crypto/rand/randfile.c.secure-getenv openssl-1.0.1c/crypto/rand/randfile.c
---- openssl-1.0.1c/crypto/rand/randfile.c.secure-getenv	2012-01-15 14:40:21.000000000 +0100
-+++ openssl-1.0.1c/crypto/rand/randfile.c	2012-09-10 20:20:40.708329617 +0200
-@@ -58,6 +58,8 @@
- 
- /* We need to define this to get macros like S_IFBLK and S_IFCHR */
+diff -up openssl-1.0.1e/crypto/rand/randfile.c.secure-getenv openssl-1.0.1e/crypto/rand/randfile.c
+--- openssl-1.0.1e/crypto/rand/randfile.c.secure-getenv	2013-02-11 16:26:04.000000000 +0100
++++ openssl-1.0.1e/crypto/rand/randfile.c	2013-02-19 13:03:06.971591052 +0100
+@@ -60,6 +60,8 @@
+ #if !defined(OPENSSL_SYS_VXWORKS)
  #define _XOPEN_SOURCE 500
+ #endif
 +/* for secure_getenv */
 +#define _GNU_SOURCE
  
  #include <errno.h>
  #include <stdio.h>
-@@ -275,8 +277,7 @@ const char *RAND_file_name(char *buf, si
+@@ -277,8 +279,7 @@ const char *RAND_file_name(char *buf, si
  	struct stat sb;
  #endif
  
@@ -139,7 +139,7 @@ diff -up openssl-1.0.1c/crypto/rand/randfile.c.secure-getenv openssl-1.0.1c/cryp
  	if (s != NULL && *s && strlen(s) + 1 < size)
  		{
  		if (BUF_strlcpy(buf,s,size) >= size)
-@@ -284,8 +285,7 @@ const char *RAND_file_name(char *buf, si
+@@ -286,8 +287,7 @@ const char *RAND_file_name(char *buf, si
  		}
  	else
  		{
@@ -149,9 +149,9 @@ diff -up openssl-1.0.1c/crypto/rand/randfile.c.secure-getenv openssl-1.0.1c/cryp
  #ifdef DEFAULT_HOME
  		if (s == NULL)
  			{
-diff -up openssl-1.0.1c/crypto/x509/by_dir.c.secure-getenv openssl-1.0.1c/crypto/x509/by_dir.c
---- openssl-1.0.1c/crypto/x509/by_dir.c.secure-getenv	2010-02-19 19:26:23.000000000 +0100
-+++ openssl-1.0.1c/crypto/x509/by_dir.c	2012-09-10 20:21:16.641144451 +0200
+diff -up openssl-1.0.1e/crypto/x509/by_dir.c.secure-getenv openssl-1.0.1e/crypto/x509/by_dir.c
+--- openssl-1.0.1e/crypto/x509/by_dir.c.secure-getenv	2013-02-11 16:26:04.000000000 +0100
++++ openssl-1.0.1e/crypto/x509/by_dir.c	2013-02-19 13:02:02.539188298 +0100
 @@ -56,6 +56,8 @@
   * [including the GNU Public Licence.]
   */
@@ -170,9 +170,9 @@ diff -up openssl-1.0.1c/crypto/x509/by_dir.c.secure-getenv openssl-1.0.1c/crypto
  			if (dir)
  				ret=add_cert_dir(ld,dir,X509_FILETYPE_PEM);
  			else
-diff -up openssl-1.0.1c/crypto/x509/by_file.c.secure-getenv openssl-1.0.1c/crypto/x509/by_file.c
---- openssl-1.0.1c/crypto/x509/by_file.c.secure-getenv	2012-09-10 20:10:26.016390503 +0200
-+++ openssl-1.0.1c/crypto/x509/by_file.c	2012-09-10 20:21:07.748942806 +0200
+diff -up openssl-1.0.1e/crypto/x509/by_file.c.secure-getenv openssl-1.0.1e/crypto/x509/by_file.c
+--- openssl-1.0.1e/crypto/x509/by_file.c.secure-getenv	2013-02-19 13:02:02.236181701 +0100
++++ openssl-1.0.1e/crypto/x509/by_file.c	2013-02-19 13:02:02.554188624 +0100
 @@ -56,6 +56,8 @@
   * [including the GNU Public Licence.]
   */
@@ -191,9 +191,9 @@ diff -up openssl-1.0.1c/crypto/x509/by_file.c.secure-getenv openssl-1.0.1c/crypt
  			if (file)
  				ok = (X509_load_cert_crl_file(ctx,file,
  					      X509_FILETYPE_PEM) != 0);
-diff -up openssl-1.0.1c/crypto/x509/x509_vfy.c.secure-getenv openssl-1.0.1c/crypto/x509/x509_vfy.c
---- openssl-1.0.1c/crypto/x509/x509_vfy.c.secure-getenv	2011-09-23 15:39:35.000000000 +0200
-+++ openssl-1.0.1c/crypto/x509/x509_vfy.c	2012-09-10 20:20:55.951675283 +0200
+diff -up openssl-1.0.1e/crypto/x509/x509_vfy.c.secure-getenv openssl-1.0.1e/crypto/x509/x509_vfy.c
+--- openssl-1.0.1e/crypto/x509/x509_vfy.c.secure-getenv	2013-02-11 16:26:04.000000000 +0100
++++ openssl-1.0.1e/crypto/x509/x509_vfy.c	2013-02-19 13:02:02.556188668 +0100
 @@ -56,6 +56,8 @@
   * [including the GNU Public Licence.]
   */
@@ -212,9 +212,9 @@ diff -up openssl-1.0.1c/crypto/x509/x509_vfy.c.secure-getenv openssl-1.0.1c/cryp
  			allow_proxy_certs = 1;
  		purpose = ctx->param->purpose;
  		}
-diff -up openssl-1.0.1c/engines/ccgost/gost_ctl.c.secure-getenv openssl-1.0.1c/engines/ccgost/gost_ctl.c
---- openssl-1.0.1c/engines/ccgost/gost_ctl.c.secure-getenv	2008-03-16 22:05:44.000000000 +0100
-+++ openssl-1.0.1c/engines/ccgost/gost_ctl.c	2012-09-10 20:21:26.759373897 +0200
+diff -up openssl-1.0.1e/engines/ccgost/gost_ctl.c.secure-getenv openssl-1.0.1e/engines/ccgost/gost_ctl.c
+--- openssl-1.0.1e/engines/ccgost/gost_ctl.c.secure-getenv	2013-02-11 16:26:04.000000000 +0100
++++ openssl-1.0.1e/engines/ccgost/gost_ctl.c	2013-02-19 13:02:02.557188690 +0100
 @@ -6,6 +6,8 @@
   *        Implementation of control commands for GOST engine          *
   *            OpenSSL 0.9.9 libraries required                        *
