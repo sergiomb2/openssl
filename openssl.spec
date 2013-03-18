@@ -21,7 +21,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1e
-Release: 3%{?dist}
+Release: 4%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -71,6 +71,7 @@ Patch69: openssl-1.0.1c-dh-1024.patch
 # Backported fixes including security fixes
 Patch81: openssl-1.0.1-beta2-padlock64.patch
 Patch82: openssl-1.0.1e-backports.patch
+Patch83: openssl-1.0.1e-bad-mac.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -174,6 +175,7 @@ from other formats to the formats used by the OpenSSL toolkit.
 
 %patch81 -p1 -b .padlock64
 %patch82 -p1 -b .backports
+%patch83 -p1 -b .bad-mac
 
 sed -i 's/SHLIB_VERSION_NUMBER "1.0.0"/SHLIB_VERSION_NUMBER "%{version}"/' crypto/opensslv.h
 
@@ -431,6 +433,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Mon Mar 18 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-4
+- fix random bad record mac errors (#918981)
+
 * Tue Feb 19 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-3
 - fix up the SHLIB_VERSION_NUMBER
 
