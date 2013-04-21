@@ -21,7 +21,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1e
-Release: 4%{?dist}
+Release: 5%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -213,7 +213,10 @@ sslarch="linux-generic32 -DB_ENDIAN"
 %ifarch s390x
 sslarch="linux64-s390x"
 %endif
-%ifarch %{arm} sh3 sh4
+%ifarch %{arm}
+sslarch=linux-armv4
+%endif
+%ifarch sh3 sh4
 sslarch=linux-generic32
 %endif
 %ifarch %{power64}
@@ -433,6 +436,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Sun Apr 21 2013 Peter Robinson <pbrobinson@fedoraproject.org> 1.0.1e-5
+- Enable ARM optimised build
+
 * Mon Mar 18 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-4
 - fix random bad record mac errors (#918981)
 
