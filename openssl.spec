@@ -21,7 +21,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1e
-Release: 5%{?dist}
+Release: 6%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -68,6 +68,7 @@ Patch65: openssl-1.0.0e-chil-fixes.patch
 Patch66: openssl-1.0.1-pkgconfig-krb5.patch
 Patch68: openssl-1.0.1e-secure-getenv.patch
 Patch69: openssl-1.0.1c-dh-1024.patch
+Patch71: openssl-1.0.1e-manfix.patch
 # Backported fixes including security fixes
 Patch81: openssl-1.0.1-beta2-padlock64.patch
 Patch82: openssl-1.0.1e-backports.patch
@@ -175,6 +176,7 @@ from other formats to the formats used by the OpenSSL toolkit.
 
 %patch81 -p1 -b .padlock64
 %patch82 -p1 -b .backports
+%patch71 -p1 -b .manfix
 %patch83 -p1 -b .bad-mac
 
 sed -i 's/SHLIB_VERSION_NUMBER "1.0.0"/SHLIB_VERSION_NUMBER "%{version}"/' crypto/opensslv.h
@@ -436,6 +438,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Fri May  3 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-6
+- fix build of manual pages with current pod2man (#959439)
+
 * Sun Apr 21 2013 Peter Robinson <pbrobinson@fedoraproject.org> 1.0.1e-5
 - Enable ARM optimised build
 
