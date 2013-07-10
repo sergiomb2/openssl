@@ -21,7 +21,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1e
-Release: 7%{?dist}
+Release: 8%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -440,6 +440,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Wed Jul 10 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-8
+- add relro linking flag
+
 * Wed Jul 10 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-7
 - add support for the -trusted_first option for certificate chain verification
 
