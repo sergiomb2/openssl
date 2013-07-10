@@ -21,7 +21,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1e
-Release: 6%{?dist}
+Release: 7%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -73,6 +73,7 @@ Patch71: openssl-1.0.1e-manfix.patch
 Patch81: openssl-1.0.1-beta2-padlock64.patch
 Patch82: openssl-1.0.1e-backports.patch
 Patch83: openssl-1.0.1e-bad-mac.patch
+Patch84: openssl-1.0.1e-trusted-first.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -178,6 +179,7 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch82 -p1 -b .backports
 %patch71 -p1 -b .manfix
 %patch83 -p1 -b .bad-mac
+%patch84 -p1 -b .trusted-first
 
 sed -i 's/SHLIB_VERSION_NUMBER "1.0.0"/SHLIB_VERSION_NUMBER "%{version}"/' crypto/opensslv.h
 
@@ -438,6 +440,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Wed Jul 10 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-7
+- add support for the -trusted_first option for certificate chain verification
+
 * Fri May  3 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-6
 - fix build of manual pages with current pod2man (#959439)
 

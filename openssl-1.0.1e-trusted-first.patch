@@ -1,0 +1,50 @@
+diff -up openssl-1.0.1e/apps/apps.c.trusted-first openssl-1.0.1e/apps/apps.c
+--- openssl-1.0.1e/apps/apps.c.trusted-first	2013-02-11 16:26:04.000000000 +0100
++++ openssl-1.0.1e/apps/apps.c	2013-07-10 10:42:42.242706279 +0200
+@@ -2361,6 +2361,8 @@ int args_verify(char ***pargs, int *parg
+ 		flags |= X509_V_FLAG_NOTIFY_POLICY;
+ 	else if (!strcmp(arg, "-check_ss_sig"))
+ 		flags |= X509_V_FLAG_CHECK_SS_SIGNATURE;
++	else if (!strcmp(arg, "-trusted_first"))
++		flags |= X509_V_FLAG_TRUSTED_FIRST;
+ 	else
+ 		return 0;
+ 
+diff -up openssl-1.0.1e/CHANGES.trusted-first openssl-1.0.1e/CHANGES
+diff -up openssl-1.0.1e/crypto/x509/x509_vfy.c.trusted-first openssl-1.0.1e/crypto/x509/x509_vfy.c
+--- openssl-1.0.1e/crypto/x509/x509_vfy.c.trusted-first	2013-05-31 13:40:52.000000000 +0200
++++ openssl-1.0.1e/crypto/x509/x509_vfy.c	2013-07-10 10:45:49.473638295 +0200
+@@ -205,6 +205,21 @@ int X509_verify_cert(X509_STORE_CTX *ctx
+ 
+ 		/* If we are self signed, we break */
+ 		if (ctx->check_issued(ctx, x,x)) break;
++		/* If asked see if we can find issuer in trusted store first */
++		if (ctx->param->flags & X509_V_FLAG_TRUSTED_FIRST)
++			{
++			ok = ctx->get_issuer(&xtmp, ctx, x);
++			if (ok < 0)
++				return ok;
++			/* If successful for now free up cert so it
++			 * will be picked up again later.
++			 */
++			if (ok > 0)
++				{
++				X509_free(xtmp);
++				break;
++				}
++			}
+ 
+ 		/* If we were passed a cert chain, use it first */
+ 		if (ctx->untrusted != NULL)
+diff -up openssl-1.0.1e/crypto/x509/x509_vfy.h.trusted-first openssl-1.0.1e/crypto/x509/x509_vfy.h
+--- openssl-1.0.1e/crypto/x509/x509_vfy.h.trusted-first	2013-05-31 13:40:51.890277515 +0200
++++ openssl-1.0.1e/crypto/x509/x509_vfy.h	2013-07-10 10:42:42.247706379 +0200
+@@ -389,6 +389,8 @@ void X509_STORE_CTX_set_depth(X509_STORE
+ #define X509_V_FLAG_USE_DELTAS			0x2000
+ /* Check selfsigned CA signature */
+ #define X509_V_FLAG_CHECK_SS_SIGNATURE		0x4000
++/* Use trusted store first */
++#define X509_V_FLAG_TRUSTED_FIRST		0x8000
+ 
+ 
+ #define X509_VP_FLAG_DEFAULT			0x1
