@@ -21,7 +21,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1e
-Release: 8%{?dist}
+Release: 9%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -318,6 +318,7 @@ done
 
 # Rename man pages so that they don't conflict with other system man pages.
 pushd $RPM_BUILD_ROOT%{_mandir}
+ln -s -f config.5 man5/openssl.cnf.5
 for manpage in man*/* ; do
 	if [ -L ${manpage} ]; then
 		TARGET=`ls -l ${manpage} | awk '{ print $NF }'`
@@ -440,6 +441,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Thu Jul 11 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-9
+- add openssl.cnf.5 manpage symlink to config.5
+
 * Wed Jul 10 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-8
 - add relro linking flag
 
