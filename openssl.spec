@@ -21,7 +21,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1e
-Release: 10%{?dist}
+Release: 11%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -232,7 +232,7 @@ sslarch=linux-ppc64
 # usable on all platforms.  The Configure script already knows to use -fPIC and
 # RPM_OPT_FLAGS, so we can skip specifiying them here.
 ./Configure \
-	--prefix=/usr --openssldir=%{_sysconfdir}/pki/tls ${sslflags} \
+	--prefix=%{_prefix} --openssldir=%{_sysconfdir}/pki/tls ${sslflags} \
 	zlib enable-camellia enable-seed enable-tlsext enable-rfc3779 \
 	enable-cms enable-md2 no-mdc2 no-rc5 no-ec no-ec2m no-ecdh no-ecdsa no-srp \
 	--with-krb5-flavor=MIT --enginesdir=%{_libdir}/openssl/engines \
@@ -441,6 +441,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Fri Jul 19 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-11
+- use _prefix macro
+
 * Wed Jul 17 2013 Petr Pisar <ppisar@redhat.com> - 1:1.0.1e-10
 - Perl 5.18 rebuild
 
