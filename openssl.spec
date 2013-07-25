@@ -21,7 +21,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1e
-Release: 11%{?dist}
+Release: 12%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -441,6 +441,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Thu Jul 25 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-12
+- additional manual page fixes
+
 * Fri Jul 19 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-11
 - use _prefix macro
 
