@@ -19333,8 +19333,8 @@ diff -up openssl-1.0.1e/crypto/o_fips.c.fips openssl-1.0.1e/crypto/o_fips.c
  	if (r)
 diff -up openssl-1.0.1e/crypto/o_init.c.fips openssl-1.0.1e/crypto/o_init.c
 --- openssl-1.0.1e/crypto/o_init.c.fips	2013-02-11 16:26:04.000000000 +0100
-+++ openssl-1.0.1e/crypto/o_init.c	2013-02-19 12:47:33.744118975 +0100
-@@ -55,28 +55,63 @@
++++ openssl-1.0.1e/crypto/o_init.c	2013-08-15 16:14:43.069221580 +0200
+@@ -55,28 +55,68 @@
  #include <e_os.h>
  #include <openssl/err.h>
  #ifdef OPENSSL_FIPS
@@ -19392,6 +19392,11 @@ diff -up openssl-1.0.1e/crypto/o_init.c.fips openssl-1.0.1e/crypto/o_init.c
 -	FIPS_set_malloc_callbacks(CRYPTO_malloc, CRYPTO_free);
  	RAND_init_fips();
 +	init_fips_mode();
++	if (!FIPS_mode())
++		{
++		/* Clean up prematurely set default rand method */
++		RAND_set_rand_method(NULL);
++		}
  #endif
  #if 0
  	fprintf(stderr, "Called OPENSSL_init\n");

@@ -21,7 +21,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1e
-Release: 14%{?dist}
+Release: 15%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -441,6 +441,11 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Fri Aug 16 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-15
+- fix use of rdrand if available
+- more commits cherry picked from upstream
+- documentation fixes
+
 * Sat Aug 03 2013 Petr Pisar <ppisar@redhat.com> - 1:1.0.1e-14
 - Perl 5.18 rebuild
 

@@ -1,6 +1,6 @@
 diff -up openssl-1.0.1e/doc/apps/cms.pod.manfix openssl-1.0.1e/doc/apps/cms.pod
 --- openssl-1.0.1e/doc/apps/cms.pod.manfix	2013-02-11 16:26:04.000000000 +0100
-+++ openssl-1.0.1e/doc/apps/cms.pod	2013-07-25 15:04:07.149565258 +0200
++++ openssl-1.0.1e/doc/apps/cms.pod	2013-08-16 16:02:17.542089270 +0200
 @@ -450,28 +450,28 @@ remains DER.
  
  =over 4
@@ -38,7 +38,7 @@ diff -up openssl-1.0.1e/doc/apps/cms.pod.manfix openssl-1.0.1e/doc/apps/cms.pod
  the signers certificates.
 diff -up openssl-1.0.1e/doc/apps/ec.pod.manfix openssl-1.0.1e/doc/apps/ec.pod
 --- openssl-1.0.1e/doc/apps/ec.pod.manfix	2013-02-11 16:26:04.000000000 +0100
-+++ openssl-1.0.1e/doc/apps/ec.pod	2013-07-25 15:12:40.782194199 +0200
++++ openssl-1.0.1e/doc/apps/ec.pod	2013-08-16 16:02:17.542089270 +0200
 @@ -93,10 +93,6 @@ prints out the public, private key compo
  
  this option prevents output of the encoded version of the key.
@@ -52,7 +52,7 @@ diff -up openssl-1.0.1e/doc/apps/ec.pod.manfix openssl-1.0.1e/doc/apps/ec.pod
  by default a private key is read from the input file: with this option a
 diff -up openssl-1.0.1e/doc/apps/openssl.pod.manfix openssl-1.0.1e/doc/apps/openssl.pod
 --- openssl-1.0.1e/doc/apps/openssl.pod.manfix	2013-02-11 16:26:04.000000000 +0100
-+++ openssl-1.0.1e/doc/apps/openssl.pod	2013-07-25 15:04:07.149565258 +0200
++++ openssl-1.0.1e/doc/apps/openssl.pod	2013-08-16 16:02:17.542089270 +0200
 @@ -163,7 +163,7 @@ Create or examine a netscape certificate
  
  Online Certificate Status Protocol utility.
@@ -84,8 +84,8 @@ diff -up openssl-1.0.1e/doc/apps/openssl.pod.manfix openssl-1.0.1e/doc/apps/open
  L<s_server(1)|s_server(1)>, L<s_time(1)|s_time(1)>,
  L<smime(1)|smime(1)>, L<spkac(1)|spkac(1)>,
 diff -up openssl-1.0.1e/doc/apps/s_client.pod.manfix openssl-1.0.1e/doc/apps/s_client.pod
---- openssl-1.0.1e/doc/apps/s_client.pod.manfix	2013-07-25 15:04:07.000000000 +0200
-+++ openssl-1.0.1e/doc/apps/s_client.pod	2013-07-25 15:08:37.912168333 +0200
+--- openssl-1.0.1e/doc/apps/s_client.pod.manfix	2013-08-16 16:02:17.434086891 +0200
++++ openssl-1.0.1e/doc/apps/s_client.pod	2013-08-16 16:02:17.543089292 +0200
 @@ -32,9 +32,14 @@ B<openssl> B<s_client>
  [B<-ssl2>]
  [B<-ssl3>]
@@ -112,7 +112,7 @@ diff -up openssl-1.0.1e/doc/apps/s_client.pod.manfix openssl-1.0.1e/doc/apps/s_c
  the initial handshake uses a method which should be compatible with all
 diff -up openssl-1.0.1e/doc/apps/smime.pod.manfix openssl-1.0.1e/doc/apps/smime.pod
 --- openssl-1.0.1e/doc/apps/smime.pod.manfix	2013-02-11 16:26:04.000000000 +0100
-+++ openssl-1.0.1e/doc/apps/smime.pod	2013-07-25 15:04:07.149565258 +0200
++++ openssl-1.0.1e/doc/apps/smime.pod	2013-08-16 16:02:17.543089292 +0200
 @@ -308,28 +308,28 @@ remains DER.
  
  =over 4
@@ -150,8 +150,8 @@ diff -up openssl-1.0.1e/doc/apps/smime.pod.manfix openssl-1.0.1e/doc/apps/smime.
  the signers certificates.
 diff -up openssl-1.0.1e/doc/apps/s_server.pod.manfix openssl-1.0.1e/doc/apps/s_server.pod
 --- openssl-1.0.1e/doc/apps/s_server.pod.manfix	2013-02-11 16:26:04.000000000 +0100
-+++ openssl-1.0.1e/doc/apps/s_server.pod	2013-07-25 15:10:57.653060081 +0200
-@@ -40,9 +40,14 @@ B<openssl> B<s_server>
++++ openssl-1.0.1e/doc/apps/s_server.pod	2013-08-16 16:03:56.711273036 +0200
+@@ -40,10 +40,16 @@ B<openssl> B<s_server>
  [B<-ssl2>]
  [B<-ssl3>]
  [B<-tls1>]
@@ -164,9 +164,22 @@ diff -up openssl-1.0.1e/doc/apps/s_server.pod.manfix openssl-1.0.1e/doc/apps/s_s
 +[B<-no_tls1_1>]
 +[B<-no_tls1_2>]
  [B<-no_dhe>]
++[B<-no_ecdhe>]
  [B<-bugs>]
  [B<-hack>]
-@@ -201,7 +206,7 @@ Use the PSK key B<key> when using a PSK
+ [B<-www>]
+@@ -131,6 +137,10 @@ a static set of parameters hard coded in
+ if this option is set then no DH parameters will be loaded effectively
+ disabling the ephemeral DH cipher suites.
+ 
++=item B<-no_ecdhe>
++
++if this option is set then ephemeral ECDH cipher suites will be disabled.
++
+ =item B<-no_tmp_rsa>
+ 
+ certain export cipher suites sometimes use a temporary RSA key, this option
+@@ -201,7 +211,7 @@ Use the PSK key B<key> when using a PSK
  given as a hexadecimal number without leading 0x, for example -psk
  1a2b3c4d.
  
@@ -176,8 +189,8 @@ diff -up openssl-1.0.1e/doc/apps/s_server.pod.manfix openssl-1.0.1e/doc/apps/s_s
  these options disable the use of certain SSL or TLS protocols. By default
  the initial handshake uses a method which should be compatible with all
 diff -up openssl-1.0.1e/doc/ssl/SSL_accept.pod.manfix openssl-1.0.1e/doc/ssl/SSL_accept.pod
---- openssl-1.0.1e/doc/ssl/SSL_accept.pod.manfix	2013-07-25 15:04:07.146565198 +0200
-+++ openssl-1.0.1e/doc/ssl/SSL_accept.pod	2013-07-25 15:04:07.149565258 +0200
+--- openssl-1.0.1e/doc/ssl/SSL_accept.pod.manfix	2013-08-16 16:02:17.534089094 +0200
++++ openssl-1.0.1e/doc/ssl/SSL_accept.pod	2013-08-16 16:02:17.544089314 +0200
 @@ -44,13 +44,13 @@ The following return values can occur:
  
  =over 4
@@ -196,7 +209,7 @@ diff -up openssl-1.0.1e/doc/ssl/SSL_accept.pod.manfix openssl-1.0.1e/doc/ssl/SSL
  established.
 diff -up openssl-1.0.1e/doc/ssl/SSL_clear.pod.manfix openssl-1.0.1e/doc/ssl/SSL_clear.pod
 --- openssl-1.0.1e/doc/ssl/SSL_clear.pod.manfix	2013-02-11 16:02:48.000000000 +0100
-+++ openssl-1.0.1e/doc/ssl/SSL_clear.pod	2013-07-25 15:04:07.150565279 +0200
++++ openssl-1.0.1e/doc/ssl/SSL_clear.pod	2013-08-16 16:02:17.544089314 +0200
 @@ -56,12 +56,12 @@ The following return values can occur:
  
  =over 4
@@ -213,8 +226,8 @@ diff -up openssl-1.0.1e/doc/ssl/SSL_clear.pod.manfix openssl-1.0.1e/doc/ssl/SSL_
  The SSL_clear() operation was successful.
  
 diff -up openssl-1.0.1e/doc/ssl/SSL_COMP_add_compression_method.pod.manfix openssl-1.0.1e/doc/ssl/SSL_COMP_add_compression_method.pod
---- openssl-1.0.1e/doc/ssl/SSL_COMP_add_compression_method.pod.manfix	2013-07-25 15:04:07.115564555 +0200
-+++ openssl-1.0.1e/doc/ssl/SSL_COMP_add_compression_method.pod	2013-07-25 15:04:07.150565279 +0200
+--- openssl-1.0.1e/doc/ssl/SSL_COMP_add_compression_method.pod.manfix	2013-08-16 16:02:17.486088037 +0200
++++ openssl-1.0.1e/doc/ssl/SSL_COMP_add_compression_method.pod	2013-08-16 16:02:17.544089314 +0200
 @@ -60,11 +60,11 @@ SSL_COMP_add_compression_method() may re
  
  =over 4
@@ -230,8 +243,8 @@ diff -up openssl-1.0.1e/doc/ssl/SSL_COMP_add_compression_method.pod.manfix opens
  The operation failed. Check the error queue to find out the reason.
  
 diff -up openssl-1.0.1e/doc/ssl/SSL_connect.pod.manfix openssl-1.0.1e/doc/ssl/SSL_connect.pod
---- openssl-1.0.1e/doc/ssl/SSL_connect.pod.manfix	2013-07-25 15:04:07.146565198 +0200
-+++ openssl-1.0.1e/doc/ssl/SSL_connect.pod	2013-07-25 15:04:07.150565279 +0200
+--- openssl-1.0.1e/doc/ssl/SSL_connect.pod.manfix	2013-08-16 16:02:17.535089116 +0200
++++ openssl-1.0.1e/doc/ssl/SSL_connect.pod	2013-08-16 16:02:17.545089336 +0200
 @@ -41,13 +41,13 @@ The following return values can occur:
  
  =over 4
@@ -250,7 +263,7 @@ diff -up openssl-1.0.1e/doc/ssl/SSL_connect.pod.manfix openssl-1.0.1e/doc/ssl/SS
  established.
 diff -up openssl-1.0.1e/doc/ssl/SSL_CTX_add_session.pod.manfix openssl-1.0.1e/doc/ssl/SSL_CTX_add_session.pod
 --- openssl-1.0.1e/doc/ssl/SSL_CTX_add_session.pod.manfix	2013-02-11 16:02:48.000000000 +0100
-+++ openssl-1.0.1e/doc/ssl/SSL_CTX_add_session.pod	2013-07-25 15:04:07.150565279 +0200
++++ openssl-1.0.1e/doc/ssl/SSL_CTX_add_session.pod	2013-08-16 16:02:17.545089336 +0200
 @@ -52,13 +52,13 @@ The following values are returned by all
  
  =over 4
@@ -269,7 +282,7 @@ diff -up openssl-1.0.1e/doc/ssl/SSL_CTX_add_session.pod.manfix openssl-1.0.1e/do
  
 diff -up openssl-1.0.1e/doc/ssl/SSL_CTX_load_verify_locations.pod.manfix openssl-1.0.1e/doc/ssl/SSL_CTX_load_verify_locations.pod
 --- openssl-1.0.1e/doc/ssl/SSL_CTX_load_verify_locations.pod.manfix	2013-02-11 16:02:48.000000000 +0100
-+++ openssl-1.0.1e/doc/ssl/SSL_CTX_load_verify_locations.pod	2013-07-25 15:04:07.150565279 +0200
++++ openssl-1.0.1e/doc/ssl/SSL_CTX_load_verify_locations.pod	2013-08-16 16:02:17.545089336 +0200
 @@ -100,13 +100,13 @@ The following return values can occur:
  
  =over 4
@@ -287,8 +300,8 @@ diff -up openssl-1.0.1e/doc/ssl/SSL_CTX_load_verify_locations.pod.manfix openssl
  The operation succeeded.
  
 diff -up openssl-1.0.1e/doc/ssl/SSL_CTX_set_client_CA_list.pod.manfix openssl-1.0.1e/doc/ssl/SSL_CTX_set_client_CA_list.pod
---- openssl-1.0.1e/doc/ssl/SSL_CTX_set_client_CA_list.pod.manfix	2013-07-25 15:04:07.146565198 +0200
-+++ openssl-1.0.1e/doc/ssl/SSL_CTX_set_client_CA_list.pod	2013-07-25 15:04:07.150565279 +0200
+--- openssl-1.0.1e/doc/ssl/SSL_CTX_set_client_CA_list.pod.manfix	2013-08-16 16:02:17.535089116 +0200
++++ openssl-1.0.1e/doc/ssl/SSL_CTX_set_client_CA_list.pod	2013-08-16 16:02:17.545089336 +0200
 @@ -66,13 +66,13 @@ values:
  
  =over 4
@@ -307,7 +320,7 @@ diff -up openssl-1.0.1e/doc/ssl/SSL_CTX_set_client_CA_list.pod.manfix openssl-1.
  
 diff -up openssl-1.0.1e/doc/ssl/SSL_CTX_set_session_id_context.pod.manfix openssl-1.0.1e/doc/ssl/SSL_CTX_set_session_id_context.pod
 --- openssl-1.0.1e/doc/ssl/SSL_CTX_set_session_id_context.pod.manfix	2013-02-11 16:02:48.000000000 +0100
-+++ openssl-1.0.1e/doc/ssl/SSL_CTX_set_session_id_context.pod	2013-07-25 15:04:07.150565279 +0200
++++ openssl-1.0.1e/doc/ssl/SSL_CTX_set_session_id_context.pod	2013-08-16 16:02:17.546089358 +0200
 @@ -64,13 +64,13 @@ return the following values:
  
  =over 4
@@ -326,7 +339,7 @@ diff -up openssl-1.0.1e/doc/ssl/SSL_CTX_set_session_id_context.pod.manfix openss
  
 diff -up openssl-1.0.1e/doc/ssl/SSL_CTX_set_ssl_version.pod.manfix openssl-1.0.1e/doc/ssl/SSL_CTX_set_ssl_version.pod
 --- openssl-1.0.1e/doc/ssl/SSL_CTX_set_ssl_version.pod.manfix	2013-02-11 16:26:04.000000000 +0100
-+++ openssl-1.0.1e/doc/ssl/SSL_CTX_set_ssl_version.pod	2013-07-25 15:04:07.151565300 +0200
++++ openssl-1.0.1e/doc/ssl/SSL_CTX_set_ssl_version.pod	2013-08-16 16:02:17.546089358 +0200
 @@ -42,11 +42,11 @@ and SSL_set_ssl_method():
  
  =over 4
@@ -342,8 +355,8 @@ diff -up openssl-1.0.1e/doc/ssl/SSL_CTX_set_ssl_version.pod.manfix openssl-1.0.1
  The operation succeeded.
  
 diff -up openssl-1.0.1e/doc/ssl/SSL_CTX_use_psk_identity_hint.pod.manfix openssl-1.0.1e/doc/ssl/SSL_CTX_use_psk_identity_hint.pod
---- openssl-1.0.1e/doc/ssl/SSL_CTX_use_psk_identity_hint.pod.manfix	2013-07-25 15:04:07.146565198 +0200
-+++ openssl-1.0.1e/doc/ssl/SSL_CTX_use_psk_identity_hint.pod	2013-07-25 15:04:07.151565300 +0200
+--- openssl-1.0.1e/doc/ssl/SSL_CTX_use_psk_identity_hint.pod.manfix	2013-08-16 16:02:17.535089116 +0200
++++ openssl-1.0.1e/doc/ssl/SSL_CTX_use_psk_identity_hint.pod	2013-08-16 16:02:17.546089358 +0200
 @@ -96,7 +96,7 @@ data to B<psk> and return the length of
  connection will fail with decryption_error before it will be finished
  completely.
@@ -354,8 +367,8 @@ diff -up openssl-1.0.1e/doc/ssl/SSL_CTX_use_psk_identity_hint.pod.manfix openssl
  PSK identity was not found. An "unknown_psk_identity" alert message
  will be sent and the connection setup fails.
 diff -up openssl-1.0.1e/doc/ssl/SSL_do_handshake.pod.manfix openssl-1.0.1e/doc/ssl/SSL_do_handshake.pod
---- openssl-1.0.1e/doc/ssl/SSL_do_handshake.pod.manfix	2013-07-25 15:04:07.147565218 +0200
-+++ openssl-1.0.1e/doc/ssl/SSL_do_handshake.pod	2013-07-25 15:04:07.151565300 +0200
+--- openssl-1.0.1e/doc/ssl/SSL_do_handshake.pod.manfix	2013-08-16 16:02:17.536089138 +0200
++++ openssl-1.0.1e/doc/ssl/SSL_do_handshake.pod	2013-08-16 16:02:17.546089358 +0200
 @@ -45,13 +45,13 @@ The following return values can occur:
  
  =over 4
@@ -374,7 +387,7 @@ diff -up openssl-1.0.1e/doc/ssl/SSL_do_handshake.pod.manfix openssl-1.0.1e/doc/s
  established.
 diff -up openssl-1.0.1e/doc/ssl/SSL_read.pod.manfix openssl-1.0.1e/doc/ssl/SSL_read.pod
 --- openssl-1.0.1e/doc/ssl/SSL_read.pod.manfix	2013-02-11 16:02:48.000000000 +0100
-+++ openssl-1.0.1e/doc/ssl/SSL_read.pod	2013-07-25 15:04:07.151565300 +0200
++++ openssl-1.0.1e/doc/ssl/SSL_read.pod	2013-08-16 16:02:17.547089380 +0200
 @@ -86,7 +86,7 @@ The following return values can occur:
  The read operation was successful; the return value is the number of
  bytes actually read from the TLS/SSL connection.
@@ -386,7 +399,7 @@ diff -up openssl-1.0.1e/doc/ssl/SSL_read.pod.manfix openssl-1.0.1e/doc/ssl/SSL_r
  shutdown due to a "close notify" alert sent by the peer (in which case
 diff -up openssl-1.0.1e/doc/ssl/SSL_session_reused.pod.manfix openssl-1.0.1e/doc/ssl/SSL_session_reused.pod
 --- openssl-1.0.1e/doc/ssl/SSL_session_reused.pod.manfix	2013-02-11 16:02:48.000000000 +0100
-+++ openssl-1.0.1e/doc/ssl/SSL_session_reused.pod	2013-07-25 15:04:07.151565300 +0200
++++ openssl-1.0.1e/doc/ssl/SSL_session_reused.pod	2013-08-16 16:02:17.547089380 +0200
 @@ -27,11 +27,11 @@ The following return values can occur:
  
  =over 4
@@ -403,7 +416,7 @@ diff -up openssl-1.0.1e/doc/ssl/SSL_session_reused.pod.manfix openssl-1.0.1e/doc
  
 diff -up openssl-1.0.1e/doc/ssl/SSL_set_fd.pod.manfix openssl-1.0.1e/doc/ssl/SSL_set_fd.pod
 --- openssl-1.0.1e/doc/ssl/SSL_set_fd.pod.manfix	2013-02-11 16:02:48.000000000 +0100
-+++ openssl-1.0.1e/doc/ssl/SSL_set_fd.pod	2013-07-25 15:04:07.151565300 +0200
++++ openssl-1.0.1e/doc/ssl/SSL_set_fd.pod	2013-08-16 16:02:17.547089380 +0200
 @@ -35,11 +35,11 @@ The following return values can occur:
  
  =over 4
@@ -420,7 +433,7 @@ diff -up openssl-1.0.1e/doc/ssl/SSL_set_fd.pod.manfix openssl-1.0.1e/doc/ssl/SSL
  
 diff -up openssl-1.0.1e/doc/ssl/SSL_set_session.pod.manfix openssl-1.0.1e/doc/ssl/SSL_set_session.pod
 --- openssl-1.0.1e/doc/ssl/SSL_set_session.pod.manfix	2013-02-11 16:02:48.000000000 +0100
-+++ openssl-1.0.1e/doc/ssl/SSL_set_session.pod	2013-07-25 15:04:07.151565300 +0200
++++ openssl-1.0.1e/doc/ssl/SSL_set_session.pod	2013-08-16 16:02:17.547089380 +0200
 @@ -37,11 +37,11 @@ The following return values can occur:
  
  =over 4
@@ -436,8 +449,8 @@ diff -up openssl-1.0.1e/doc/ssl/SSL_set_session.pod.manfix openssl-1.0.1e/doc/ss
  The operation succeeded.
  
 diff -up openssl-1.0.1e/doc/ssl/SSL_shutdown.pod.manfix openssl-1.0.1e/doc/ssl/SSL_shutdown.pod
---- openssl-1.0.1e/doc/ssl/SSL_shutdown.pod.manfix	2013-07-25 15:04:07.147565218 +0200
-+++ openssl-1.0.1e/doc/ssl/SSL_shutdown.pod	2013-07-25 15:04:07.151565300 +0200
+--- openssl-1.0.1e/doc/ssl/SSL_shutdown.pod.manfix	2013-08-16 16:02:17.536089138 +0200
++++ openssl-1.0.1e/doc/ssl/SSL_shutdown.pod	2013-08-16 16:02:17.548089402 +0200
 @@ -92,14 +92,14 @@ The following return values can occur:
  
  =over 4
@@ -457,7 +470,7 @@ diff -up openssl-1.0.1e/doc/ssl/SSL_shutdown.pod.manfix openssl-1.0.1e/doc/ssl/S
  and the peer's "close notify" alert was received.
 diff -up openssl-1.0.1e/doc/ssl/SSL_write.pod.manfix openssl-1.0.1e/doc/ssl/SSL_write.pod
 --- openssl-1.0.1e/doc/ssl/SSL_write.pod.manfix	2013-02-11 16:02:48.000000000 +0100
-+++ openssl-1.0.1e/doc/ssl/SSL_write.pod	2013-07-25 15:04:07.152565321 +0200
++++ openssl-1.0.1e/doc/ssl/SSL_write.pod	2013-08-16 16:02:17.548089402 +0200
 @@ -79,7 +79,7 @@ The following return values can occur:
  The write operation was successful, the return value is the number of
  bytes actually written to the TLS/SSL connection.
