@@ -21,7 +21,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1e
-Release: 15%{?dist}
+Release: 16%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -35,6 +35,7 @@ Source8: openssl-thread-test.c
 Source9: opensslconf-new.h
 Source10: opensslconf-new-warning.h
 Source11: README.FIPS
+Source12: openssl-fips.conf
 # Build changes
 Patch1: openssl-1.0.1-beta2-rpmbuild.patch
 Patch2: openssl-1.0.0f-defaults.patch
@@ -135,6 +136,16 @@ Requires: %{name}%{?_isa} = %{epoch}:%{version}-%{release}
 OpenSSL is a toolkit for supporting cryptography. The openssl-perl
 package provides Perl scripts for converting certificates and keys
 from other formats to the formats used by the OpenSSL toolkit.
+
+%package fips
+Summary: The FIPS module package for OpenSSL
+Group: System Environment/Libraries
+Requires: %{name}-libs%{?_isa} = %{epoch}:%{version}-%{release}
+
+%description fips
+OpenSSL is a toolkit for supporting cryptography. The openssl-fips
+package provides files that complete the installation of the
+OpenSSL FIPS module.
 
 %prep
 %setup -q -n %{name}-%{version}
@@ -372,6 +383,11 @@ install -m644 %{SOURCE9} \
 	$RPM_BUILD_ROOT/%{_prefix}/include/openssl/opensslconf.h
 %endif
 
+#install prelink blacklist
+mkdir -p $RPM_BUILD_ROOT/%{_sysconfdir}/prelink.conf.d
+install -m644 %{SOURCE12} \
+	$RPM_BUILD_ROOT/%{_sysconfdir}/prelink.conf.d/openssl-fips.conf
+
 # Remove unused files from upstream fips support
 rm -rf $RPM_BUILD_ROOT/%{_bindir}/openssl_fips_fingerprint
 rm -rf $RPM_BUILD_ROOT/%{_libdir}/fips_premain.*
@@ -414,8 +430,6 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %attr(0755,root,root) %{_libdir}/libcrypto.so.%{soversion}
 %attr(0755,root,root) %{_libdir}/libssl.so.%{version}
 %attr(0755,root,root) %{_libdir}/libssl.so.%{soversion}
-%attr(0644,root,root) %{_libdir}/.libcrypto.so.*.hmac
-%attr(0644,root,root) %{_libdir}/.libssl.so.*.hmac
 %attr(0755,root,root) %{_libdir}/openssl
 
 %files devel
@@ -436,11 +450,25 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %{_sysconfdir}/pki/tls/misc/*.pl
 %{_sysconfdir}/pki/tls/misc/tsget
 
+%files fips
+%defattr(-,root,root)
+%attr(0644,root,root) %{_libdir}/.libcrypto.so.*.hmac
+%attr(0644,root,root) %{_libdir}/.libssl.so.*.hmac
+# We don't want to depend on prelink for this directory
+%dir %{_sysconfdir}/prelink.conf.d
+%{_sysconfdir}/prelink.conf.d/openssl-fips.conf
+
 %post libs -p /sbin/ldconfig
 
 %postun libs -p /sbin/ldconfig
 
+%post fips
+prelink -u %{_libdir}/libcrypto.so.%{version} %{_libdir}/libssl.so.%{version} 2>/dev/null || :
+
 %changelog
+* Tue Aug 27 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-16
+- add -fips subpackage that contains the FIPS module files
+
 * Fri Aug 16 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-15
 - fix use of rdrand if available
 - more commits cherry picked from upstream
