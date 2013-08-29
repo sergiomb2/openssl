@@ -19326,7 +19326,7 @@ diff -up openssl-1.0.1e/crypto/o_fips.c.fips openssl-1.0.1e/crypto/o_fips.c
  #ifndef FIPS_AUTH_USER_PASS
  #define FIPS_AUTH_USER_PASS	"Default FIPS Crypto User Password"
  #endif
-+	if (FIPS_module_mode()) /* can be implicitly initialized by OPENSSL_init() */
++	if (r && FIPS_module_mode()) /* can be implicitly initialized by OPENSSL_init() */
 +		return 1;
  	if (!FIPS_module_mode_set(r, FIPS_AUTH_USER_PASS))
  		return 0;
