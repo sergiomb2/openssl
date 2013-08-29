@@ -1,0 +1,102 @@
+diff -up openssl-1.0.1e/crypto/fips/fips.c.fips-ctor openssl-1.0.1e/crypto/fips/fips.c
+--- openssl-1.0.1e/crypto/fips/fips.c.fips-ctor	2013-08-27 15:44:08.000000000 +0200
++++ openssl-1.0.1e/crypto/fips/fips.c	2013-08-29 11:13:04.279245656 +0200
+@@ -60,6 +60,8 @@
+ #include <dlfcn.h>
+ #include <stdio.h>
+ #include <stdlib.h>
++#include <unistd.h>
++#include <errno.h>
+ #include "fips_locl.h"
+ 
+ #ifdef OPENSSL_FIPS
+@@ -341,6 +343,32 @@ end:
+ 	return 1;	
+ }
+ 
++int FIPS_module_installed(void)
++    {
++	char path[PATH_MAX+1];
++	int rv;
++	char *hmacpath, *p;
++	char *hmac = NULL;
++	size_t n;
++	
++	rv = get_library_path("libcrypto.so." SHLIB_VERSION_NUMBER, "FIPS_mode_set", path, sizeof(path));
++
++	if (rv < 0)
++		return 0;
++
++	hmacpath = make_hmac_path(path);
++	if (hmacpath == NULL)
++		return 0;
++
++	rv = access(hmacpath, F_OK);
++	if (rv < 0 && errno != ENOENT)
++		rv = 0;
++
++        free(hmacpath);
++	/* Installed == true */
++	return !rv;
++    }
++
+ int FIPS_module_mode_set(int onoff, const char *auth)
+     {
+     int ret = 0;
+diff -up openssl-1.0.1e/crypto/fips/fips.h.fips-ctor openssl-1.0.1e/crypto/fips/fips.h
+--- openssl-1.0.1e/crypto/fips/fips.h.fips-ctor	2013-08-27 15:44:08.000000000 +0200
++++ openssl-1.0.1e/crypto/fips/fips.h	2013-08-29 11:41:04.233049349 +0200
+@@ -74,6 +74,7 @@ struct hmac_ctx_st;
+ 
+ int FIPS_module_mode_set(int onoff, const char *auth);
+ int FIPS_module_mode(void);
++int FIPS_module_installed(void);
+ const void *FIPS_rand_check(void);
+ int FIPS_selftest(void);
+ int FIPS_selftest_failed(void);
+diff -up openssl-1.0.1e/crypto/o_init.c.fips-ctor openssl-1.0.1e/crypto/o_init.c
+--- openssl-1.0.1e/crypto/o_init.c.fips-ctor	2013-08-27 15:44:09.000000000 +0200
++++ openssl-1.0.1e/crypto/o_init.c	2013-08-29 11:39:37.760101734 +0200
+@@ -73,6 +73,10 @@ static void init_fips_mode(void)
+ 	char buf[2] = "0";
+ 	int fd;
+ 	
++	/* Ensure the selftests always run and abort on error */
++	FIPS_mode_set(1);
++	FIPS_selftest_check();
++
+ 	if (secure_getenv("OPENSSL_FORCE_FIPS_MODE") != NULL)
+ 		{
+ 		buf[0] = '1';
+@@ -87,9 +91,10 @@ static void init_fips_mode(void)
+ 	 * otherwise. 
+ 	 */
+ 	
+-	if (buf[0] == '1')
++	if (buf[0] != '1')
+ 		{
+-		FIPS_mode_set(1);
++		/* drop down to non-FIPS mode if it is not requested */
++		FIPS_mode_set(0);
+ 		}
+ 	}
+ #endif
+@@ -98,13 +103,17 @@ static void init_fips_mode(void)
+  * Currently only sets FIPS callbacks
+  */
+ 
+-void OPENSSL_init_library(void)
++void __attribute__ ((constructor)) OPENSSL_init_library(void)
+ 	{
+ 	static int done = 0;
+ 	if (done)
+ 		return;
+ 	done = 1;
+ #ifdef OPENSSL_FIPS
++	if (!FIPS_module_installed())
++		{
++		return;
++		}
+ 	RAND_init_fips();
+ 	init_fips_mode();
+ 	if (!FIPS_mode())

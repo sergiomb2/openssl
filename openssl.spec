@@ -21,7 +21,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1e
-Release: 16%{?dist}
+Release: 17%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -70,6 +70,7 @@ Patch66: openssl-1.0.1-pkgconfig-krb5.patch
 Patch68: openssl-1.0.1e-secure-getenv.patch
 Patch69: openssl-1.0.1c-dh-1024.patch
 Patch71: openssl-1.0.1e-manfix.patch
+Patch72: openssl-1.0.1e-fips-ctor.patch
 # Backported fixes including security fixes
 Patch81: openssl-1.0.1-beta2-padlock64.patch
 Patch82: openssl-1.0.1e-backports.patch
@@ -189,6 +190,7 @@ OpenSSL FIPS module.
 %patch81 -p1 -b .padlock64
 %patch82 -p1 -b .backports
 %patch71 -p1 -b .manfix
+%patch72 -p1 -b .fips-ctor
 %patch83 -p1 -b .bad-mac
 %patch84 -p1 -b .trusted-first
 
@@ -466,6 +468,10 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 prelink -u %{_libdir}/libcrypto.so.%{version} %{_libdir}/libssl.so.%{version} 2>/dev/null || :
 
 %changelog
+* Thu Aug 29 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-17
+- always perform the FIPS selftests in library constructor
+  if FIPS module is installed
+
 * Tue Aug 27 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-16
 - add -fips subpackage that contains the FIPS module files
 
