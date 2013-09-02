@@ -21,7 +21,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1e
-Release: 18%{?dist}
+Release: 19%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -255,7 +255,7 @@ sslarch=linux-ppc64
 # marked as not requiring an executable stack.
 # Also add -DPURIFY to make using valgrind with openssl easier as we do not
 # want to depend on the uninitialized memory as a source of entropy anyway.
-RPM_OPT_FLAGS="$RPM_OPT_FLAGS -Wa,--noexecstack -DPURIFY"
+RPM_OPT_FLAGS="$RPM_OPT_FLAGS -Wa,--noexecstack -DPURIFY -DHMAC_SUFFIX=\\\".%{version}-%{release}.hmac\\\""
 make depend
 make all
 
@@ -290,10 +290,10 @@ make -C test apps tests
     %{?__debug_package:%{__debug_install_post}} \
     %{__arch_install_post} \
     %{__os_install_post} \
-    crypto/fips/fips_standalone_hmac $RPM_BUILD_ROOT%{_libdir}/libcrypto.so.%{version} >$RPM_BUILD_ROOT%{_libdir}/.libcrypto.so.%{version}.hmac \
-    ln -sf .libcrypto.so.%{version}.hmac $RPM_BUILD_ROOT%{_libdir}/.libcrypto.so.%{soversion}.hmac \
-    crypto/fips/fips_standalone_hmac $RPM_BUILD_ROOT%{_libdir}/libssl.so.%{version} >$RPM_BUILD_ROOT%{_libdir}/.libssl.so.%{version}.hmac \
-    ln -sf .libssl.so.%{version}.hmac $RPM_BUILD_ROOT%{_libdir}/.libssl.so.%{soversion}.hmac \
+    crypto/fips/fips_standalone_hmac $RPM_BUILD_ROOT%{_libdir}/libcrypto.so.%{version} >$RPM_BUILD_ROOT%{_libdir}/.libcrypto.so.%{version}.%{version}-%{release}.hmac \
+    ln -sf .libcrypto.so.%{version}.%{version}-%{release}.hmac $RPM_BUILD_ROOT%{_libdir}/.libcrypto.so.%{soversion}.%{version}-%{release}.hmac \
+    crypto/fips/fips_standalone_hmac $RPM_BUILD_ROOT%{_libdir}/libssl.so.%{version} >$RPM_BUILD_ROOT%{_libdir}/.libssl.so.%{version}.%{version}-%{release}.hmac \
+    ln -sf .libssl.so.%{version}.%{version}-%{release}.hmac $RPM_BUILD_ROOT%{_libdir}/.libssl.so.%{soversion}.%{version}-%{release}.hmac \
 %{nil}
 
 %define __provides_exclude_from %{_libdir}/openssl
@@ -468,6 +468,10 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 prelink -u %{_libdir}/libcrypto.so.%{version} %{_libdir}/libssl.so.%{version} 2>/dev/null || :
 
 %changelog
+* Mon Sep  2 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-19
+- use version-release in .hmac suffix to avoid overwrite
+  during upgrade
+
 * Thu Aug 29 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-18
 - allow deinitialization of the FIPS mode
 

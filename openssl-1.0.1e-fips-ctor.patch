@@ -1,6 +1,6 @@
 diff -up openssl-1.0.1e/crypto/fips/fips.c.fips-ctor openssl-1.0.1e/crypto/fips/fips.c
---- openssl-1.0.1e/crypto/fips/fips.c.fips-ctor	2013-08-27 15:44:08.000000000 +0200
-+++ openssl-1.0.1e/crypto/fips/fips.c	2013-08-29 11:13:04.279245656 +0200
+--- openssl-1.0.1e/crypto/fips/fips.c.fips-ctor	2013-09-02 14:20:26.853925144 +0200
++++ openssl-1.0.1e/crypto/fips/fips.c	2013-09-02 14:22:18.082370680 +0200
 @@ -60,6 +60,8 @@
  #include <dlfcn.h>
  #include <stdio.h>
@@ -10,7 +10,20 @@ diff -up openssl-1.0.1e/crypto/fips/fips.c.fips-ctor openssl-1.0.1e/crypto/fips/
  #include "fips_locl.h"
  
  #ifdef OPENSSL_FIPS
-@@ -341,6 +343,32 @@ end:
+@@ -198,8 +200,10 @@ bin2hex(void *buf, size_t len)
+ 	return hex;
+ }
+ 
+-#define HMAC_PREFIX "." 
+-#define HMAC_SUFFIX ".hmac" 
++#define HMAC_PREFIX "."
++#ifndef HMAC_SUFFIX
++#define HMAC_SUFFIX ".hmac"
++#endif
+ #define READ_BUFFER_LENGTH 16384
+ 
+ static char *
+@@ -341,6 +345,32 @@ end:
  	return 1;	
  }
  
@@ -44,8 +57,8 @@ diff -up openssl-1.0.1e/crypto/fips/fips.c.fips-ctor openssl-1.0.1e/crypto/fips/
      {
      int ret = 0;
 diff -up openssl-1.0.1e/crypto/fips/fips.h.fips-ctor openssl-1.0.1e/crypto/fips/fips.h
---- openssl-1.0.1e/crypto/fips/fips.h.fips-ctor	2013-08-27 15:44:08.000000000 +0200
-+++ openssl-1.0.1e/crypto/fips/fips.h	2013-08-29 11:41:04.233049349 +0200
+--- openssl-1.0.1e/crypto/fips/fips.h.fips-ctor	2013-09-02 14:20:26.857925232 +0200
++++ openssl-1.0.1e/crypto/fips/fips.h	2013-09-02 14:20:26.915926507 +0200
 @@ -74,6 +74,7 @@ struct hmac_ctx_st;
  
  int FIPS_module_mode_set(int onoff, const char *auth);
@@ -55,8 +68,8 @@ diff -up openssl-1.0.1e/crypto/fips/fips.h.fips-ctor openssl-1.0.1e/crypto/fips/
  int FIPS_selftest(void);
  int FIPS_selftest_failed(void);
 diff -up openssl-1.0.1e/crypto/o_init.c.fips-ctor openssl-1.0.1e/crypto/o_init.c
---- openssl-1.0.1e/crypto/o_init.c.fips-ctor	2013-08-27 15:44:09.000000000 +0200
-+++ openssl-1.0.1e/crypto/o_init.c	2013-08-29 11:39:37.760101734 +0200
+--- openssl-1.0.1e/crypto/o_init.c.fips-ctor	2013-09-02 14:20:26.894926046 +0200
++++ openssl-1.0.1e/crypto/o_init.c	2013-09-02 14:20:26.916926529 +0200
 @@ -73,6 +73,10 @@ static void init_fips_mode(void)
  	char buf[2] = "0";
  	int fd;
