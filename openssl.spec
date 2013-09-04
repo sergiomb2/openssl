@@ -21,7 +21,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1e
-Release: 19%{?dist}
+Release: 20%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -98,6 +98,8 @@ Group: System Environment/Libraries
 Requires: ca-certificates >= 2008-5
 # Needed obsoletes due to the base/lib subpackage split
 Obsoletes: openssl < 1:1.0.1-0.3.beta3
+# Needed for proper transaction ordering if openssl-fips is installed
+OrderWithRequires(pre): openssl-fips
 
 %description libs
 OpenSSL is a toolkit for supporting cryptography. The openssl-libs
@@ -464,10 +466,14 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 
 %postun libs -p /sbin/ldconfig
 
-%post fips
+%pre fips
+# Must use pre to avoid some possible races
 prelink -u %{_libdir}/libcrypto.so.%{version} %{_libdir}/libssl.so.%{version} 2>/dev/null || :
 
 %changelog
+* Wed Sep  4 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-20
+- try to avoid some races when updating the -fips subpackage
+
 * Mon Sep  2 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-19
 - use version-release in .hmac suffix to avoid overwrite
   during upgrade
