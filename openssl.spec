@@ -21,7 +21,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1e
-Release: 20%{?dist}
+Release: 21%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -76,6 +76,7 @@ Patch81: openssl-1.0.1-beta2-padlock64.patch
 Patch82: openssl-1.0.1e-backports.patch
 Patch83: openssl-1.0.1e-bad-mac.patch
 Patch84: openssl-1.0.1e-trusted-first.patch
+Patch85: openssl-1.0.1e-arm-use-elf-auxv-caps.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -195,6 +196,7 @@ OpenSSL FIPS module.
 %patch72 -p1 -b .fips-ctor
 %patch83 -p1 -b .bad-mac
 %patch84 -p1 -b .trusted-first
+%patch85 -p1 -b .armcap
 
 sed -i 's/SHLIB_VERSION_NUMBER "1.0.0"/SHLIB_VERSION_NUMBER "%{version}"/' crypto/opensslv.h
 
@@ -471,6 +473,10 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 prelink -u %{_libdir}/libcrypto.so.%{version} %{_libdir}/libssl.so.%{version} 2>/dev/null || :
 
 %changelog
+* Tue Sep 10 2013 Kyle McMartin <kyle@redhat.com> 1.0.1e-21
+- [arm] use elf auxv to figure out armcap.c instead of playing silly
+  games with SIGILL handlers. (#1006474)
+
 * Wed Sep  4 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-20
 - try to avoid some races when updating the -fips subpackage
 
