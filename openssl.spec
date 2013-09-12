@@ -21,7 +21,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1e
-Release: 20%{?dist}
+Release: 21%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -471,6 +471,10 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 prelink -u %{_libdir}/libcrypto.so.%{version} %{_libdir}/libssl.so.%{version} 2>/dev/null || :
 
 %changelog
+* Thu Sep 12 2013 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-21
+- document the nextprotoneg option in manual pages
+  original patch by Hubert Kario
+
 * Wed Sep  4 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-20
 - try to avoid some races when updating the -fips subpackage
 
