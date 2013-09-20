@@ -8392,7 +8392,7 @@ diff -up openssl-1.0.1e/crypto/fips/fips_aes_selftest.c.fips openssl-1.0.1e/cryp
 +	EVP_CIPHER_CTX ctx;
 +	EVP_CIPHER_CTX_init(&ctx);
 +	memset(out, 0, sizeof(out));
-+	if (!EVP_CipherInit(&ctx, EVP_aes_192_ccm(), NULL, NULL, 1))
++	if (!EVP_CipherInit_ex(&ctx, EVP_aes_192_ccm(),NULL, NULL, NULL, 1))
 +		goto err;
 +	if (!EVP_CIPHER_CTX_ctrl(&ctx, EVP_CTRL_CCM_SET_IVLEN,
 +					sizeof(ccm_nonce), NULL))
@@ -8400,7 +8400,7 @@ diff -up openssl-1.0.1e/crypto/fips/fips_aes_selftest.c.fips openssl-1.0.1e/cryp
 +	if (!EVP_CIPHER_CTX_ctrl(&ctx, EVP_CTRL_CCM_SET_TAG,
 +					sizeof(ccm_tag), NULL))
 +		goto err;
-+	if (!EVP_CipherInit(&ctx, NULL, ccm_key, ccm_nonce, 1))
++	if (!EVP_CipherInit_ex(&ctx, NULL, NULL, ccm_key, ccm_nonce, 1))
 +		goto err;
 +	if (EVP_Cipher(&ctx, NULL, NULL, sizeof(ccm_pt)) != sizeof(ccm_pt))
 +		goto err;
@@ -8417,14 +8417,14 @@ diff -up openssl-1.0.1e/crypto/fips/fips_aes_selftest.c.fips openssl-1.0.1e/cryp
 +
 +	memset(out, 0, sizeof(out));
 +
-+	if (!EVP_CipherInit(&ctx, EVP_aes_192_ccm(), NULL, NULL, 0))
++	if (!EVP_CipherInit_ex(&ctx, EVP_aes_192_ccm(), NULL, NULL, NULL, 0))
 +		goto err;
 +	if (!EVP_CIPHER_CTX_ctrl(&ctx, EVP_CTRL_CCM_SET_IVLEN,
 +					sizeof(ccm_nonce), NULL))
 +		goto err;
 +	if (!EVP_CIPHER_CTX_ctrl(&ctx, EVP_CTRL_CCM_SET_TAG, 16, tag))
 +		goto err;
-+	if (!EVP_CipherInit(&ctx, NULL, ccm_key, ccm_nonce, 0))
++	if (!EVP_CipherInit_ex(&ctx, NULL, NULL, ccm_key, ccm_nonce, 0))
 +		goto err;
 +	if (EVP_Cipher(&ctx, NULL, NULL, sizeof(ccm_ct)) != sizeof(ccm_ct))
 +		goto err;
@@ -8486,12 +8486,12 @@ diff -up openssl-1.0.1e/crypto/fips/fips_aes_selftest.c.fips openssl-1.0.1e/cryp
 +	EVP_CIPHER_CTX_init(&ctx);
 +	memset(out, 0, sizeof(out));
 +	memset(tag, 0, sizeof(tag));
-+	if (!EVP_CipherInit(&ctx, EVP_aes_256_gcm(), NULL, NULL, 1))
++	if (!EVP_CipherInit_ex(&ctx, EVP_aes_256_gcm(), NULL, NULL, NULL, 1))
 +		goto err;
 +	if (!EVP_CIPHER_CTX_ctrl(&ctx, EVP_CTRL_GCM_SET_IVLEN,
 +					sizeof(gcm_iv), NULL))
 +		goto err;
-+	if (!EVP_CipherInit(&ctx, NULL, gcm_key, gcm_iv, 1))
++	if (!EVP_CipherInit_ex(&ctx, NULL, NULL, gcm_key, gcm_iv, 1))
 +		goto err;
 +	if (EVP_Cipher(&ctx, NULL, gcm_aad, sizeof(gcm_aad)) < 0)
 +		goto err;
@@ -8508,14 +8508,14 @@ diff -up openssl-1.0.1e/crypto/fips/fips_aes_selftest.c.fips openssl-1.0.1e/cryp
 +
 +	memset(out, 0, sizeof(out));
 +
-+	if (!EVP_CipherInit(&ctx, EVP_aes_256_gcm(), NULL, NULL, 0))
++	if (!EVP_CipherInit_ex(&ctx, EVP_aes_256_gcm(), NULL, NULL, NULL, 0))
 +		goto err;
 +	if (!EVP_CIPHER_CTX_ctrl(&ctx, EVP_CTRL_GCM_SET_IVLEN,
 +					sizeof(gcm_iv), NULL))
 +		goto err;
 +	if (!EVP_CIPHER_CTX_ctrl(&ctx, EVP_CTRL_GCM_SET_TAG, 16, tag))
 +		goto err;
-+	if (!EVP_CipherInit(&ctx, NULL, gcm_key, gcm_iv, 0))
++	if (!EVP_CipherInit_ex(&ctx, NULL, NULL, gcm_key, gcm_iv, 0))
 +		goto err;
 +	if (EVP_Cipher(&ctx, NULL, gcm_aad, sizeof(gcm_aad)) < 0)
 +		goto err;

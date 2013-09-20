@@ -21,7 +21,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1e
-Release: 23%{?dist}
+Release: 24%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -473,6 +473,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 prelink -u %{_libdir}/libcrypto.so.%{version} %{_libdir}/libssl.so.%{version} 2>/dev/null || :
 
 %changelog
+* Fri Sep 20 2013 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-24
+- fix small memory leak in FIPS aes selftest
+
 * Thu Sep 19 2013 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-23
 - fix segfault in openssl speed hmac in the FIPS mode
 
