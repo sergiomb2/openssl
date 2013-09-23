@@ -1,6 +1,6 @@
 diff -up openssl-1.0.1e/crypto/fips/fips.c.fips-ctor openssl-1.0.1e/crypto/fips/fips.c
---- openssl-1.0.1e/crypto/fips/fips.c.fips-ctor	2013-09-02 14:20:26.853925144 +0200
-+++ openssl-1.0.1e/crypto/fips/fips.c	2013-09-02 14:22:18.082370680 +0200
+--- openssl-1.0.1e/crypto/fips/fips.c.fips-ctor	2013-09-23 18:05:15.731136863 +0200
++++ openssl-1.0.1e/crypto/fips/fips.c	2013-09-23 18:18:27.953969770 +0200
 @@ -60,6 +60,8 @@
  #include <dlfcn.h>
  #include <stdio.h>
@@ -23,11 +23,65 @@ diff -up openssl-1.0.1e/crypto/fips/fips.c.fips-ctor openssl-1.0.1e/crypto/fips/
  #define READ_BUFFER_LENGTH 16384
  
  static char *
-@@ -341,6 +345,32 @@ end:
+@@ -279,19 +283,13 @@ end:
+ }
+ 
+ static int
+-FIPSCHECK_verify(const char *libname, const char *symbolname)
++FIPSCHECK_verify(const char *path)
+ {
+-	char path[PATH_MAX+1];
+-	int rv;
++	int rv = 0;
+ 	FILE *hf;
+ 	char *hmacpath, *p;
+ 	char *hmac = NULL;
+ 	size_t n;
+-	
+-	rv = get_library_path(libname, symbolname, path, sizeof(path));
+-
+-	if (rv < 0)
+-		return 0;
+ 
+ 	hmacpath = make_hmac_path(path);
+ 	if (hmacpath == NULL)
+@@ -341,6 +339,64 @@ end:
  	return 1;	
  }
  
-+int FIPS_module_installed(void)
++static int
++verify_checksums(void)
++    {
++	int rv;
++	char path[PATH_MAX+1];
++	char *p;
++
++	/* we need to avoid dlopening libssl, assume both libcrypto and libssl
++	   are in the same directory */
++
++	rv = get_library_path("libcrypto.so." SHLIB_VERSION_NUMBER, "FIPS_mode_set", path, sizeof(path));
++	if (rv < 0)
++		return 0;
++
++	rv = FIPSCHECK_verify(path);
++	if (!rv)
++		return 0;
++
++	/* replace libcrypto with libssl */
++	while ((p = strstr(path, "libcrypto.so")) != NULL)
++	    {
++		p = stpcpy(p, "libssl");
++                memmove(p, p+3, strlen(p+2));
++	    }
++
++	rv = FIPSCHECK_verify(path);
++	if (!rv)
++		return 0;
++	return 1;
++    }
++
++int
++FIPS_module_installed(void)
 +    {
 +	char path[PATH_MAX+1];
 +	int rv;
@@ -56,9 +110,26 @@ diff -up openssl-1.0.1e/crypto/fips/fips.c.fips-ctor openssl-1.0.1e/crypto/fips/
  int FIPS_module_mode_set(int onoff, const char *auth)
      {
      int ret = 0;
+@@ -379,15 +435,7 @@ int FIPS_module_mode_set(int onoff, cons
+ 	}
+ #endif
+ 
+-	if(!FIPSCHECK_verify("libcrypto.so." SHLIB_VERSION_NUMBER,"FIPS_mode_set"))
+-	    {
+-	    FIPSerr(FIPS_F_FIPS_MODULE_MODE_SET,FIPS_R_FINGERPRINT_DOES_NOT_MATCH);
+-	    fips_selftest_fail = 1;
+-	    ret = 0;
+-	    goto end;
+-	    }
+-
+-	if(!FIPSCHECK_verify("libssl.so." SHLIB_VERSION_NUMBER,"SSL_CTX_new"))
++	if(!verify_checksums())
+ 	    {
+ 	    FIPSerr(FIPS_F_FIPS_MODULE_MODE_SET,FIPS_R_FINGERPRINT_DOES_NOT_MATCH);
+ 	    fips_selftest_fail = 1;
 diff -up openssl-1.0.1e/crypto/fips/fips.h.fips-ctor openssl-1.0.1e/crypto/fips/fips.h
---- openssl-1.0.1e/crypto/fips/fips.h.fips-ctor	2013-09-02 14:20:26.857925232 +0200
-+++ openssl-1.0.1e/crypto/fips/fips.h	2013-09-02 14:20:26.915926507 +0200
+--- openssl-1.0.1e/crypto/fips/fips.h.fips-ctor	2013-09-23 18:05:15.734136931 +0200
++++ openssl-1.0.1e/crypto/fips/fips.h	2013-09-23 18:05:15.775137854 +0200
 @@ -74,6 +74,7 @@ struct hmac_ctx_st;
  
  int FIPS_module_mode_set(int onoff, const char *auth);
@@ -68,8 +139,8 @@ diff -up openssl-1.0.1e/crypto/fips/fips.h.fips-ctor openssl-1.0.1e/crypto/fips/
  int FIPS_selftest(void);
  int FIPS_selftest_failed(void);
 diff -up openssl-1.0.1e/crypto/o_init.c.fips-ctor openssl-1.0.1e/crypto/o_init.c
---- openssl-1.0.1e/crypto/o_init.c.fips-ctor	2013-09-02 14:20:26.894926046 +0200
-+++ openssl-1.0.1e/crypto/o_init.c	2013-09-02 14:20:26.916926529 +0200
+--- openssl-1.0.1e/crypto/o_init.c.fips-ctor	2013-09-23 18:05:15.762137561 +0200
++++ openssl-1.0.1e/crypto/o_init.c	2013-09-23 18:05:15.776137876 +0200
 @@ -73,6 +73,10 @@ static void init_fips_mode(void)
  	char buf[2] = "0";
  	int fd;
