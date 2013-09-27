@@ -473,6 +473,10 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 prelink -u %{_libdir}/libcrypto.so.%{version} %{_libdir}/libssl.so.%{version} 2>/dev/null || :
 
 %changelog
+* Fri Sep 27 2013 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-26
+- make DTLS1 work in FIPS mode
+- avoid RSA and DSA 512 bits and Whirlpool in 'openssl speed' in FIPS mode
+
 * Mon Sep 23 2013 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-25
 - avoid dlopening libssl.so from libcrypto (#1010357)
 
