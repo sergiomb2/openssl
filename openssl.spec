@@ -21,7 +21,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1e
-Release: 23%{?dist}
+Release: 27%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -77,6 +77,7 @@ Patch82: openssl-1.0.1e-backports.patch
 Patch83: openssl-1.0.1e-bad-mac.patch
 Patch84: openssl-1.0.1e-trusted-first.patch
 Patch85: openssl-1.0.1e-arm-use-elf-auxv-caps.patch
+Patch86: openssl-1.0.1e-fips-ec.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -197,6 +198,7 @@ OpenSSL FIPS module.
 %patch83 -p1 -b .bad-mac
 %patch84 -p1 -b .trusted-first
 %patch85 -p1 -b .armcap
+%patch86 -p1 -b .fips-ec
 
 sed -i 's/SHLIB_VERSION_NUMBER "1.0.0"/SHLIB_VERSION_NUMBER "%{version}"/' crypto/opensslv.h
 
@@ -251,7 +253,7 @@ sslarch=linux-ppc64
 ./Configure \
 	--prefix=%{_prefix} --openssldir=%{_sysconfdir}/pki/tls ${sslflags} \
 	zlib enable-camellia enable-seed enable-tlsext enable-rfc3779 \
-	enable-cms enable-md2 no-mdc2 no-rc5 no-ec no-ec2m no-ecdh no-ecdsa no-srp \
+	enable-cms enable-md2 no-mdc2 no-rc5 no-srp \
 	--with-krb5-flavor=MIT --enginesdir=%{_libdir}/openssl/engines \
 	--with-krb5-dir=/usr shared  ${sslarch} %{?!nofips:fips}
 
@@ -473,6 +475,19 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 prelink -u %{_libdir}/libcrypto.so.%{version} %{_libdir}/libssl.so.%{version} 2>/dev/null || :
 
 %changelog
+* Mon Oct 14 2013 Tom Callaway <spot@fedoraproject.org> - 1.0.1e-27
+- resolve bugzilla 319901 (phew! only took 6 years & 9 days)
+
+* Fri Sep 27 2013 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-26
+- make DTLS1 work in FIPS mode
+- avoid RSA and DSA 512 bits and Whirlpool in 'openssl speed' in FIPS mode
+
+* Mon Sep 23 2013 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-25
+- avoid dlopening libssl.so from libcrypto (#1010357)
+
+* Fri Sep 20 2013 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-24
+- fix small memory leak in FIPS aes selftest
+
 * Thu Sep 19 2013 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-23
 - fix segfault in openssl speed hmac in the FIPS mode
 
