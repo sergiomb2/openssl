@@ -21,7 +21,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1e
-Release: 4%{?dist}
+Release: 4%{?dist}.1
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -72,6 +72,7 @@ Patch69: openssl-1.0.1c-dh-1024.patch
 Patch81: openssl-1.0.1-beta2-padlock64.patch
 Patch82: openssl-1.0.1e-backports.patch
 Patch83: openssl-1.0.1e-bad-mac.patch
+Patch84: openssl-1.0.1e-fips-ec.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -176,6 +177,7 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch81 -p1 -b .padlock64
 %patch82 -p1 -b .backports
 %patch83 -p1 -b .bad-mac
+%patch84 -p1 -b .fips-ec
 
 sed -i 's/SHLIB_VERSION_NUMBER "1.0.0"/SHLIB_VERSION_NUMBER "%{version}"/' crypto/opensslv.h
 
@@ -227,7 +229,7 @@ sslarch=linux-ppc64
 ./Configure \
 	--prefix=/usr --openssldir=%{_sysconfdir}/pki/tls ${sslflags} \
 	zlib enable-camellia enable-seed enable-tlsext enable-rfc3779 \
-	enable-cms enable-md2 no-mdc2 no-rc5 no-ec no-ec2m no-ecdh no-ecdsa no-srp \
+	enable-cms enable-md2 no-mdc2 no-rc5 no-srp \
 	--with-krb5-flavor=MIT --enginesdir=%{_libdir}/openssl/engines \
 	--with-krb5-dir=/usr shared  ${sslarch} %{?!nofips:fips}
 
@@ -433,6 +435,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Tue Oct 15 2013 Tom Callaway <spot@fedoraproject.org> 1.0.1e-4.1
+- resolve bugzilla 319901 (phew! only took 6 years & 9 days)
+
 * Mon Mar 18 2013 Tomas Mraz <tmraz@redhat.com> 1.0.1e-4
 - fix random bad record mac errors (#918981)
 
