@@ -21,12 +21,12 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1e
-Release: 27%{?dist}
+Release: 28%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
 # The original openssl upstream tarball cannot be shipped in the .src.rpm.
-Source: openssl-%{version}-usa.tar.xz
+Source: openssl-%{version}-hobbled.tar.xz
 Source1: hobble-openssl
 Source2: Makefile.certificate
 Source6: make-dummy-cert
@@ -35,7 +35,8 @@ Source8: openssl-thread-test.c
 Source9: opensslconf-new.h
 Source10: opensslconf-new-warning.h
 Source11: README.FIPS
-Source12: openssl-fips.conf
+Source12: ec_curve.c
+Source13: ectest.c
 # Build changes
 Patch1: openssl-1.0.1-beta2-rpmbuild.patch
 Patch2: openssl-1.0.0f-defaults.patch
@@ -69,15 +70,16 @@ Patch65: openssl-1.0.0e-chil-fixes.patch
 Patch66: openssl-1.0.1-pkgconfig-krb5.patch
 Patch68: openssl-1.0.1e-secure-getenv.patch
 Patch69: openssl-1.0.1c-dh-1024.patch
+Patch70: openssl-1.0.1e-fips-ec.patch
 Patch71: openssl-1.0.1e-manfix.patch
 Patch72: openssl-1.0.1e-fips-ctor.patch
+Patch73: openssl-1.0.1e-speed-suiteb.patch
 # Backported fixes including security fixes
 Patch81: openssl-1.0.1-beta2-padlock64.patch
 Patch82: openssl-1.0.1e-backports.patch
 Patch83: openssl-1.0.1e-bad-mac.patch
 Patch84: openssl-1.0.1e-trusted-first.patch
 Patch85: openssl-1.0.1e-arm-use-elf-auxv-caps.patch
-Patch86: openssl-1.0.1e-fips-ec.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -100,8 +102,8 @@ Group: System Environment/Libraries
 Requires: ca-certificates >= 2008-5
 # Needed obsoletes due to the base/lib subpackage split
 Obsoletes: openssl < 1:1.0.1-0.3.beta3
-# Needed for proper transaction ordering if openssl-fips is installed
-OrderWithRequires(pre): openssl-fips
+Obsoletes: openssl-fips < 1:1.0.1e-28
+Provides: openssl-fips = %{epoch}:%{version}-%{release}
 
 %description libs
 OpenSSL is a toolkit for supporting cryptography. The openssl-libs
@@ -142,22 +144,15 @@ OpenSSL is a toolkit for supporting cryptography. The openssl-perl
 package provides Perl scripts for converting certificates and keys
 from other formats to the formats used by the OpenSSL toolkit.
 
-%package fips
-Summary: The FIPS module package for OpenSSL
-Group: System Environment/Libraries
-Requires: %{name}-libs%{?_isa} = %{epoch}:%{version}-%{release}
-
-%description fips
-OpenSSL is a toolkit for supporting cryptography. The openssl-fips
-package provides files that complete the installation of the
-OpenSSL FIPS module.
-
 %prep
 %setup -q -n %{name}-%{version}
 
 # The hobble_openssl is called here redundantly, just to be sure.
 # The tarball has already the sources removed.
 %{SOURCE1} > /dev/null
+
+cp %{SOURCE12} %{SOURCE13} crypto/ec/
+
 %patch1 -p1 -b .rpmbuild
 %patch2 -p1 -b .defaults
 %patch4 -p1 -b .enginesdir %{?_rawbuild}
@@ -190,15 +185,16 @@ OpenSSL FIPS module.
 %patch66 -p1 -b .krb5
 %patch68 -p1 -b .secure-getenv
 %patch69 -p1 -b .dh1024
+%patch70 -p1 -b .fips-ec
+%patch72 -p1 -b .fips-ctor
+%patch73 -p1 -b .suiteb
 
 %patch81 -p1 -b .padlock64
 %patch82 -p1 -b .backports
 %patch71 -p1 -b .manfix
-%patch72 -p1 -b .fips-ctor
 %patch83 -p1 -b .bad-mac
 %patch84 -p1 -b .trusted-first
 %patch85 -p1 -b .armcap
-%patch86 -p1 -b .fips-ec
 
 sed -i 's/SHLIB_VERSION_NUMBER "1.0.0"/SHLIB_VERSION_NUMBER "%{version}"/' crypto/opensslv.h
 
@@ -253,7 +249,7 @@ sslarch=linux-ppc64
 ./Configure \
 	--prefix=%{_prefix} --openssldir=%{_sysconfdir}/pki/tls ${sslflags} \
 	zlib enable-camellia enable-seed enable-tlsext enable-rfc3779 \
-	enable-cms enable-md2 no-mdc2 no-rc5 no-srp \
+	enable-cms enable-md2 no-mdc2 no-rc5 no-ec2m no-gost no-srp \
 	--with-krb5-flavor=MIT --enginesdir=%{_libdir}/openssl/engines \
 	--with-krb5-dir=/usr shared  ${sslarch} %{?!nofips:fips}
 
@@ -261,7 +257,7 @@ sslarch=linux-ppc64
 # marked as not requiring an executable stack.
 # Also add -DPURIFY to make using valgrind with openssl easier as we do not
 # want to depend on the uninitialized memory as a source of entropy anyway.
-RPM_OPT_FLAGS="$RPM_OPT_FLAGS -Wa,--noexecstack -DPURIFY -DHMAC_SUFFIX=\\\".%{version}-%{release}.hmac\\\""
+RPM_OPT_FLAGS="$RPM_OPT_FLAGS -Wa,--noexecstack -DPURIFY"
 make depend
 make all
 
@@ -296,10 +292,10 @@ make -C test apps tests
     %{?__debug_package:%{__debug_install_post}} \
     %{__arch_install_post} \
     %{__os_install_post} \
-    crypto/fips/fips_standalone_hmac $RPM_BUILD_ROOT%{_libdir}/libcrypto.so.%{version} >$RPM_BUILD_ROOT%{_libdir}/.libcrypto.so.%{version}.%{version}-%{release}.hmac \
-    ln -sf .libcrypto.so.%{version}.%{version}-%{release}.hmac $RPM_BUILD_ROOT%{_libdir}/.libcrypto.so.%{soversion}.%{version}-%{release}.hmac \
-    crypto/fips/fips_standalone_hmac $RPM_BUILD_ROOT%{_libdir}/libssl.so.%{version} >$RPM_BUILD_ROOT%{_libdir}/.libssl.so.%{version}.%{version}-%{release}.hmac \
-    ln -sf .libssl.so.%{version}.%{version}-%{release}.hmac $RPM_BUILD_ROOT%{_libdir}/.libssl.so.%{soversion}.%{version}-%{release}.hmac \
+    crypto/fips/fips_standalone_hmac $RPM_BUILD_ROOT%{_libdir}/libcrypto.so.%{version} >$RPM_BUILD_ROOT%{_libdir}/.libcrypto.so.%{version}.hmac \
+    ln -sf .libcrypto.so.%{version}.hmac $RPM_BUILD_ROOT%{_libdir}/.libcrypto.so.%{soversion}.hmac \
+    crypto/fips/fips_standalone_hmac $RPM_BUILD_ROOT%{_libdir}/libssl.so.%{version} >$RPM_BUILD_ROOT%{_libdir}/.libssl.so.%{version}.hmac \
+    ln -sf .libssl.so.%{version}.hmac $RPM_BUILD_ROOT%{_libdir}/.libssl.so.%{soversion}.hmac \
 %{nil}
 
 %define __provides_exclude_from %{_libdir}/openssl
@@ -391,11 +387,6 @@ install -m644 %{SOURCE9} \
 	$RPM_BUILD_ROOT/%{_prefix}/include/openssl/opensslconf.h
 %endif
 
-#install prelink blacklist
-mkdir -p $RPM_BUILD_ROOT/%{_sysconfdir}/prelink.conf.d
-install -m644 %{SOURCE12} \
-	$RPM_BUILD_ROOT/%{_sysconfdir}/prelink.conf.d/openssl-fips.conf
-
 # Remove unused files from upstream fips support
 rm -rf $RPM_BUILD_ROOT/%{_bindir}/openssl_fips_fingerprint
 rm -rf $RPM_BUILD_ROOT/%{_libdir}/fips_premain.*
@@ -438,6 +429,8 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %attr(0755,root,root) %{_libdir}/libcrypto.so.%{soversion}
 %attr(0755,root,root) %{_libdir}/libssl.so.%{version}
 %attr(0755,root,root) %{_libdir}/libssl.so.%{soversion}
+%attr(0644,root,root) %{_libdir}/.libcrypto.so.*.hmac
+%attr(0644,root,root) %{_libdir}/.libssl.so.*.hmac
 %attr(0755,root,root) %{_libdir}/openssl
 
 %files devel
@@ -458,23 +451,15 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %{_sysconfdir}/pki/tls/misc/*.pl
 %{_sysconfdir}/pki/tls/misc/tsget
 
-%files fips
-%defattr(-,root,root)
-%attr(0644,root,root) %{_libdir}/.libcrypto.so.*.hmac
-%attr(0644,root,root) %{_libdir}/.libssl.so.*.hmac
-# We don't want to depend on prelink for this directory
-%dir %{_sysconfdir}/prelink.conf.d
-%{_sysconfdir}/prelink.conf.d/openssl-fips.conf
-
 %post libs -p /sbin/ldconfig
 
 %postun libs -p /sbin/ldconfig
 
-%pre fips
-# Must use pre to avoid some possible races
-prelink -u %{_libdir}/libcrypto.so.%{version} %{_libdir}/libssl.so.%{version} 2>/dev/null || :
-
 %changelog
+* Wed Oct 16 2013 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-28
+- only ECC NIST Suite B curves support
+- drop -fips subpackage
+
 * Mon Oct 14 2013 Tom Callaway <spot@fedoraproject.org> - 1.0.1e-27
 - resolve bugzilla 319901 (phew! only took 6 years & 9 days)
 
