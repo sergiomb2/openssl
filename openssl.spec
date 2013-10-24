@@ -21,7 +21,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1e
-Release: 28%{?dist}
+Release: 29%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -73,7 +73,7 @@ Patch69: openssl-1.0.1c-dh-1024.patch
 Patch70: openssl-1.0.1e-fips-ec.patch
 Patch71: openssl-1.0.1e-manfix.patch
 Patch72: openssl-1.0.1e-fips-ctor.patch
-Patch73: openssl-1.0.1e-speed-suiteb.patch
+Patch73: openssl-1.0.1e-ecc-suiteb.patch
 # Backported fixes including security fixes
 Patch81: openssl-1.0.1-beta2-padlock64.patch
 Patch82: openssl-1.0.1e-backports.patch
@@ -456,6 +456,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Thu Oct 24 2013 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-29
+- do not advertise ECC curves we do not support (#1022493)
+
 * Wed Oct 16 2013 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-28
 - only ECC NIST Suite B curves support
 - drop -fips subpackage
