@@ -345,6 +345,53 @@ static void prime_field_tests(void)
 	if (!(P_384 = EC_GROUP_new(EC_GROUP_method_of(group)))) ABORT;
 	if (!EC_GROUP_copy(P_384, group)) ABORT;
 
+
+	/* Curve P-521 (FIPS PUB 186-2, App. 6) */
+	
+	if (!BN_hex2bn(&p, "1FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
+		"FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
+		"FFFFFFFFFFFFFFFFFFFFFFFFFFFF")) ABORT;
+	if (1 != BN_is_prime_ex(p, BN_prime_checks, ctx, NULL)) ABORT;
+	if (!BN_hex2bn(&a, "1FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
+		"FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
+		"FFFFFFFFFFFFFFFFFFFFFFFFFFFC")) ABORT;
+	if (!BN_hex2bn(&b, "051953EB9618E1C9A1F929A21A0B68540EEA2DA725B99B"
+		"315F3B8B489918EF109E156193951EC7E937B1652C0BD3BB1BF073573"
+		"DF883D2C34F1EF451FD46B503F00")) ABORT;
+	if (!EC_GROUP_set_curve_GFp(group, p, a, b, ctx)) ABORT;
+
+	if (!BN_hex2bn(&x, "C6858E06B70404E9CD9E3ECB662395B4429C648139053F"
+		"B521F828AF606B4D3DBAA14B5E77EFE75928FE1DC127A2FFA8DE3348B"
+		"3C1856A429BF97E7E31C2E5BD66")) ABORT;
+	if (!EC_POINT_set_compressed_coordinates_GFp(group, P, x, 0, ctx)) ABORT;
+	if (!EC_POINT_is_on_curve(group, P, ctx)) ABORT;
+	if (!BN_hex2bn(&z, "1FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
+		"FFFFFFFFFFFFFFFFFFFFA51868783BF2F966B7FCC0148F709A5D03BB5"
+		"C9B8899C47AEBB6FB71E91386409")) ABORT;
+	if (!EC_GROUP_set_generator(group, P, z, BN_value_one())) ABORT;
+
+	if (!EC_POINT_get_affine_coordinates_GFp(group, P, x, y, ctx)) ABORT;
+	fprintf(stdout, "\nNIST curve P-521 -- Generator:\n     x = 0x");
+	BN_print_fp(stdout, x);
+	fprintf(stdout, "\n     y = 0x");
+	BN_print_fp(stdout, y);
+	fprintf(stdout, "\n");
+	/* G_y value taken from the standard: */
+	if (!BN_hex2bn(&z, "11839296A789A3BC0045C8A5FB42C7D1BD998F54449579"
+		"B446817AFBD17273E662C97EE72995EF42640C550B9013FAD0761353C"
+		"7086A272C24088BE94769FD16650")) ABORT;
+	if (0 != BN_cmp(y, z)) ABORT;
+	
+	fprintf(stdout, "verify degree ...");
+	if (EC_GROUP_get_degree(group) != 521) ABORT;
+	fprintf(stdout, " ok\n");
+
+ 	group_order_tests(group);
+
+	if (!(P_521 = EC_GROUP_new(EC_GROUP_method_of(group)))) ABORT;
+	if (!EC_GROUP_copy(P_521, group)) ABORT;
+
+
 	/* more tests using the last curve */
 
 	if (!EC_POINT_copy(Q, P)) ABORT;
