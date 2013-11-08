@@ -1,6 +1,6 @@
 diff -up openssl-1.0.1e/crypto/ecdh/ecdh.h.fips-ec openssl-1.0.1e/crypto/ecdh/ecdh.h
---- openssl-1.0.1e/crypto/ecdh/ecdh.h.fips-ec	2013-05-03 12:19:59.248301642 +0200
-+++ openssl-1.0.1e/crypto/ecdh/ecdh.h	2013-05-03 12:19:59.975317289 +0200
+--- openssl-1.0.1e/crypto/ecdh/ecdh.h.fips-ec	2013-11-08 17:59:42.755019363 +0100
++++ openssl-1.0.1e/crypto/ecdh/ecdh.h	2013-11-08 17:59:43.147028002 +0100
 @@ -85,6 +85,8 @@
  extern "C" {
  #endif
@@ -12,8 +12,8 @@ diff -up openssl-1.0.1e/crypto/ecdh/ecdh.h.fips-ec openssl-1.0.1e/crypto/ecdh/ec
  void	  ECDH_set_default_method(const ECDH_METHOD *);
 diff -up openssl-1.0.1e/crypto/ecdh/ecdhtest.c.fips-ec openssl-1.0.1e/crypto/ecdh/ecdhtest.c
 --- openssl-1.0.1e/crypto/ecdh/ecdhtest.c.fips-ec	2013-02-11 16:26:04.000000000 +0100
-+++ openssl-1.0.1e/crypto/ecdh/ecdhtest.c	2013-05-03 12:19:59.975317289 +0200
-@@ -323,11 +323,15 @@ int main(int argc, char *argv[])
++++ openssl-1.0.1e/crypto/ecdh/ecdhtest.c	2013-11-08 17:59:54.712282862 +0100
+@@ -323,8 +323,10 @@ int main(int argc, char *argv[])
  	if ((ctx=BN_CTX_new()) == NULL) goto err;
  
  	/* NIST PRIME CURVES TESTS */
@@ -23,15 +23,10 @@ diff -up openssl-1.0.1e/crypto/ecdh/ecdhtest.c.fips-ec openssl-1.0.1e/crypto/ecd
 +#endif
  	if (!test_ecdh_curve(NID_X9_62_prime256v1, "NIST Prime-Curve P-256", ctx, out)) goto err;
  	if (!test_ecdh_curve(NID_secp384r1, "NIST Prime-Curve P-384", ctx, out)) goto err;
-+#if 0
  	if (!test_ecdh_curve(NID_secp521r1, "NIST Prime-Curve P-521", ctx, out)) goto err;
-+#endif
- #ifndef OPENSSL_NO_EC2M
- 	/* NIST BINARY CURVES TESTS */
- 	if (!test_ecdh_curve(NID_sect163k1, "NIST Binary-Curve K-163", ctx, out)) goto err;
 diff -up openssl-1.0.1e/crypto/ecdh/ech_lib.c.fips-ec openssl-1.0.1e/crypto/ecdh/ech_lib.c
 --- openssl-1.0.1e/crypto/ecdh/ech_lib.c.fips-ec	2013-02-11 16:26:04.000000000 +0100
-+++ openssl-1.0.1e/crypto/ecdh/ech_lib.c	2013-05-03 12:19:59.976317311 +0200
++++ openssl-1.0.1e/crypto/ecdh/ech_lib.c	2013-11-08 17:59:43.148028024 +0100
 @@ -94,14 +94,7 @@ const ECDH_METHOD *ECDH_get_default_meth
  	{
  	if(!default_ECDH_method) 
@@ -49,7 +44,7 @@ diff -up openssl-1.0.1e/crypto/ecdh/ech_lib.c.fips-ec openssl-1.0.1e/crypto/ecdh
  	}
 diff -up openssl-1.0.1e/crypto/ecdh/ech_ossl.c.fips-ec openssl-1.0.1e/crypto/ecdh/ech_ossl.c
 --- openssl-1.0.1e/crypto/ecdh/ech_ossl.c.fips-ec	2013-02-11 16:26:04.000000000 +0100
-+++ openssl-1.0.1e/crypto/ecdh/ech_ossl.c	2013-05-03 12:19:59.976317311 +0200
++++ openssl-1.0.1e/crypto/ecdh/ech_ossl.c	2013-11-08 17:59:43.148028024 +0100
 @@ -79,6 +79,10 @@
  #include <openssl/obj_mac.h>
  #include <openssl/bn.h>
@@ -106,7 +101,7 @@ diff -up openssl-1.0.1e/crypto/ecdh/ech_ossl.c.fips-ec openssl-1.0.1e/crypto/ecd
  		ECDHerr(ECDH_F_ECDH_COMPUTE_KEY,ERR_R_MALLOC_FAILURE);
 diff -up openssl-1.0.1e/crypto/ecdsa/ecdsatest.c.fips-ec openssl-1.0.1e/crypto/ecdsa/ecdsatest.c
 --- openssl-1.0.1e/crypto/ecdsa/ecdsatest.c.fips-ec	2013-02-11 16:26:04.000000000 +0100
-+++ openssl-1.0.1e/crypto/ecdsa/ecdsatest.c	2013-05-03 12:19:59.976317311 +0200
++++ openssl-1.0.1e/crypto/ecdsa/ecdsatest.c	2013-11-08 17:59:43.148028024 +0100
 @@ -138,11 +138,14 @@ int restore_rand(void)
  	}
  
@@ -144,7 +139,7 @@ diff -up openssl-1.0.1e/crypto/ecdsa/ecdsatest.c.fips-ec openssl-1.0.1e/crypto/e
  	ret = 0;
 diff -up openssl-1.0.1e/crypto/ecdsa/ecs_lib.c.fips-ec openssl-1.0.1e/crypto/ecdsa/ecs_lib.c
 --- openssl-1.0.1e/crypto/ecdsa/ecs_lib.c.fips-ec	2013-02-11 16:26:04.000000000 +0100
-+++ openssl-1.0.1e/crypto/ecdsa/ecs_lib.c	2013-05-03 12:19:59.977317333 +0200
++++ openssl-1.0.1e/crypto/ecdsa/ecs_lib.c	2013-11-08 17:59:43.148028024 +0100
 @@ -81,14 +81,7 @@ const ECDSA_METHOD *ECDSA_get_default_me
  {
  	if(!default_ECDSA_method) 
@@ -162,7 +157,7 @@ diff -up openssl-1.0.1e/crypto/ecdsa/ecs_lib.c.fips-ec openssl-1.0.1e/crypto/ecd
  }
 diff -up openssl-1.0.1e/crypto/ecdsa/ecs_ossl.c.fips-ec openssl-1.0.1e/crypto/ecdsa/ecs_ossl.c
 --- openssl-1.0.1e/crypto/ecdsa/ecs_ossl.c.fips-ec	2013-02-11 16:26:04.000000000 +0100
-+++ openssl-1.0.1e/crypto/ecdsa/ecs_ossl.c	2013-05-03 12:19:59.977317333 +0200
++++ openssl-1.0.1e/crypto/ecdsa/ecs_ossl.c	2013-11-08 17:59:43.148028024 +0100
 @@ -60,6 +60,9 @@
  #include <openssl/err.h>
  #include <openssl/obj_mac.h>
@@ -214,7 +209,7 @@ diff -up openssl-1.0.1e/crypto/ecdsa/ecs_ossl.c.fips-ec openssl-1.0.1e/crypto/ec
  	    (pub_key = EC_KEY_get0_public_key(eckey)) == NULL || sig == NULL)
 diff -up openssl-1.0.1e/crypto/ec/ec_key.c.fips-ec openssl-1.0.1e/crypto/ec/ec_key.c
 --- openssl-1.0.1e/crypto/ec/ec_key.c.fips-ec	2013-02-11 16:26:04.000000000 +0100
-+++ openssl-1.0.1e/crypto/ec/ec_key.c	2013-05-03 12:19:59.978317354 +0200
++++ openssl-1.0.1e/crypto/ec/ec_key.c	2013-11-08 17:59:43.148028024 +0100
 @@ -64,9 +64,6 @@
  #include <string.h>
  #include "ec_lcl.h"
@@ -313,7 +308,7 @@ diff -up openssl-1.0.1e/crypto/ec/ec_key.c.fips-ec openssl-1.0.1e/crypto/ec/ec_k
  			EC_R_COORDINATES_OUT_OF_RANGE);
 diff -up openssl-1.0.1e/crypto/ec/ecp_mont.c.fips-ec openssl-1.0.1e/crypto/ec/ecp_mont.c
 --- openssl-1.0.1e/crypto/ec/ecp_mont.c.fips-ec	2013-02-11 16:26:04.000000000 +0100
-+++ openssl-1.0.1e/crypto/ec/ecp_mont.c	2013-05-03 12:19:59.978317354 +0200
++++ openssl-1.0.1e/crypto/ec/ecp_mont.c	2013-11-08 17:59:43.149028046 +0100
 @@ -63,18 +63,11 @@
  
  #include <openssl/err.h>
@@ -343,7 +338,7 @@ diff -up openssl-1.0.1e/crypto/ec/ecp_mont.c.fips-ec openssl-1.0.1e/crypto/ec/ec
  
 diff -up openssl-1.0.1e/crypto/ec/ecp_nist.c.fips-ec openssl-1.0.1e/crypto/ec/ecp_nist.c
 --- openssl-1.0.1e/crypto/ec/ecp_nist.c.fips-ec	2013-02-11 16:26:04.000000000 +0100
-+++ openssl-1.0.1e/crypto/ec/ecp_nist.c	2013-05-03 12:19:59.978317354 +0200
++++ openssl-1.0.1e/crypto/ec/ecp_nist.c	2013-11-08 17:59:43.149028046 +0100
 @@ -67,15 +67,8 @@
  #include <openssl/obj_mac.h>
  #include "ec_lcl.h"
@@ -370,7 +365,7 @@ diff -up openssl-1.0.1e/crypto/ec/ecp_nist.c.fips-ec openssl-1.0.1e/crypto/ec/ec
  int ec_GFp_nist_group_copy(EC_GROUP *dest, const EC_GROUP *src)
 diff -up openssl-1.0.1e/crypto/ec/ecp_smpl.c.fips-ec openssl-1.0.1e/crypto/ec/ecp_smpl.c
 --- openssl-1.0.1e/crypto/ec/ecp_smpl.c.fips-ec	2013-02-11 16:26:04.000000000 +0100
-+++ openssl-1.0.1e/crypto/ec/ecp_smpl.c	2013-05-03 12:19:59.979317376 +0200
++++ openssl-1.0.1e/crypto/ec/ecp_smpl.c	2013-11-08 17:59:43.149028046 +0100
 @@ -65,17 +65,10 @@
  #include <openssl/err.h>
  #include <openssl/symhacks.h>
@@ -412,7 +407,7 @@ diff -up openssl-1.0.1e/crypto/ec/ecp_smpl.c.fips-ec openssl-1.0.1e/crypto/ec/ec
  		ctx = new_ctx = BN_CTX_new();
 diff -up openssl-1.0.1e/crypto/evp/m_ecdsa.c.fips-ec openssl-1.0.1e/crypto/evp/m_ecdsa.c
 --- openssl-1.0.1e/crypto/evp/m_ecdsa.c.fips-ec	2013-02-11 16:26:04.000000000 +0100
-+++ openssl-1.0.1e/crypto/evp/m_ecdsa.c	2013-05-03 12:19:59.979317376 +0200
++++ openssl-1.0.1e/crypto/evp/m_ecdsa.c	2013-11-08 17:59:43.149028046 +0100
 @@ -116,7 +116,6 @@
  #include <openssl/x509.h>
  
@@ -436,8 +431,8 @@ diff -up openssl-1.0.1e/crypto/evp/m_ecdsa.c.fips-ec openssl-1.0.1e/crypto/evp/m
  #endif
 -#endif
 diff -up openssl-1.0.1e/crypto/fips/cavs/fips_ecdhvs.c.fips-ec openssl-1.0.1e/crypto/fips/cavs/fips_ecdhvs.c
---- openssl-1.0.1e/crypto/fips/cavs/fips_ecdhvs.c.fips-ec	2013-05-03 12:19:59.980317397 +0200
-+++ openssl-1.0.1e/crypto/fips/cavs/fips_ecdhvs.c	2013-05-03 12:19:59.980317397 +0200
+--- openssl-1.0.1e/crypto/fips/cavs/fips_ecdhvs.c.fips-ec	2013-11-08 17:59:43.149028046 +0100
++++ openssl-1.0.1e/crypto/fips/cavs/fips_ecdhvs.c	2013-11-08 17:59:43.149028046 +0100
 @@ -0,0 +1,496 @@
 +/* fips/ecdh/fips_ecdhvs.c */
 +/* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
@@ -936,8 +931,8 @@ diff -up openssl-1.0.1e/crypto/fips/cavs/fips_ecdhvs.c.fips-ec openssl-1.0.1e/cr
 +
 +#endif
 diff -up openssl-1.0.1e/crypto/fips/cavs/fips_ecdsavs.c.fips-ec openssl-1.0.1e/crypto/fips/cavs/fips_ecdsavs.c
---- openssl-1.0.1e/crypto/fips/cavs/fips_ecdsavs.c.fips-ec	2013-05-03 12:19:59.980317397 +0200
-+++ openssl-1.0.1e/crypto/fips/cavs/fips_ecdsavs.c	2013-05-03 12:19:59.980317397 +0200
+--- openssl-1.0.1e/crypto/fips/cavs/fips_ecdsavs.c.fips-ec	2013-11-08 17:59:43.150028068 +0100
++++ openssl-1.0.1e/crypto/fips/cavs/fips_ecdsavs.c	2013-11-08 17:59:43.150028068 +0100
 @@ -0,0 +1,533 @@
 +/* fips/ecdsa/fips_ecdsavs.c */
 +/* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
@@ -1473,8 +1468,8 @@ diff -up openssl-1.0.1e/crypto/fips/cavs/fips_ecdsavs.c.fips-ec openssl-1.0.1e/c
 +
 +#endif
 diff -up openssl-1.0.1e/crypto/fips/fips_ecdh_selftest.c.fips-ec openssl-1.0.1e/crypto/fips/fips_ecdh_selftest.c
---- openssl-1.0.1e/crypto/fips/fips_ecdh_selftest.c.fips-ec	2013-05-03 12:19:59.981317418 +0200
-+++ openssl-1.0.1e/crypto/fips/fips_ecdh_selftest.c	2013-05-03 12:19:59.981317418 +0200
+--- openssl-1.0.1e/crypto/fips/fips_ecdh_selftest.c.fips-ec	2013-11-08 17:59:43.150028068 +0100
++++ openssl-1.0.1e/crypto/fips/fips_ecdh_selftest.c	2013-11-08 17:59:43.150028068 +0100
 @@ -0,0 +1,252 @@
 +/* fips/ecdh/fips_ecdh_selftest.c */
 +/* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
@@ -1729,8 +1724,8 @@ diff -up openssl-1.0.1e/crypto/fips/fips_ecdh_selftest.c.fips-ec openssl-1.0.1e/
 +
 +#endif
 diff -up openssl-1.0.1e/crypto/fips/fips_ecdsa_selftest.c.fips-ec openssl-1.0.1e/crypto/fips/fips_ecdsa_selftest.c
---- openssl-1.0.1e/crypto/fips/fips_ecdsa_selftest.c.fips-ec	2013-05-03 12:19:59.981317418 +0200
-+++ openssl-1.0.1e/crypto/fips/fips_ecdsa_selftest.c	2013-05-03 12:19:59.981317418 +0200
+--- openssl-1.0.1e/crypto/fips/fips_ecdsa_selftest.c.fips-ec	2013-11-08 17:59:43.150028068 +0100
++++ openssl-1.0.1e/crypto/fips/fips_ecdsa_selftest.c	2013-11-08 17:59:43.150028068 +0100
 @@ -0,0 +1,167 @@
 +/* fips/ecdsa/fips_ecdsa_selftest.c */
 +/* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
@@ -1900,8 +1895,8 @@ diff -up openssl-1.0.1e/crypto/fips/fips_ecdsa_selftest.c.fips-ec openssl-1.0.1e
 +
 +#endif
 diff -up openssl-1.0.1e/crypto/fips/fips.h.fips-ec openssl-1.0.1e/crypto/fips/fips.h
---- openssl-1.0.1e/crypto/fips/fips.h.fips-ec	2013-05-03 12:19:59.942316578 +0200
-+++ openssl-1.0.1e/crypto/fips/fips.h	2013-05-03 12:19:59.981317418 +0200
+--- openssl-1.0.1e/crypto/fips/fips.h.fips-ec	2013-11-08 17:59:43.116027318 +0100
++++ openssl-1.0.1e/crypto/fips/fips.h	2013-11-08 17:59:43.150028068 +0100
 @@ -93,6 +93,8 @@ int FIPS_selftest_rsa(void);
  void FIPS_corrupt_dsa(void);
  void FIPS_corrupt_dsa_keygen(void);
@@ -1912,8 +1907,8 @@ diff -up openssl-1.0.1e/crypto/fips/fips.h.fips-ec openssl-1.0.1e/crypto/fips/fi
  void FIPS_rng_stick(void);
  void FIPS_x931_stick(int onoff);
 diff -up openssl-1.0.1e/crypto/fips/fips_post.c.fips-ec openssl-1.0.1e/crypto/fips/fips_post.c
---- openssl-1.0.1e/crypto/fips/fips_post.c.fips-ec	2013-05-03 12:19:59.942316578 +0200
-+++ openssl-1.0.1e/crypto/fips/fips_post.c	2013-05-03 12:19:59.982317439 +0200
+--- openssl-1.0.1e/crypto/fips/fips_post.c.fips-ec	2013-11-08 17:59:43.117027340 +0100
++++ openssl-1.0.1e/crypto/fips/fips_post.c	2013-11-08 17:59:43.150028068 +0100
 @@ -95,8 +95,12 @@ int FIPS_selftest(void)
  		rv = 0;
  	if (!FIPS_selftest_rsa())
@@ -1928,8 +1923,8 @@ diff -up openssl-1.0.1e/crypto/fips/fips_post.c.fips-ec openssl-1.0.1e/crypto/fi
  	}
  
 diff -up openssl-1.0.1e/crypto/fips/Makefile.fips-ec openssl-1.0.1e/crypto/fips/Makefile
---- openssl-1.0.1e/crypto/fips/Makefile.fips-ec	2013-05-03 12:19:59.945316642 +0200
-+++ openssl-1.0.1e/crypto/fips/Makefile	2013-05-03 12:20:12.173579845 +0200
+--- openssl-1.0.1e/crypto/fips/Makefile.fips-ec	2013-11-08 17:59:43.119027384 +0100
++++ openssl-1.0.1e/crypto/fips/Makefile	2013-11-08 17:59:43.151028090 +0100
 @@ -24,13 +24,13 @@ LIBSRC=fips_aes_selftest.c fips_des_self
      fips_rsa_selftest.c fips_sha_selftest.c fips.c fips_dsa_selftest.c  fips_rand.c \
      fips_rsa_x931g.c fips_post.c fips_drbg_ctr.c fips_drbg_hash.c fips_drbg_hmac.c \
@@ -2032,9 +2027,9 @@ diff -up openssl-1.0.1e/crypto/fips/Makefile.fips-ec openssl-1.0.1e/crypto/fips/
  fips_post.o: ../../include/openssl/bio.h ../../include/openssl/crypto.h
  fips_post.o: ../../include/openssl/dsa.h ../../include/openssl/e_os2.h
 diff -up openssl-1.0.1e/version.map.fips-ec openssl-1.0.1e/version.map
---- openssl-1.0.1e/version.map.fips-ec	2013-05-03 12:19:59.000000000 +0200
-+++ openssl-1.0.1e/version.map	2013-05-09 11:11:08.022300608 +0200
-@@ -5,3 +5,7 @@ OPENSSL_1.0.1 {
+--- openssl-1.0.1e/version.map.fips-ec	2013-11-08 17:59:43.131027649 +0100
++++ openssl-1.0.1e/version.map	2013-11-08 17:59:43.151028090 +0100
+@@ -6,3 +6,7 @@ OPENSSL_1.0.1 {
  	    _original*;
  	    _current*;
  };

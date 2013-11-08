@@ -34,7 +34,7 @@ diff -up openssl-1.0.1-beta2/Configure.rpmbuild openssl-1.0.1-beta2/Configure
  #### So called "highgprs" target for z/Architecture CPUs
  # "Highgprs" is kernel feature first implemented in Linux 2.6.32, see
  # /proc/cpuinfo. The idea is to preserve most significant bits of
-@@ -373,16 +373,16 @@ my %table=(
+@@ -373,16 +373,17 @@ my %table=(
  # ldconfig and run-time linker to autodiscover. Unfortunately it
  # doesn't work just yet, because of couple of bugs in glibc
  # sysdeps/s390/dl-procinfo.c affecting ldconfig and ld.so.1...
@@ -52,10 +52,11 @@ diff -up openssl-1.0.1-beta2/Configure.rpmbuild openssl-1.0.1-beta2/Configure
  # GCC 3.1 is a requirement
 -"linux64-sparcv9","gcc:-m64 -mcpu=ultrasparc -DB_ENDIAN -DTERMIO -O3 -fomit-frame-pointer -Wall::-D_REENTRANT:ULTRASPARC:-ldl:BN_LLONG RC4_CHAR RC4_CHUNK DES_INT DES_PTR DES_RISC1 DES_UNROLL BF_PTR:${sparcv9_asm}:dlfcn:linux-shared:-fPIC:-m64:.so.\$(SHLIB_MAJOR).\$(SHLIB_MINOR):::64",
 +"linux64-sparcv9","gcc:-DB_ENDIAN -DTERMIO -Wall \$(RPM_OPT_FLAGS)::-D_REENTRANT:ULTRASPARC:-Wl,-z,relro -ldl:BN_LLONG RC4_CHAR RC4_CHUNK DES_INT DES_PTR DES_RISC1 DES_UNROLL BF_PTR:${sparcv9_asm}:dlfcn:linux-shared:-fPIC:\$(RPM_OPT_FLAGS):.so.\$(SHLIB_SONAMEVER):::64",
++"linux-aarch64","gcc:-DL_ENDIAN -DTERMIO -Wall \$(RPM_OPT_FLAGS)::-D_REENTRANT::-ldl:SIXTY_FOUR_BIT_LONG RC4_CHAR RC4_CHUNK DES_INT DES_UNROLL BF_PTR:${no_asm}:dlfcn:linux-shared:-fPIC:\$(RPM_OPT_FLAGS):.so.\$(SHLIB_SONAMEVER):::64",
  #### Alpha Linux with GNU C and Compaq C setups
  # Special notes:
  # - linux-alpha+bwx-gcc is ment to be used from ./config only. If you
-@@ -396,8 +396,8 @@ my %table=(
+@@ -396,8 +397,8 @@ my %table=(
  #
  #					<appro@fy.chalmers.se>
  #
@@ -66,7 +67,7 @@ diff -up openssl-1.0.1-beta2/Configure.rpmbuild openssl-1.0.1-beta2/Configure
  "linux-alpha-ccc","ccc:-fast -readonly_strings -DL_ENDIAN -DTERMIO::-D_REENTRANT:::SIXTY_FOUR_BIT_LONG RC4_CHUNK DES_INT DES_PTR DES_RISC1 DES_UNROLL:${alpha_asm}",
  "linux-alpha+bwx-ccc","ccc:-fast -readonly_strings -DL_ENDIAN -DTERMIO::-D_REENTRANT:::SIXTY_FOUR_BIT_LONG RC4_CHAR RC4_CHUNK DES_INT DES_PTR DES_RISC1 DES_UNROLL:${alpha_asm}",
  
-@@ -1678,7 +1678,7 @@ while (<IN>)
+@@ -1678,7 +1679,7 @@ while (<IN>)
  	elsif ($shared_extension ne "" && $shared_extension =~ /^\.s([ol])\.[^\.]*\.[^\.]*$/)
  		{
  		my $sotmp = $1;

@@ -21,7 +21,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1e
-Release: 30%{?dist}
+Release: 31%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -456,6 +456,10 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Fri Nov  8 2013 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-31
+- add back support for secp521r1 EC curve
+- add aarch64 to Configure (#969692)
+
 * Tue Oct 29 2013 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-30
 - fix misdetection of RDRAND support on Cyrix CPUS (from upstream) (#1022346)
 
