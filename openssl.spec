@@ -21,7 +21,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1e
-Release: 31%{?dist}
+Release: 32%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -74,6 +74,7 @@ Patch70: openssl-1.0.1e-fips-ec.patch
 Patch71: openssl-1.0.1e-manfix.patch
 Patch72: openssl-1.0.1e-fips-ctor.patch
 Patch73: openssl-1.0.1e-ecc-suiteb.patch
+Patch74: openssl-1.0.1e-no-md5-verify.patch
 # Backported fixes including security fixes
 Patch81: openssl-1.0.1-beta2-padlock64.patch
 Patch82: openssl-1.0.1e-backports.patch
@@ -188,6 +189,7 @@ cp %{SOURCE12} %{SOURCE13} crypto/ec/
 %patch70 -p1 -b .fips-ec
 %patch72 -p1 -b .fips-ctor
 %patch73 -p1 -b .suiteb
+%patch74 -p1 -b .no-md5-verify
 
 %patch81 -p1 -b .padlock64
 %patch82 -p1 -b .backports
@@ -275,6 +277,8 @@ patch -p1 -R < %{PATCH33}
 
 LD_LIBRARY_PATH=`pwd`${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
 export LD_LIBRARY_PATH
+OPENSSL_ENABLE_MD5_VERIFY=
+export OPENSSL_ENABLE_MD5_VERIFY
 make -C test apps tests
 %{__cc} -o openssl-thread-test \
 	`krb5-config --cflags` \
@@ -456,6 +460,11 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Wed Nov 13 2013 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-32
+- disable verification of certificate, CRL, and OCSP signatures
+  using MD5 if OPENSSL_ENABLE_MD5_VERIFY environment variable
+  is not set
+
 * Fri Nov  8 2013 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-31
 - add back support for secp521r1 EC curve
 - add aarch64 to Configure (#969692)
