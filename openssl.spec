@@ -21,7 +21,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1e
-Release: 32%{?dist}
+Release: 33%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -75,6 +75,7 @@ Patch71: openssl-1.0.1e-manfix.patch
 Patch72: openssl-1.0.1e-fips-ctor.patch
 Patch73: openssl-1.0.1e-ecc-suiteb.patch
 Patch74: openssl-1.0.1e-no-md5-verify.patch
+Patch75: openssl-1.0.1e-new-fips-reqs.patch
 # Backported fixes including security fixes
 Patch81: openssl-1.0.1-beta2-padlock64.patch
 Patch82: openssl-1.0.1e-backports.patch
@@ -190,6 +191,7 @@ cp %{SOURCE12} %{SOURCE13} crypto/ec/
 %patch72 -p1 -b .fips-ctor
 %patch73 -p1 -b .suiteb
 %patch74 -p1 -b .no-md5-verify
+%patch75 -p1 -b .fips-reqs
 
 %patch81 -p1 -b .padlock64
 %patch82 -p1 -b .backports
@@ -460,6 +462,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Fri Nov 15 2013 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-33
+- additional changes required for FIPS validation
+
 * Wed Nov 13 2013 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-32
 - disable verification of certificate, CRL, and OCSP signatures
   using MD5 if OPENSSL_ENABLE_MD5_VERIFY environment variable

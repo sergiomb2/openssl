@@ -1,0 +1,146 @@
+diff -up openssl-1.0.1e/crypto/fips/fips_rsa_selftest.c.fips-reqs openssl-1.0.1e/crypto/fips/fips_rsa_selftest.c
+--- openssl-1.0.1e/crypto/fips/fips_rsa_selftest.c.fips-reqs	2013-11-15 15:01:29.183051556 +0100
++++ openssl-1.0.1e/crypto/fips/fips_rsa_selftest.c	2013-11-15 15:21:32.041438042 +0100
+@@ -340,6 +340,42 @@ static const unsigned char kat_RSA_X931_
+   0x60, 0x83, 0x18, 0x88, 0xA3, 0xF5, 0x59, 0xC3
+ };
+ 
++static int fips_rsa_encrypt_test(RSA *rsa, const unsigned char *plaintext, int ptlen)
++	{
++	unsigned char *ctbuf = NULL, *ptbuf = NULL;
++	int ret = 0;
++	int len;
++
++	ctbuf = OPENSSL_malloc(RSA_size(rsa));
++	if (!ctbuf)
++		goto err;
++
++	len = RSA_public_encrypt(ptlen, plaintext, ctbuf, rsa, RSA_PKCS1_PADDING);
++	if (len <= 0)
++		goto err;
++	/* Check ciphertext doesn't match plaintext */
++	if ((len >= ptlen && !memcmp(plaintext, ctbuf, ptlen))
++		goto err;
++
++	ptbuf = OPENSSL_malloc(RSA_size(rsa));
++	if (!ptbuf)
++		goto err;
++
++	len = RSA_private_decrypt(len, ctbuf, ptbuf, rsa, RSA_PKCS1_PADDING);
++	if (len != ptlen)
++		goto err;
++	if (memcmp(ptbuf, plaintext, len))
++		goto err;
++
++	ret = 1;
++
++	err:
++	if (ctbuf)
++		OPENSSL_free(ctbuf);
++	if (ptbuf)
++		OPENSSL_free(ptbuf);
++	return ret;
++	}
+ 
+ int FIPS_selftest_rsa()
+ 	{
+@@ -353,7 +389,7 @@ int FIPS_selftest_rsa()
+ 	if ((pk=EVP_PKEY_new()) == NULL)
+ 		goto err;
+ 
+-	EVP_PKEY_assign_RSA(pk, key);
++	EVP_PKEY_set1_RSA(pk, key);
+ 
+ 	if (!fips_pkey_signature_test(pk, kat_tbs, sizeof(kat_tbs) - 1,
+ 				kat_RSA_SHA1, sizeof(kat_RSA_SHA1),
+@@ -430,13 +466,15 @@ int FIPS_selftest_rsa()
+ 			"RSA SHA512 X931"))
+ 		goto err;
+ 
++	if (!fips_rsa_encrypt_test(key, kat_tbs, sizeof(kat_tbs) - 1)
++		goto err;
+ 
+ 	ret = 1;
+ 
+ 	err:
+ 	if (pk)
+ 		EVP_PKEY_free(pk);
+-	else if (key)
++	if (key)
+ 		RSA_free(key);
+ 	return ret;
+ 	}
+diff -up openssl-1.0.1e/crypto/modes/gcm128.c.fips-reqs openssl-1.0.1e/crypto/modes/gcm128.c
+--- openssl-1.0.1e/crypto/modes/gcm128.c.fips-reqs	2013-02-11 16:26:04.000000000 +0100
++++ openssl-1.0.1e/crypto/modes/gcm128.c	2013-11-15 16:12:52.626015247 +0100
+@@ -898,6 +898,10 @@ int CRYPTO_gcm128_encrypt(GCM128_CONTEXT
+ # endif
+ #endif
+ 
++	ctx->totlen += len;
++	if (ctx->totlen>(U64(1)<<36) || (sizeof(len)==8 && ctx->totlen<len))
++		return -1;
++
+ #if 0
+ 	n = (unsigned int)mlen%16; /* alternative to ctx->mres */
+ #endif
+@@ -1200,6 +1204,10 @@ int CRYPTO_gcm128_encrypt_ctr32(GCM128_C
+ # endif
+ #endif
+ 
++	ctx->totlen += len;
++	if (ctx->totlen>(U64(1)<<36) || (sizeof(len)==8 && ctx->totlen<len))
++		return -1;
++
+ 	mlen += len;
+ 	if (mlen>((U64(1)<<36)-32) || (sizeof(len)==8 && mlen<len))
+ 		return -1;
+diff -up openssl-1.0.1e/crypto/modes/modes_lcl.h.fips-reqs openssl-1.0.1e/crypto/modes/modes_lcl.h
+--- openssl-1.0.1e/crypto/modes/modes_lcl.h.fips-reqs	2013-11-15 15:01:28.000000000 +0100
++++ openssl-1.0.1e/crypto/modes/modes_lcl.h	2013-11-15 15:44:12.351278461 +0100
+@@ -115,6 +115,7 @@ struct gcm128_context {
+ 	unsigned int mres, ares;
+ 	block128_f block;
+ 	void *key;
++	u64 totlen;
+ };
+ 
+ struct xts128_context {
+diff -up openssl-1.0.1e/crypto/rand/rand_lcl.h.fips-reqs openssl-1.0.1e/crypto/rand/rand_lcl.h
+--- openssl-1.0.1e/crypto/rand/rand_lcl.h.fips-reqs	2013-11-15 15:01:28.922045831 +0100
++++ openssl-1.0.1e/crypto/rand/rand_lcl.h	2013-11-15 15:01:29.220052368 +0100
+@@ -112,7 +112,7 @@
+ #ifndef HEADER_RAND_LCL_H
+ #define HEADER_RAND_LCL_H
+ 
+-#define ENTROPY_NEEDED 32  /* require 256 bits = 32 bytes of randomness */
++#define ENTROPY_NEEDED 48  /* require 384 bits = 48 bytes of randomness */
+ 
+ 
+ #if !defined(USE_MD5_RAND) && !defined(USE_SHA1_RAND) && !defined(USE_MDC2_RAND) && !defined(USE_MD2_RAND)
+diff -up openssl-1.0.1e/crypto/rand/rand_lib.c.fips-reqs openssl-1.0.1e/crypto/rand/rand_lib.c
+--- openssl-1.0.1e/crypto/rand/rand_lib.c.fips-reqs	2013-02-11 16:26:04.000000000 +0100
++++ openssl-1.0.1e/crypto/rand/rand_lib.c	2013-11-15 15:01:29.220052368 +0100
+@@ -68,6 +68,7 @@
+ #ifdef OPENSSL_FIPS
+ #include <openssl/fips.h>
+ #include <openssl/fips_rand.h>
++#include "../fips/fips_rand_lcl.h"
+ #endif
+ 
+ #ifndef OPENSSL_NO_ENGINE
+@@ -239,12 +240,14 @@ static int drbg_rand_add(DRBG_CTX *ctx,
+ 				double entropy)
+ 	{
+ 	RAND_SSLeay()->add(in, inlen, entropy);
++	ctx->status = DRBG_STATUS_RESEED;
+ 	return 1;
+ 	}
+ 
+ static int drbg_rand_seed(DRBG_CTX *ctx, const void *in, int inlen)
+ 	{
+ 	RAND_SSLeay()->seed(in, inlen);
++	ctx->status = DRBG_STATUS_RESEED;
+ 	return 1;
+ 	}
+ 
