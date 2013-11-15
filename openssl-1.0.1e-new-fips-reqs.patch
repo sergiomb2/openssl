@@ -1,6 +1,6 @@
 diff -up openssl-1.0.1e/crypto/fips/fips_rsa_selftest.c.fips-reqs openssl-1.0.1e/crypto/fips/fips_rsa_selftest.c
---- openssl-1.0.1e/crypto/fips/fips_rsa_selftest.c.fips-reqs	2013-11-15 15:01:29.183051556 +0100
-+++ openssl-1.0.1e/crypto/fips/fips_rsa_selftest.c	2013-11-15 15:21:32.041438042 +0100
+--- openssl-1.0.1e/crypto/fips/fips_rsa_selftest.c.fips-reqs	2013-11-15 16:38:18.378484894 +0100
++++ openssl-1.0.1e/crypto/fips/fips_rsa_selftest.c	2013-11-15 16:54:19.584570380 +0100
 @@ -340,6 +340,42 @@ static const unsigned char kat_RSA_X931_
    0x60, 0x83, 0x18, 0x88, 0xA3, 0xF5, 0x59, 0xC3
  };
@@ -19,7 +19,7 @@ diff -up openssl-1.0.1e/crypto/fips/fips_rsa_selftest.c.fips-reqs openssl-1.0.1e
 +	if (len <= 0)
 +		goto err;
 +	/* Check ciphertext doesn't match plaintext */
-+	if ((len >= ptlen && !memcmp(plaintext, ctbuf, ptlen))
++	if (len >= ptlen && !memcmp(plaintext, ctbuf, ptlen))
 +		goto err;
 +
 +	ptbuf = OPENSSL_malloc(RSA_size(rsa));
@@ -57,7 +57,7 @@ diff -up openssl-1.0.1e/crypto/fips/fips_rsa_selftest.c.fips-reqs openssl-1.0.1e
  			"RSA SHA512 X931"))
  		goto err;
  
-+	if (!fips_rsa_encrypt_test(key, kat_tbs, sizeof(kat_tbs) - 1)
++	if (!fips_rsa_encrypt_test(key, kat_tbs, sizeof(kat_tbs) - 1))
 +		goto err;
  
  	ret = 1;
@@ -72,7 +72,7 @@ diff -up openssl-1.0.1e/crypto/fips/fips_rsa_selftest.c.fips-reqs openssl-1.0.1e
  	}
 diff -up openssl-1.0.1e/crypto/modes/gcm128.c.fips-reqs openssl-1.0.1e/crypto/modes/gcm128.c
 --- openssl-1.0.1e/crypto/modes/gcm128.c.fips-reqs	2013-02-11 16:26:04.000000000 +0100
-+++ openssl-1.0.1e/crypto/modes/gcm128.c	2013-11-15 16:12:52.626015247 +0100
++++ openssl-1.0.1e/crypto/modes/gcm128.c	2013-11-15 16:38:18.417485749 +0100
 @@ -898,6 +898,10 @@ int CRYPTO_gcm128_encrypt(GCM128_CONTEXT
  # endif
  #endif
@@ -96,8 +96,8 @@ diff -up openssl-1.0.1e/crypto/modes/gcm128.c.fips-reqs openssl-1.0.1e/crypto/mo
  	if (mlen>((U64(1)<<36)-32) || (sizeof(len)==8 && mlen<len))
  		return -1;
 diff -up openssl-1.0.1e/crypto/modes/modes_lcl.h.fips-reqs openssl-1.0.1e/crypto/modes/modes_lcl.h
---- openssl-1.0.1e/crypto/modes/modes_lcl.h.fips-reqs	2013-11-15 15:01:28.000000000 +0100
-+++ openssl-1.0.1e/crypto/modes/modes_lcl.h	2013-11-15 15:44:12.351278461 +0100
+--- openssl-1.0.1e/crypto/modes/modes_lcl.h.fips-reqs	2013-11-15 16:38:17.984476250 +0100
++++ openssl-1.0.1e/crypto/modes/modes_lcl.h	2013-11-15 16:38:18.417485749 +0100
 @@ -115,6 +115,7 @@ struct gcm128_context {
  	unsigned int mres, ares;
  	block128_f block;
@@ -107,8 +107,8 @@ diff -up openssl-1.0.1e/crypto/modes/modes_lcl.h.fips-reqs openssl-1.0.1e/crypto
  
  struct xts128_context {
 diff -up openssl-1.0.1e/crypto/rand/rand_lcl.h.fips-reqs openssl-1.0.1e/crypto/rand/rand_lcl.h
---- openssl-1.0.1e/crypto/rand/rand_lcl.h.fips-reqs	2013-11-15 15:01:28.922045831 +0100
-+++ openssl-1.0.1e/crypto/rand/rand_lcl.h	2013-11-15 15:01:29.220052368 +0100
+--- openssl-1.0.1e/crypto/rand/rand_lcl.h.fips-reqs	2013-11-15 16:38:18.110479014 +0100
++++ openssl-1.0.1e/crypto/rand/rand_lcl.h	2013-11-15 16:38:18.417485749 +0100
 @@ -112,7 +112,7 @@
  #ifndef HEADER_RAND_LCL_H
  #define HEADER_RAND_LCL_H
@@ -120,7 +120,7 @@ diff -up openssl-1.0.1e/crypto/rand/rand_lcl.h.fips-reqs openssl-1.0.1e/crypto/r
  #if !defined(USE_MD5_RAND) && !defined(USE_SHA1_RAND) && !defined(USE_MDC2_RAND) && !defined(USE_MD2_RAND)
 diff -up openssl-1.0.1e/crypto/rand/rand_lib.c.fips-reqs openssl-1.0.1e/crypto/rand/rand_lib.c
 --- openssl-1.0.1e/crypto/rand/rand_lib.c.fips-reqs	2013-02-11 16:26:04.000000000 +0100
-+++ openssl-1.0.1e/crypto/rand/rand_lib.c	2013-11-15 15:01:29.220052368 +0100
++++ openssl-1.0.1e/crypto/rand/rand_lib.c	2013-11-15 16:38:18.417485749 +0100
 @@ -68,6 +68,7 @@
  #ifdef OPENSSL_FIPS
  #include <openssl/fips.h>
