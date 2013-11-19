@@ -1,6 +1,57 @@
+diff -up openssl-1.0.1e/crypto/fips/fips_drbg_rand.c.fips-reqs openssl-1.0.1e/crypto/fips/fips_drbg_rand.c
+--- openssl-1.0.1e/crypto/fips/fips_drbg_rand.c.fips-reqs	2013-11-15 16:54:49.000000000 +0100
++++ openssl-1.0.1e/crypto/fips/fips_drbg_rand.c	2013-11-19 14:48:38.935251819 +0100
+@@ -77,7 +77,8 @@ static int fips_drbg_bytes(unsigned char
+ 	int rv = 0;
+ 	unsigned char *adin = NULL;
+ 	size_t adinlen = 0;
+-	CRYPTO_w_lock(CRYPTO_LOCK_RAND);
++	int locked;
++	locked = private_RAND_lock(1);
+ 	do 
+ 		{
+ 		size_t rcnt;
+@@ -109,7 +110,8 @@ static int fips_drbg_bytes(unsigned char
+ 	while (count);
+ 	rv = 1;
+ 	err:
+-	CRYPTO_w_unlock(CRYPTO_LOCK_RAND);
++	if (locked)
++		private_RAND_lock(0);
+ 	return rv;
+ 	}
+ 
+@@ -141,8 +143,13 @@ static void fips_drbg_cleanup(void)
+ static int fips_drbg_seed(const void *seed, int seedlen)
+ 	{
+ 	DRBG_CTX *dctx = &ossl_dctx;
++	int locked;
++
++	locked = private_RAND_lock(1);
+ 	if (dctx->rand_seed_cb)
+ 		return dctx->rand_seed_cb(dctx, seed, seedlen);
++	if (locked)
++		private_RAND_lock(0);
+ 	return 1;
+ 	}
+ 
+@@ -150,8 +157,13 @@ static int fips_drbg_add(const void *see
+ 					double add_entropy)
+ 	{
+ 	DRBG_CTX *dctx = &ossl_dctx;
++	int locked;
++
++	locked = private_RAND_lock(1);
+ 	if (dctx->rand_add_cb)
+ 		return dctx->rand_add_cb(dctx, seed, seedlen, add_entropy);
++	if (locked)
++		private_RAND_lock(0);
+ 	return 1;
+ 	}
+ 
 diff -up openssl-1.0.1e/crypto/fips/fips_rsa_selftest.c.fips-reqs openssl-1.0.1e/crypto/fips/fips_rsa_selftest.c
---- openssl-1.0.1e/crypto/fips/fips_rsa_selftest.c.fips-reqs	2013-11-15 16:38:18.378484894 +0100
-+++ openssl-1.0.1e/crypto/fips/fips_rsa_selftest.c	2013-11-15 16:54:19.584570380 +0100
+--- openssl-1.0.1e/crypto/fips/fips_rsa_selftest.c.fips-reqs	2013-11-15 16:54:49.390224209 +0100
++++ openssl-1.0.1e/crypto/fips/fips_rsa_selftest.c	2013-11-15 16:54:49.427225021 +0100
 @@ -340,6 +340,42 @@ static const unsigned char kat_RSA_X931_
    0x60, 0x83, 0x18, 0x88, 0xA3, 0xF5, 0x59, 0xC3
  };
@@ -72,7 +123,7 @@ diff -up openssl-1.0.1e/crypto/fips/fips_rsa_selftest.c.fips-reqs openssl-1.0.1e
  	}
 diff -up openssl-1.0.1e/crypto/modes/gcm128.c.fips-reqs openssl-1.0.1e/crypto/modes/gcm128.c
 --- openssl-1.0.1e/crypto/modes/gcm128.c.fips-reqs	2013-02-11 16:26:04.000000000 +0100
-+++ openssl-1.0.1e/crypto/modes/gcm128.c	2013-11-15 16:38:18.417485749 +0100
++++ openssl-1.0.1e/crypto/modes/gcm128.c	2013-11-15 16:54:49.427225021 +0100
 @@ -898,6 +898,10 @@ int CRYPTO_gcm128_encrypt(GCM128_CONTEXT
  # endif
  #endif
@@ -96,8 +147,8 @@ diff -up openssl-1.0.1e/crypto/modes/gcm128.c.fips-reqs openssl-1.0.1e/crypto/mo
  	if (mlen>((U64(1)<<36)-32) || (sizeof(len)==8 && mlen<len))
  		return -1;
 diff -up openssl-1.0.1e/crypto/modes/modes_lcl.h.fips-reqs openssl-1.0.1e/crypto/modes/modes_lcl.h
---- openssl-1.0.1e/crypto/modes/modes_lcl.h.fips-reqs	2013-11-15 16:38:17.984476250 +0100
-+++ openssl-1.0.1e/crypto/modes/modes_lcl.h	2013-11-15 16:38:18.417485749 +0100
+--- openssl-1.0.1e/crypto/modes/modes_lcl.h.fips-reqs	2013-11-15 16:54:48.995215544 +0100
++++ openssl-1.0.1e/crypto/modes/modes_lcl.h	2013-11-15 16:54:49.427225021 +0100
 @@ -115,6 +115,7 @@ struct gcm128_context {
  	unsigned int mres, ares;
  	block128_f block;
@@ -106,9 +157,196 @@ diff -up openssl-1.0.1e/crypto/modes/modes_lcl.h.fips-reqs openssl-1.0.1e/crypto
  };
  
  struct xts128_context {
+diff -up openssl-1.0.1e/crypto/rand/md_rand.c.fips-reqs openssl-1.0.1e/crypto/rand/md_rand.c
+--- openssl-1.0.1e/crypto/rand/md_rand.c.fips-reqs	2013-11-15 16:54:49.000000000 +0100
++++ openssl-1.0.1e/crypto/rand/md_rand.c	2013-11-19 14:43:00.592829775 +0100
+@@ -143,12 +143,6 @@ static long md_count[2]={0,0};
+ static double entropy=0;
+ static int initialized=0;
+ 
+-static unsigned int crypto_lock_rand = 0; /* may be set only when a thread
+-                                           * holds CRYPTO_LOCK_RAND
+-                                           * (to prevent double locking) */
+-/* access to lockin_thread is synchronized by CRYPTO_LOCK_RAND2 */
+-static CRYPTO_THREADID locking_threadid; /* valid iff crypto_lock_rand is set */
+-
+ 
+ #ifdef PREDICT
+ int rand_predictable=0;
+@@ -196,7 +190,7 @@ static void ssleay_rand_add(const void *
+ 	long md_c[2];
+ 	unsigned char local_md[MD_DIGEST_LENGTH];
+ 	EVP_MD_CTX m;
+-	int do_not_lock;
++	int locked;
+ 
+ 	/*
+ 	 * (Based on the rand(3) manpage)
+@@ -213,19 +207,8 @@ static void ssleay_rand_add(const void *
+          * hash function.
+ 	 */
+ 
+-	/* check if we already have the lock */
+-	if (crypto_lock_rand)
+-		{
+-		CRYPTO_THREADID cur;
+-		CRYPTO_THREADID_current(&cur);
+-		CRYPTO_r_lock(CRYPTO_LOCK_RAND2);
+-		do_not_lock = !CRYPTO_THREADID_cmp(&locking_threadid, &cur);
+-		CRYPTO_r_unlock(CRYPTO_LOCK_RAND2);
+-		}
+-	else
+-		do_not_lock = 0;
++	locked = private_RAND_lock(1);
+ 
+-	if (!do_not_lock) CRYPTO_w_lock(CRYPTO_LOCK_RAND);
+ 	st_idx=state_index;
+ 
+ 	/* use our own copies of the counters so that even
+@@ -257,7 +240,8 @@ static void ssleay_rand_add(const void *
+ 
+ 	md_count[1] += (num / MD_DIGEST_LENGTH) + (num % MD_DIGEST_LENGTH > 0);
+ 
+-	if (!do_not_lock) CRYPTO_w_unlock(CRYPTO_LOCK_RAND);
++	if (locked)
++		private_RAND_lock(0);
+ 
+ 	EVP_MD_CTX_init(&m);
+ 	for (i=0; i<num; i+=MD_DIGEST_LENGTH)
+@@ -308,7 +292,7 @@ static void ssleay_rand_add(const void *
+ 		}
+ 	EVP_MD_CTX_cleanup(&m);
+ 
+-	if (!do_not_lock) CRYPTO_w_lock(CRYPTO_LOCK_RAND);
++	locked = private_RAND_lock(1);
+ 	/* Don't just copy back local_md into md -- this could mean that
+ 	 * other thread's seeding remains without effect (except for
+ 	 * the incremented counter).  By XORing it we keep at least as
+@@ -319,7 +303,8 @@ static void ssleay_rand_add(const void *
+ 		}
+ 	if (entropy < ENTROPY_NEEDED) /* stop counting when we have enough */
+ 	    entropy += add;
+-	if (!do_not_lock) CRYPTO_w_unlock(CRYPTO_LOCK_RAND);
++	if (locked)
++		private_RAND_lock(0);
+ 	
+ #if !defined(OPENSSL_THREADS) && !defined(OPENSSL_SYS_WIN32)
+ 	assert(md_c[1] == md_count[1]);
+@@ -344,6 +329,7 @@ static int ssleay_rand_bytes(unsigned ch
+ 	pid_t curr_pid = getpid();
+ #endif
+ 	int do_stir_pool = 0;
++	int locked;
+ 
+ #ifdef PREDICT
+ 	if (rand_predictable)
+@@ -381,13 +367,7 @@ static int ssleay_rand_bytes(unsigned ch
+ 	 * global 'md'.
+ 	 */
+ 
+-	CRYPTO_w_lock(CRYPTO_LOCK_RAND);
+-
+-	/* prevent ssleay_rand_bytes() from trying to obtain the lock again */
+-	CRYPTO_w_lock(CRYPTO_LOCK_RAND2);
+-	CRYPTO_THREADID_current(&locking_threadid);
+-	CRYPTO_w_unlock(CRYPTO_LOCK_RAND2);
+-	crypto_lock_rand = 1;
++	locked = private_RAND_lock(1);
+ 
+ 	/* always poll for external entropy in FIPS mode, drbg provides the 
+ 	 * expansion
+@@ -461,9 +441,8 @@ static int ssleay_rand_bytes(unsigned ch
+ 
+ 	md_count[0] += 1;
+ 
+-	/* before unlocking, we must clear 'crypto_lock_rand' */
+-	crypto_lock_rand = 0;
+-	CRYPTO_w_unlock(CRYPTO_LOCK_RAND);
++	if (locked)
++		private_RAND_lock(0);
+ 
+ 	while (num > 0)
+ 		{
+@@ -515,10 +494,11 @@ static int ssleay_rand_bytes(unsigned ch
+ 	MD_Init(&m);
+ 	MD_Update(&m,(unsigned char *)&(md_c[0]),sizeof(md_c));
+ 	MD_Update(&m,local_md,MD_DIGEST_LENGTH);
+-	CRYPTO_w_lock(CRYPTO_LOCK_RAND);
++	locked = private_RAND_lock(1);
+ 	MD_Update(&m,md,MD_DIGEST_LENGTH);
+ 	MD_Final(&m,md);
+-	CRYPTO_w_unlock(CRYPTO_LOCK_RAND);
++	if (locked)
++		private_RAND_lock(0);
+ 
+ 	EVP_MD_CTX_cleanup(&m);
+ 	if (ok)
+@@ -548,32 +528,10 @@ static int ssleay_rand_pseudo_bytes(unsi
+ 
+ static int ssleay_rand_status(void)
+ 	{
+-	CRYPTO_THREADID cur;
+ 	int ret;
+-	int do_not_lock;
++	int locked;
+ 
+-	CRYPTO_THREADID_current(&cur);
+-	/* check if we already have the lock
+-	 * (could happen if a RAND_poll() implementation calls RAND_status()) */
+-	if (crypto_lock_rand)
+-		{
+-		CRYPTO_r_lock(CRYPTO_LOCK_RAND2);
+-		do_not_lock = !CRYPTO_THREADID_cmp(&locking_threadid, &cur);
+-		CRYPTO_r_unlock(CRYPTO_LOCK_RAND2);
+-		}
+-	else
+-		do_not_lock = 0;
+-	
+-	if (!do_not_lock)
+-		{
+-		CRYPTO_w_lock(CRYPTO_LOCK_RAND);
+-		
+-		/* prevent ssleay_rand_bytes() from trying to obtain the lock again */
+-		CRYPTO_w_lock(CRYPTO_LOCK_RAND2);
+-		CRYPTO_THREADID_cpy(&locking_threadid, &cur);
+-		CRYPTO_w_unlock(CRYPTO_LOCK_RAND2);
+-		crypto_lock_rand = 1;
+-		}
++	locked = private_RAND_lock(1);
+ 	
+ 	if (!initialized)
+ 		{
+@@ -583,13 +541,8 @@ static int ssleay_rand_status(void)
+ 
+ 	ret = entropy >= ENTROPY_NEEDED;
+ 
+-	if (!do_not_lock)
+-		{
+-		/* before unlocking, we must clear 'crypto_lock_rand' */
+-		crypto_lock_rand = 0;
+-		
+-		CRYPTO_w_unlock(CRYPTO_LOCK_RAND);
+-		}
++	if (locked)
++		private_RAND_lock(0);
+ 	
+ 	return ret;
+ 	}
+diff -up openssl-1.0.1e/crypto/rand/rand.h.fips-reqs openssl-1.0.1e/crypto/rand/rand.h
+--- openssl-1.0.1e/crypto/rand/rand.h.fips-reqs	2013-11-19 14:32:25.182891113 +0100
++++ openssl-1.0.1e/crypto/rand/rand.h	2013-11-19 14:32:03.546416472 +0100
+@@ -124,6 +124,8 @@ void RAND_set_fips_drbg_type(int type, i
+ int RAND_init_fips(void);
+ #endif
+ 
++int private_RAND_lock(int lock);
++
+ /* BEGIN ERROR CODES */
+ /* The following lines are auto generated by the script mkerr.pl. Any changes
+  * made after this point may be overwritten when the script is next run.
 diff -up openssl-1.0.1e/crypto/rand/rand_lcl.h.fips-reqs openssl-1.0.1e/crypto/rand/rand_lcl.h
---- openssl-1.0.1e/crypto/rand/rand_lcl.h.fips-reqs	2013-11-15 16:38:18.110479014 +0100
-+++ openssl-1.0.1e/crypto/rand/rand_lcl.h	2013-11-15 16:38:18.417485749 +0100
+--- openssl-1.0.1e/crypto/rand/rand_lcl.h.fips-reqs	2013-11-15 16:54:49.122218330 +0100
++++ openssl-1.0.1e/crypto/rand/rand_lcl.h	2013-11-15 16:54:49.427225021 +0100
 @@ -112,7 +112,7 @@
  #ifndef HEADER_RAND_LCL_H
  #define HEADER_RAND_LCL_H
@@ -120,27 +358,61 @@ diff -up openssl-1.0.1e/crypto/rand/rand_lcl.h.fips-reqs openssl-1.0.1e/crypto/r
  #if !defined(USE_MD5_RAND) && !defined(USE_SHA1_RAND) && !defined(USE_MDC2_RAND) && !defined(USE_MD2_RAND)
 diff -up openssl-1.0.1e/crypto/rand/rand_lib.c.fips-reqs openssl-1.0.1e/crypto/rand/rand_lib.c
 --- openssl-1.0.1e/crypto/rand/rand_lib.c.fips-reqs	2013-02-11 16:26:04.000000000 +0100
-+++ openssl-1.0.1e/crypto/rand/rand_lib.c	2013-11-15 16:38:18.417485749 +0100
-@@ -68,6 +68,7 @@
- #ifdef OPENSSL_FIPS
- #include <openssl/fips.h>
- #include <openssl/fips_rand.h>
-+#include "../fips/fips_rand_lcl.h"
- #endif
++++ openssl-1.0.1e/crypto/rand/rand_lib.c	2013-11-19 14:44:22.422624833 +0100
+@@ -181,6 +181,41 @@ int RAND_status(void)
+ 	return 0;
+ 	}
  
- #ifndef OPENSSL_NO_ENGINE
-@@ -239,12 +240,14 @@ static int drbg_rand_add(DRBG_CTX *ctx,
++int private_RAND_lock(int lock)
++	{
++	static int crypto_lock_rand;
++	static CRYPTO_THREADID locking_threadid;
++	int do_lock;
++
++	if (!lock)
++		{
++		crypto_lock_rand = 0;
++		CRYPTO_w_unlock(CRYPTO_LOCK_RAND);
++		return 0;
++		}
++
++	/* check if we already have the lock */
++	if (crypto_lock_rand)
++		{
++		CRYPTO_THREADID cur;
++		CRYPTO_THREADID_current(&cur);
++		CRYPTO_r_lock(CRYPTO_LOCK_RAND2);
++		do_lock = !!CRYPTO_THREADID_cmp(&locking_threadid, &cur);
++		CRYPTO_r_unlock(CRYPTO_LOCK_RAND2);
++		}
++        else
++		do_lock = 1;
++	if (do_lock)
++		{
++		CRYPTO_w_lock(CRYPTO_LOCK_RAND);
++		crypto_lock_rand = 1;
++		CRYPTO_w_lock(CRYPTO_LOCK_RAND2);
++		CRYPTO_THREADID_current(&locking_threadid);
++		CRYPTO_w_unlock(CRYPTO_LOCK_RAND2);
++		}
++	return do_lock;
++	}
++
+ #ifdef OPENSSL_FIPS
+ 
+ /* FIPS DRBG initialisation code. This sets up the DRBG for use by the
+@@ -239,12 +274,14 @@ static int drbg_rand_add(DRBG_CTX *ctx,
  				double entropy)
  	{
  	RAND_SSLeay()->add(in, inlen, entropy);
-+	ctx->status = DRBG_STATUS_RESEED;
++	FIPS_drbg_reseed(ctx, NULL, 0);
  	return 1;
  	}
  
  static int drbg_rand_seed(DRBG_CTX *ctx, const void *in, int inlen)
  	{
  	RAND_SSLeay()->seed(in, inlen);
-+	ctx->status = DRBG_STATUS_RESEED;
++	FIPS_drbg_reseed(ctx, NULL, 0);
  	return 1;
  	}
  
