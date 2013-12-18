@@ -21,7 +21,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1e
-Release: 34%{?dist}
+Release: 35%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -75,7 +75,9 @@ Patch71: openssl-1.0.1e-manfix.patch
 Patch72: openssl-1.0.1e-fips-ctor.patch
 Patch73: openssl-1.0.1e-ecc-suiteb.patch
 Patch74: openssl-1.0.1e-no-md5-verify.patch
-Patch75: openssl-1.0.1e-new-fips-reqs.patch
+Patch75: openssl-1.0.1e-compat-symbols.patch
+Patch76: openssl-1.0.1e-new-fips-reqs.patch
+Patch77: openssl-1.0.1e-weak-ciphers.patch
 # Backported fixes including security fixes
 Patch81: openssl-1.0.1-beta2-padlock64.patch
 Patch82: openssl-1.0.1e-backports.patch
@@ -191,7 +193,9 @@ cp %{SOURCE12} %{SOURCE13} crypto/ec/
 %patch72 -p1 -b .fips-ctor
 %patch73 -p1 -b .suiteb
 %patch74 -p1 -b .no-md5-verify
-%patch75 -p1 -b .fips-reqs
+%patch75 -p1 -b .compat
+%patch76 -p1 -b .fips-reqs
+%patch77 -p1 -b .weak-ciphers
 
 %patch81 -p1 -b .padlock64
 %patch82 -p1 -b .backports
@@ -462,6 +466,11 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Wed Dec 18 2013 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-35
+- drop weak ciphers from the default TLS ciphersuite list
+- add back some symbols that were dropped with update to 1.0.1 branch
+- more FIPS validation requirement changes
+
 * Tue Nov 19 2013 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-34
 - fix locking and reseeding problems with FIPS drbg
 
