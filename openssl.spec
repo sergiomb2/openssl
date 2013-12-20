@@ -193,7 +193,7 @@ cp %{SOURCE12} %{SOURCE13} crypto/ec/
 %patch70 -p1 -b .fips-ec
 %patch72 -p1 -b .fips-ctor
 %patch73 -p1 -b .suiteb
-%patch74 -p1 -b .no-md5-verify
+#%patch74 -p1 -b .no-md5-verify
 %patch75 -p1 -b .compat
 %patch76 -p1 -b .fips-reqs
 %patch77 -p1 -b .weak-ciphers
@@ -471,6 +471,7 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 * Fri Dec 20 2013 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-36
 - fix CVE-2013-6449 - crash when version in SSL structure is incorrect
 - more FIPS validation requirement changes
+- do not apply the no-md5-verify patch in released Fedora branches
 
 * Wed Dec 18 2013 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-35
 - drop weak ciphers from the default TLS ciphersuite list
