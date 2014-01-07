@@ -29,7 +29,7 @@ diff -up openssl-1.0.1e/crypto/dh/dh_check.c.fips-reqs openssl-1.0.1e/crypto/dh/
  	if (BN_cmp(pub_key,q)>=0)
  		*ret|=DH_CHECK_PUBKEY_TOO_LARGE;
 +#ifdef OPENSSL_FIPS
-+	if (FIPS_mode())
++	if (FIPS_mode() && dh->q != NULL)
 +		{
 +		BN_CTX *ctx = NULL;
  
