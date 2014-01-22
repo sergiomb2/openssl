@@ -21,7 +21,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1e
-Release: 37%{?dist}
+Release: 38%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -78,6 +78,7 @@ Patch74: openssl-1.0.1e-no-md5-verify.patch
 Patch75: openssl-1.0.1e-compat-symbols.patch
 Patch76: openssl-1.0.1e-new-fips-reqs.patch
 Patch77: openssl-1.0.1e-weak-ciphers.patch
+Patch78: openssl-1.0.1e-3des-strength.patch
 # Backported fixes including security fixes
 Patch81: openssl-1.0.1-beta2-padlock64.patch
 Patch82: openssl-1.0.1e-backports.patch
@@ -199,6 +200,7 @@ cp %{SOURCE12} %{SOURCE13} crypto/ec/
 %patch75 -p1 -b .compat
 %patch76 -p1 -b .fips-reqs
 %patch77 -p1 -b .weak-ciphers
+%patch78 -p1 -b .3des-strength
 
 %patch81 -p1 -b .padlock64
 %patch82 -p1 -b .backports
@@ -472,6 +474,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Wed Jan 22 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-38
+- make 3des strength to be 128 bits instead of 168 (#1056616)
+
 * Tue Jan  7 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-37
 - fix CVE-2013-4353 - Invalid TLS handshake crash
 - fix CVE-2013-6450 - possible MiTM attack on DTLS1
