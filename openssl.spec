@@ -21,7 +21,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1e
-Release: 38%{?dist}
+Release: 39%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -39,7 +39,7 @@ Source12: ec_curve.c
 Source13: ectest.c
 # Build changes
 Patch1: openssl-1.0.1-beta2-rpmbuild.patch
-Patch2: openssl-1.0.0f-defaults.patch
+Patch2: openssl-1.0.1e-defaults.patch
 Patch4: openssl-1.0.0-beta5-enginesdir.patch
 Patch5: openssl-0.9.8a-no-rpath.patch
 Patch6: openssl-0.9.8b-test-use-localhost.patch
@@ -474,6 +474,11 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Thu Feb  6 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-39
+- make expiration and key length changeable by DAYS and KEYLEN
+  variables in the certificate Makefile (#1058108)
+- change default hash to sha256 (#1062325)
+
 * Wed Jan 22 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-38
 - make 3des strength to be 128 bits instead of 168 (#1056616)
 
