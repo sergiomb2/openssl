@@ -375,8 +375,8 @@ diff -up openssl-1.0.1e/crypto/dh/dh_gen.c.fips openssl-1.0.1e/crypto/dh/dh_gen.
  	if (ctx == NULL) goto err;
  	BN_CTX_start(ctx);
 diff -up openssl-1.0.1e/crypto/dh/dh.h.fips openssl-1.0.1e/crypto/dh/dh.h
---- openssl-1.0.1e/crypto/dh/dh.h.fips	2013-10-04 11:48:04.032690794 +0200
-+++ openssl-1.0.1e/crypto/dh/dh.h	2013-10-04 11:48:04.174694001 +0200
+--- openssl-1.0.1e/crypto/dh/dh.h.fips	2014-02-06 18:04:19.000000000 +0100
++++ openssl-1.0.1e/crypto/dh/dh.h	2014-02-11 16:01:17.039345356 +0100
 @@ -77,6 +77,8 @@
  # define OPENSSL_DH_MAX_MODULUS_BITS	10000
  #endif
@@ -386,9 +386,17 @@ diff -up openssl-1.0.1e/crypto/dh/dh.h.fips openssl-1.0.1e/crypto/dh/dh.h
  #define DH_FLAG_CACHE_MONT_P     0x01
  #define DH_FLAG_NO_EXP_CONSTTIME 0x02 /* new with 0.9.7h; the built-in DH
                                         * implementation now uses constant time
+@@ -210,6 +212,7 @@ int	DH_check(const DH *dh,int *codes);
+ int	DH_check_pub_key(const DH *dh,const BIGNUM *pub_key, int *codes);
+ int	DH_generate_key(DH *dh);
+ int	DH_compute_key(unsigned char *key,const BIGNUM *pub_key,DH *dh);
++int	DH_compute_key_padded(unsigned char *key,const BIGNUM *pub_key,DH *dh);
+ DH *	d2i_DHparams(DH **a,const unsigned char **pp, long length);
+ int	i2d_DHparams(const DH *a,unsigned char **pp);
+ #ifndef OPENSSL_NO_FP_API
 diff -up openssl-1.0.1e/crypto/dh/dh_key.c.fips openssl-1.0.1e/crypto/dh/dh_key.c
 --- openssl-1.0.1e/crypto/dh/dh_key.c.fips	2013-02-11 16:26:04.000000000 +0100
-+++ openssl-1.0.1e/crypto/dh/dh_key.c	2013-10-04 11:48:04.174694001 +0200
++++ openssl-1.0.1e/crypto/dh/dh_key.c	2014-02-11 15:57:55.266840301 +0100
 @@ -61,6 +61,9 @@
  #include <openssl/bn.h>
  #include <openssl/rand.h>
@@ -399,7 +407,29 @@ diff -up openssl-1.0.1e/crypto/dh/dh_key.c.fips openssl-1.0.1e/crypto/dh/dh_key.
  
  static int generate_key(DH *dh);
  static int compute_key(unsigned char *key, const BIGNUM *pub_key, DH *dh);
-@@ -104,7 +107,7 @@ compute_key,
+@@ -97,6 +100,21 @@ int DH_compute_key(unsigned char *key, c
+ 	return dh->meth->compute_key(key, pub_key, dh);
+ 	}
+ 
++int DH_compute_key_padded(unsigned char *key, const BIGNUM *pub_key, DH *dh)
++	{
++	int rv, pad;
++	rv = DH_compute_key(key, pub_key, dh);
++	if (rv <= 0)
++		return rv;
++	pad = BN_num_bytes(dh->p) - rv;
++	if (pad > 0)
++		{
++		memmove(key + pad, key, rv);
++		memset(key, 0, pad);
++		}
++	return rv + pad;
++	}
++
+ static DH_METHOD dh_ossl = {
+ "OpenSSL DH Method",
+ generate_key,
+@@ -104,7 +122,7 @@ compute_key,
  dh_bn_mod_exp,
  dh_init,
  dh_finish,
@@ -408,7 +438,7 @@ diff -up openssl-1.0.1e/crypto/dh/dh_key.c.fips openssl-1.0.1e/crypto/dh/dh_key.
  NULL,
  NULL
  };
-@@ -123,6 +126,14 @@ static int generate_key(DH *dh)
+@@ -123,6 +141,14 @@ static int generate_key(DH *dh)
  	BN_MONT_CTX *mont=NULL;
  	BIGNUM *pub_key=NULL,*priv_key=NULL;
  
@@ -423,7 +453,7 @@ diff -up openssl-1.0.1e/crypto/dh/dh_key.c.fips openssl-1.0.1e/crypto/dh/dh_key.
  	ctx = BN_CTX_new();
  	if (ctx == NULL) goto err;
  
-@@ -213,6 +224,13 @@ static int compute_key(unsigned char *ke
+@@ -213,6 +239,13 @@ static int compute_key(unsigned char *ke
  		DHerr(DH_F_COMPUTE_KEY,DH_R_MODULUS_TOO_LARGE);
  		goto err;
  		}
@@ -437,7 +467,7 @@ diff -up openssl-1.0.1e/crypto/dh/dh_key.c.fips openssl-1.0.1e/crypto/dh/dh_key.
  
  	ctx = BN_CTX_new();
  	if (ctx == NULL) goto err;
-@@ -280,6 +298,9 @@ static int dh_bn_mod_exp(const DH *dh, B
+@@ -280,6 +313,9 @@ static int dh_bn_mod_exp(const DH *dh, B
  
  static int dh_init(DH *dh)
  	{
