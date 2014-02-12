@@ -18,6 +18,8 @@
 # also be handled in opensslconf-new.h.
 %define multilib_arches %{ix86} ia64 ppc %{power64} s390 s390x sparcv9 sparc64 x86_64
 
+%global _performance_build 1
+
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1e
