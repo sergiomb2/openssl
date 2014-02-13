@@ -1,3 +1,22 @@
+diff -up openssl-1.0.1e/crypto/bn/bn_rand.c.fips-reqs openssl-1.0.1e/crypto/bn/bn_rand.c
+--- openssl-1.0.1e/crypto/bn/bn_rand.c.fips-reqs	2013-02-11 16:02:47.000000000 +0100
++++ openssl-1.0.1e/crypto/bn/bn_rand.c	2014-02-13 16:50:34.280893285 +0100
+@@ -138,9 +138,12 @@ static int bnrand(int pseudorand, BIGNUM
+ 		goto err;
+ 		}
+ 
+-	/* make a random number and set the top and bottom bits */
+-	time(&tim);
+-	RAND_add(&tim,sizeof(tim),0.0);
++	if (!FIPS_mode()) /* in FIPS mode the RNG is always properly seeded or the module fails */
++		{
++		/* make a random number and set the top and bottom bits */
++		time(&tim);
++		RAND_add(&tim,sizeof(tim),0.0);
++		}
+ 
+ 	if (pseudorand)
+ 		{
 diff -up openssl-1.0.1e/crypto/dh/dh_gen.c.fips-reqs openssl-1.0.1e/crypto/dh/dh_gen.c
 --- openssl-1.0.1e/crypto/dh/dh_gen.c.fips-reqs	2013-12-18 12:17:09.748636614 +0100
 +++ openssl-1.0.1e/crypto/dh/dh_gen.c	2013-12-18 12:17:09.798637687 +0100
