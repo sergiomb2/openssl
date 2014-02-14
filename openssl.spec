@@ -23,7 +23,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1e
-Release: 40%{?dist}
+Release: 41%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -81,6 +81,7 @@ Patch75: openssl-1.0.1e-compat-symbols.patch
 Patch76: openssl-1.0.1e-new-fips-reqs.patch
 Patch77: openssl-1.0.1e-weak-ciphers.patch
 Patch78: openssl-1.0.1e-3des-strength.patch
+Patch79: openssl-1.0.1e-req-keylen.patch
 # Backported fixes including security fixes
 Patch81: openssl-1.0.1-beta2-padlock64.patch
 Patch82: openssl-1.0.1e-backports.patch
@@ -204,6 +205,7 @@ cp %{SOURCE12} %{SOURCE13} crypto/ec/
 %patch76 -p1 -b .fips-reqs
 %patch77 -p1 -b .weak-ciphers
 %patch78 -p1 -b .3des-strength
+%patch79 -p1 -b .keylen
 
 %patch81 -p1 -b .padlock64
 %patch82 -p1 -b .backports
@@ -478,7 +480,10 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
-* Thu Feb  6 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-40
+* Fri Feb 14 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-41
+- use the key length from configuration file if req -newkey rsa is invoked
+
+* Thu Feb 13 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-40
 - print ephemeral key size negotiated in TLS handshake (#1057715)
 - add DH_compute_key_padded needed for FIPS CAVS testing
 
