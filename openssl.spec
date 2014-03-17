@@ -23,7 +23,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1e
-Release: 41%{?dist}
+Release: 42%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -82,6 +82,7 @@ Patch76: openssl-1.0.1e-new-fips-reqs.patch
 Patch77: openssl-1.0.1e-weak-ciphers.patch
 Patch78: openssl-1.0.1e-3des-strength.patch
 Patch79: openssl-1.0.1e-req-keylen.patch
+Patch90: openssl-1.0.1e-enc-fail.patch
 # Backported fixes including security fixes
 Patch81: openssl-1.0.1-beta2-padlock64.patch
 Patch82: openssl-1.0.1e-backports.patch
@@ -206,6 +207,7 @@ cp %{SOURCE12} %{SOURCE13} crypto/ec/
 %patch77 -p1 -b .weak-ciphers
 %patch78 -p1 -b .3des-strength
 %patch79 -p1 -b .keylen
+%patch90 -p1 -b .enc-fail
 
 %patch81 -p1 -b .padlock64
 %patch82 -p1 -b .backports
@@ -480,6 +482,10 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Mon Mar 17 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-42
+- properly detect encryption failure in BIO
+- use 2048 bit RSA key in FIPS selftests
+
 * Fri Feb 14 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-41
 - use the key length from configuration file if req -newkey rsa is invoked
 
