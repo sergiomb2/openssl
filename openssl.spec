@@ -23,7 +23,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1e
-Release: 42%{?dist}
+Release: 43%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -48,6 +48,7 @@ Patch6: openssl-0.9.8b-test-use-localhost.patch
 Patch7: openssl-1.0.0-timezone.patch
 Patch8: openssl-1.0.1c-perlfind.patch
 Patch9: openssl-1.0.1c-aliasing.patch
+Patch10: openssl-1.0.1e-ppc64le-target.patch
 # Bug fixes
 Patch23: openssl-1.0.1c-default-paths.patch
 Patch24: openssl-1.0.1e-issuer-hash.patch
@@ -174,6 +175,7 @@ cp %{SOURCE12} %{SOURCE13} crypto/ec/
 %patch7 -p1 -b .timezone
 %patch8 -p1 -b .perlfind %{?_rawbuild}
 %patch9 -p1 -b .aliasing
+%patch10 -p1 -b .ppc64le
 
 %patch23 -p1 -b .default-paths
 %patch24 -p1 -b .issuer-hash
@@ -262,8 +264,11 @@ sslarch=linux-armv4
 %ifarch sh3 sh4
 sslarch=linux-generic32
 %endif
-%ifarch %{power64}
+%ifarch ppc64 ppc64p7
 sslarch=linux-ppc64
+%endif
+%ifarch ppc64le
+sslarch="linux-ppc64le"
 %endif
 
 # ia64, x86_64, ppc are OK by default
@@ -482,6 +487,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Thu Apr  3 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-43
+- add support for ppc64le architecture (#1072633)
+
 * Mon Mar 17 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-42
 - properly detect encryption failure in BIO
 - use 2048 bit RSA key in FIPS selftests
