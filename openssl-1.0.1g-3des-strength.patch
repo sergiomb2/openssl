@@ -1,9 +1,6 @@
-Although the real strength is rather 112 bits we use 128 here as
-we do not want to sort it behind more obscure ciphers.
-AES-128 is preferred anyway.
-diff -up openssl-1.0.1e/ssl/s2_lib.c.3des-strength openssl-1.0.1e/ssl/s2_lib.c
---- openssl-1.0.1e/ssl/s2_lib.c.3des-strength	2013-02-11 16:26:04.000000000 +0100
-+++ openssl-1.0.1e/ssl/s2_lib.c	2014-01-22 16:32:45.791700322 +0100
+diff -up openssl-1.0.1g/ssl/s2_lib.c.3des-strength openssl-1.0.1g/ssl/s2_lib.c
+--- openssl-1.0.1g/ssl/s2_lib.c.3des-strength	2014-03-17 17:14:20.000000000 +0100
++++ openssl-1.0.1g/ssl/s2_lib.c	2014-05-06 16:33:45.646358418 +0200
 @@ -250,7 +250,7 @@ OPENSSL_GLOBAL const SSL_CIPHER ssl2_cip
  	SSL_SSLV2,
  	SSL_NOT_EXP|SSL_HIGH,
@@ -13,9 +10,9 @@ diff -up openssl-1.0.1e/ssl/s2_lib.c.3des-strength openssl-1.0.1e/ssl/s2_lib.c
  	168,
  	},
  
-diff -up openssl-1.0.1e/ssl/s3_lib.c.3des-strength openssl-1.0.1e/ssl/s3_lib.c
---- openssl-1.0.1e/ssl/s3_lib.c.3des-strength	2014-01-17 11:41:11.000000000 +0100
-+++ openssl-1.0.1e/ssl/s3_lib.c	2014-01-22 16:31:14.713666777 +0100
+diff -up openssl-1.0.1g/ssl/s3_lib.c.3des-strength openssl-1.0.1g/ssl/s3_lib.c
+--- openssl-1.0.1g/ssl/s3_lib.c.3des-strength	2014-03-17 17:14:20.000000000 +0100
++++ openssl-1.0.1g/ssl/s3_lib.c	2014-05-06 16:38:05.887374872 +0200
 @@ -328,7 +328,7 @@ OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[]
  	SSL_SSLV3,
  	SSL_NOT_EXP|SSL_HIGH|SSL_FIPS,
@@ -90,7 +87,7 @@ diff -up openssl-1.0.1e/ssl/s3_lib.c.3des-strength openssl-1.0.1e/ssl/s3_lib.c
  
 @@ -1685,7 +1685,7 @@ OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[]
  	SSL_TLSV1,
- 	SSL_NOT_EXP|SSL_HIGH,
+ 	SSL_NOT_EXP|SSL_HIGH|SSL_FIPS,
  	SSL_HANDSHAKE_MAC_DEFAULT|TLS1_PRF,
 -	168,
 +	128,

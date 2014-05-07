@@ -1,6 +1,6 @@
-diff -up openssl-1.0.1e/crypto/bn/bn_rand.c.fips-reqs openssl-1.0.1e/crypto/bn/bn_rand.c
---- openssl-1.0.1e/crypto/bn/bn_rand.c.fips-reqs	2013-02-11 16:02:47.000000000 +0100
-+++ openssl-1.0.1e/crypto/bn/bn_rand.c	2014-02-13 16:50:34.280893285 +0100
+diff -up openssl-1.0.1g/crypto/bn/bn_rand.c.fips-reqs openssl-1.0.1g/crypto/bn/bn_rand.c
+--- openssl-1.0.1g/crypto/bn/bn_rand.c.fips-reqs	2014-03-17 17:14:20.000000000 +0100
++++ openssl-1.0.1g/crypto/bn/bn_rand.c	2014-05-06 16:22:21.432540283 +0200
 @@ -138,9 +138,12 @@ static int bnrand(int pseudorand, BIGNUM
  		goto err;
  		}
@@ -17,9 +17,9 @@ diff -up openssl-1.0.1e/crypto/bn/bn_rand.c.fips-reqs openssl-1.0.1e/crypto/bn/b
  
  	if (pseudorand)
  		{
-diff -up openssl-1.0.1e/crypto/dh/dh_gen.c.fips-reqs openssl-1.0.1e/crypto/dh/dh_gen.c
---- openssl-1.0.1e/crypto/dh/dh_gen.c.fips-reqs	2013-12-18 12:17:09.748636614 +0100
-+++ openssl-1.0.1e/crypto/dh/dh_gen.c	2013-12-18 12:17:09.798637687 +0100
+diff -up openssl-1.0.1g/crypto/dh/dh_gen.c.fips-reqs openssl-1.0.1g/crypto/dh/dh_gen.c
+--- openssl-1.0.1g/crypto/dh/dh_gen.c.fips-reqs	2014-05-06 16:22:21.253536145 +0200
++++ openssl-1.0.1g/crypto/dh/dh_gen.c	2014-05-06 16:22:21.432540283 +0200
 @@ -125,7 +125,7 @@ static int dh_builtin_genparams(DH *ret,
  		return 0;
  		}
@@ -29,9 +29,9 @@ diff -up openssl-1.0.1e/crypto/dh/dh_gen.c.fips-reqs openssl-1.0.1e/crypto/dh/dh
  		{
  		DHerr(DH_F_DH_BUILTIN_GENPARAMS, DH_R_KEY_SIZE_TOO_SMALL);
  		goto err;
-diff -up openssl-1.0.1e/crypto/dh/dh.h.fips-reqs openssl-1.0.1e/crypto/dh/dh.h
---- openssl-1.0.1e/crypto/dh/dh.h.fips-reqs	2013-12-18 12:17:09.748636614 +0100
-+++ openssl-1.0.1e/crypto/dh/dh.h	2013-12-18 12:17:09.798637687 +0100
+diff -up openssl-1.0.1g/crypto/dh/dh.h.fips-reqs openssl-1.0.1g/crypto/dh/dh.h
+--- openssl-1.0.1g/crypto/dh/dh.h.fips-reqs	2014-05-06 16:22:21.253536145 +0200
++++ openssl-1.0.1g/crypto/dh/dh.h	2014-05-06 16:22:21.432540283 +0200
 @@ -78,6 +78,7 @@
  #endif
  
@@ -40,9 +40,9 @@ diff -up openssl-1.0.1e/crypto/dh/dh.h.fips-reqs openssl-1.0.1e/crypto/dh/dh.h
  
  #define DH_FLAG_CACHE_MONT_P     0x01
  #define DH_FLAG_NO_EXP_CONSTTIME 0x02 /* new with 0.9.7h; the built-in DH
-diff -up openssl-1.0.1e/crypto/dh/dh_check.c.fips-reqs openssl-1.0.1e/crypto/dh/dh_check.c
---- openssl-1.0.1e/crypto/dh/dh_check.c.fips-reqs	2013-02-11 16:26:04.000000000 +0100
-+++ openssl-1.0.1e/crypto/dh/dh_check.c	2013-12-18 12:17:09.799637708 +0100
+diff -up openssl-1.0.1g/crypto/dh/dh_check.c.fips-reqs openssl-1.0.1g/crypto/dh/dh_check.c
+--- openssl-1.0.1g/crypto/dh/dh_check.c.fips-reqs	2014-03-17 17:14:20.000000000 +0100
++++ openssl-1.0.1g/crypto/dh/dh_check.c	2014-05-06 16:22:21.432540283 +0200
 @@ -134,7 +134,33 @@ int DH_check_pub_key(const DH *dh, const
  	BN_sub_word(q,1);
  	if (BN_cmp(pub_key,q)>=0)
@@ -77,9 +77,9 @@ diff -up openssl-1.0.1e/crypto/dh/dh_check.c.fips-reqs openssl-1.0.1e/crypto/dh/
  	ok = 1;
  err:
  	if (q != NULL) BN_free(q);
-diff -up openssl-1.0.1e/crypto/dsa/dsa_gen.c.fips-reqs openssl-1.0.1e/crypto/dsa/dsa_gen.c
---- openssl-1.0.1e/crypto/dsa/dsa_gen.c.fips-reqs	2013-12-18 12:17:09.749636636 +0100
-+++ openssl-1.0.1e/crypto/dsa/dsa_gen.c	2013-12-18 12:17:09.799637708 +0100
+diff -up openssl-1.0.1g/crypto/dsa/dsa_gen.c.fips-reqs openssl-1.0.1g/crypto/dsa/dsa_gen.c
+--- openssl-1.0.1g/crypto/dsa/dsa_gen.c.fips-reqs	2014-05-06 16:22:21.254536168 +0200
++++ openssl-1.0.1g/crypto/dsa/dsa_gen.c	2014-05-06 16:22:21.432540283 +0200
 @@ -159,7 +159,6 @@ int dsa_builtin_paramgen(DSA *ret, size_
  	    }
  
@@ -88,9 +88,9 @@ diff -up openssl-1.0.1e/crypto/dsa/dsa_gen.c.fips-reqs openssl-1.0.1e/crypto/dsa
  	    (bits != 2048 || qbits != 224) &&
  	    (bits != 2048 || qbits != 256) &&
  	    (bits != 3072 || qbits != 256))
-diff -up openssl-1.0.1e/crypto/dsa/dsa.h.fips-reqs openssl-1.0.1e/crypto/dsa/dsa.h
---- openssl-1.0.1e/crypto/dsa/dsa.h.fips-reqs	2013-12-18 12:17:09.749636636 +0100
-+++ openssl-1.0.1e/crypto/dsa/dsa.h	2013-12-18 12:17:09.799637708 +0100
+diff -up openssl-1.0.1g/crypto/dsa/dsa.h.fips-reqs openssl-1.0.1g/crypto/dsa/dsa.h
+--- openssl-1.0.1g/crypto/dsa/dsa.h.fips-reqs	2014-05-06 16:22:21.254536168 +0200
++++ openssl-1.0.1g/crypto/dsa/dsa.h	2014-05-06 16:22:21.432540283 +0200
 @@ -89,6 +89,7 @@
  #endif
  
@@ -112,9 +112,9 @@ diff -up openssl-1.0.1e/crypto/dsa/dsa.h.fips-reqs openssl-1.0.1e/crypto/dsa/dsa
  #define DSA_is_prime(n, callback, cb_arg) \
  	BN_is_prime(n, DSS_prime_checks, callback, NULL, cb_arg)
  
-diff -up openssl-1.0.1e/crypto/dsa/dsa_key.c.fips-reqs openssl-1.0.1e/crypto/dsa/dsa_key.c
---- openssl-1.0.1e/crypto/dsa/dsa_key.c.fips-reqs	2013-12-18 12:17:09.797637665 +0100
-+++ openssl-1.0.1e/crypto/dsa/dsa_key.c	2013-12-18 12:17:09.799637708 +0100
+diff -up openssl-1.0.1g/crypto/dsa/dsa_key.c.fips-reqs openssl-1.0.1g/crypto/dsa/dsa_key.c
+--- openssl-1.0.1g/crypto/dsa/dsa_key.c.fips-reqs	2014-05-06 16:22:21.427540169 +0200
++++ openssl-1.0.1g/crypto/dsa/dsa_key.c	2014-05-06 16:22:21.433540307 +0200
 @@ -127,7 +127,7 @@ static int dsa_builtin_keygen(DSA *dsa)
  
  #ifdef OPENSSL_FIPS
@@ -124,9 +124,9 @@ diff -up openssl-1.0.1e/crypto/dsa/dsa_key.c.fips-reqs openssl-1.0.1e/crypto/dsa
  		{
  		DSAerr(DSA_F_DSA_BUILTIN_KEYGEN, DSA_R_KEY_SIZE_TOO_SMALL);
  		goto err;
-diff -up openssl-1.0.1e/crypto/fips/fips_dh_selftest.c.fips-reqs openssl-1.0.1e/crypto/fips/fips_dh_selftest.c
---- openssl-1.0.1e/crypto/fips/fips_dh_selftest.c.fips-reqs	2013-12-18 17:06:36.575114314 +0100
-+++ openssl-1.0.1e/crypto/fips/fips_dh_selftest.c	2013-12-18 17:26:14.409036334 +0100
+diff -up openssl-1.0.1g/crypto/fips/fips_dh_selftest.c.fips-reqs openssl-1.0.1g/crypto/fips/fips_dh_selftest.c
+--- openssl-1.0.1g/crypto/fips/fips_dh_selftest.c.fips-reqs	2014-05-06 16:22:21.433540307 +0200
++++ openssl-1.0.1g/crypto/fips/fips_dh_selftest.c	2014-05-06 16:22:21.433540307 +0200
 @@ -0,0 +1,162 @@
 +/* ====================================================================
 + * Copyright (c) 2011 The OpenSSL Project.  All rights reserved.
@@ -290,9 +290,9 @@ diff -up openssl-1.0.1e/crypto/fips/fips_dh_selftest.c.fips-reqs openssl-1.0.1e/
 +	return ret;
 +	}
 +#endif
-diff -up openssl-1.0.1e/crypto/fips/fips_drbg_rand.c.fips-reqs openssl-1.0.1e/crypto/fips/fips_drbg_rand.c
---- openssl-1.0.1e/crypto/fips/fips_drbg_rand.c.fips-reqs	2013-12-18 12:17:09.757636808 +0100
-+++ openssl-1.0.1e/crypto/fips/fips_drbg_rand.c	2013-12-18 18:53:33.263711297 +0100
+diff -up openssl-1.0.1g/crypto/fips/fips_drbg_rand.c.fips-reqs openssl-1.0.1g/crypto/fips/fips_drbg_rand.c
+--- openssl-1.0.1g/crypto/fips/fips_drbg_rand.c.fips-reqs	2014-05-06 16:22:21.263536376 +0200
++++ openssl-1.0.1g/crypto/fips/fips_drbg_rand.c	2014-05-06 16:22:21.433540307 +0200
 @@ -77,7 +77,8 @@ static int fips_drbg_bytes(unsigned char
  	int rv = 0;
  	unsigned char *adin = NULL;
@@ -373,9 +373,9 @@ diff -up openssl-1.0.1e/crypto/fips/fips_drbg_rand.c.fips-reqs openssl-1.0.1e/cr
  	}
  
  static const RAND_METHOD rand_drbg_meth =
-diff -up openssl-1.0.1e/crypto/fips/fips.h.fips-reqs openssl-1.0.1e/crypto/fips/fips.h
---- openssl-1.0.1e/crypto/fips/fips.h.fips-reqs	2013-12-18 12:17:09.000000000 +0100
-+++ openssl-1.0.1e/crypto/fips/fips.h	2013-12-18 17:13:00.928586689 +0100
+diff -up openssl-1.0.1g/crypto/fips/fips.h.fips-reqs openssl-1.0.1g/crypto/fips/fips.h
+--- openssl-1.0.1g/crypto/fips/fips.h.fips-reqs	2014-05-06 16:22:21.421540031 +0200
++++ openssl-1.0.1g/crypto/fips/fips.h	2014-05-06 16:22:21.433540307 +0200
 @@ -96,6 +96,7 @@ void FIPS_corrupt_dsa_keygen(void);
  int FIPS_selftest_dsa(void);
  int FIPS_selftest_ecdsa(void);
@@ -384,9 +384,9 @@ diff -up openssl-1.0.1e/crypto/fips/fips.h.fips-reqs openssl-1.0.1e/crypto/fips/
  void FIPS_corrupt_rng(void);
  void FIPS_rng_stick(void);
  void FIPS_x931_stick(int onoff);
-diff -up openssl-1.0.1e/crypto/fips/fips_post.c.fips-reqs openssl-1.0.1e/crypto/fips/fips_post.c
---- openssl-1.0.1e/crypto/fips/fips_post.c.fips-reqs	2013-12-18 12:17:09.000000000 +0100
-+++ openssl-1.0.1e/crypto/fips/fips_post.c	2013-12-18 17:12:26.721832716 +0100
+diff -up openssl-1.0.1g/crypto/fips/fips_post.c.fips-reqs openssl-1.0.1g/crypto/fips/fips_post.c
+--- openssl-1.0.1g/crypto/fips/fips_post.c.fips-reqs	2014-05-06 16:22:21.420540008 +0200
++++ openssl-1.0.1g/crypto/fips/fips_post.c	2014-05-06 16:22:21.433540307 +0200
 @@ -99,6 +99,8 @@ int FIPS_selftest(void)
  		rv = 0;
  	if (!FIPS_selftest_dsa())
@@ -396,9 +396,9 @@ diff -up openssl-1.0.1e/crypto/fips/fips_post.c.fips-reqs openssl-1.0.1e/crypto/
  	if (!FIPS_selftest_ecdh())
  		rv = 0;
  	return rv;
-diff -up openssl-1.0.1e/crypto/fips/fips_rsa_selftest.c.fips-reqs openssl-1.0.1e/crypto/fips/fips_rsa_selftest.c
---- openssl-1.0.1e/crypto/fips/fips_rsa_selftest.c.fips-reqs	2014-03-14 14:47:18.809259727 +0100
-+++ openssl-1.0.1e/crypto/fips/fips_rsa_selftest.c	2014-03-14 15:37:26.295687852 +0100
+diff -up openssl-1.0.1g/crypto/fips/fips_rsa_selftest.c.fips-reqs openssl-1.0.1g/crypto/fips/fips_rsa_selftest.c
+--- openssl-1.0.1g/crypto/fips/fips_rsa_selftest.c.fips-reqs	2014-05-06 16:22:21.267536469 +0200
++++ openssl-1.0.1g/crypto/fips/fips_rsa_selftest.c	2014-05-06 16:22:21.434540330 +0200
 @@ -60,69 +60,113 @@
  #ifdef OPENSSL_FIPS
  
@@ -1129,9 +1129,9 @@ diff -up openssl-1.0.1e/crypto/fips/fips_rsa_selftest.c.fips-reqs openssl-1.0.1e
  		RSA_free(key);
  	return ret;
  	}
-diff -up openssl-1.0.1e/crypto/fips/Makefile.fips-reqs openssl-1.0.1e/crypto/fips/Makefile
---- openssl-1.0.1e/crypto/fips/Makefile.fips-reqs	2013-12-18 12:17:20.000000000 +0100
-+++ openssl-1.0.1e/crypto/fips/Makefile	2013-12-18 17:14:20.348337362 +0100
+diff -up openssl-1.0.1g/crypto/fips/Makefile.fips-reqs openssl-1.0.1g/crypto/fips/Makefile
+--- openssl-1.0.1g/crypto/fips/Makefile.fips-reqs	2014-05-06 16:22:21.420540008 +0200
++++ openssl-1.0.1g/crypto/fips/Makefile	2014-05-06 16:22:21.434540330 +0200
 @@ -24,13 +24,15 @@ LIBSRC=fips_aes_selftest.c fips_des_self
      fips_rsa_selftest.c fips_sha_selftest.c fips.c fips_dsa_selftest.c  fips_rand.c \
      fips_rsa_x931g.c fips_post.c fips_drbg_ctr.c fips_drbg_hash.c fips_drbg_hmac.c \
@@ -1150,10 +1150,10 @@ diff -up openssl-1.0.1e/crypto/fips/Makefile.fips-reqs openssl-1.0.1e/crypto/fip
  
  LIBCRYPTO=-L.. -lcrypto
  
-diff -up openssl-1.0.1e/crypto/modes/gcm128.c.fips-reqs openssl-1.0.1e/crypto/modes/gcm128.c
---- openssl-1.0.1e/crypto/modes/gcm128.c.fips-reqs	2013-02-11 16:26:04.000000000 +0100
-+++ openssl-1.0.1e/crypto/modes/gcm128.c	2013-12-18 12:17:09.800637730 +0100
-@@ -898,6 +898,10 @@ int CRYPTO_gcm128_encrypt(GCM128_CONTEXT
+diff -up openssl-1.0.1g/crypto/modes/gcm128.c.fips-reqs openssl-1.0.1g/crypto/modes/gcm128.c
+--- openssl-1.0.1g/crypto/modes/gcm128.c.fips-reqs	2014-04-06 17:55:01.000000000 +0200
++++ openssl-1.0.1g/crypto/modes/gcm128.c	2014-05-06 16:22:21.434540330 +0200
+@@ -906,6 +906,10 @@ int CRYPTO_gcm128_encrypt(GCM128_CONTEXT
  # endif
  #endif
  
@@ -1164,7 +1164,7 @@ diff -up openssl-1.0.1e/crypto/modes/gcm128.c.fips-reqs openssl-1.0.1e/crypto/mo
  #if 0
  	n = (unsigned int)mlen%16; /* alternative to ctx->mres */
  #endif
-@@ -1200,6 +1204,10 @@ int CRYPTO_gcm128_encrypt_ctr32(GCM128_C
+@@ -1269,6 +1273,10 @@ int CRYPTO_gcm128_encrypt_ctr32(GCM128_C
  # endif
  #endif
  
@@ -1175,10 +1175,10 @@ diff -up openssl-1.0.1e/crypto/modes/gcm128.c.fips-reqs openssl-1.0.1e/crypto/mo
  	mlen += len;
  	if (mlen>((U64(1)<<36)-32) || (sizeof(len)==8 && mlen<len))
  		return -1;
-diff -up openssl-1.0.1e/crypto/modes/modes_lcl.h.fips-reqs openssl-1.0.1e/crypto/modes/modes_lcl.h
---- openssl-1.0.1e/crypto/modes/modes_lcl.h.fips-reqs	2013-12-18 12:17:09.388628895 +0100
-+++ openssl-1.0.1e/crypto/modes/modes_lcl.h	2013-12-18 12:17:09.800637730 +0100
-@@ -115,6 +115,7 @@ struct gcm128_context {
+diff -up openssl-1.0.1g/crypto/modes/modes_lcl.h.fips-reqs openssl-1.0.1g/crypto/modes/modes_lcl.h
+--- openssl-1.0.1g/crypto/modes/modes_lcl.h.fips-reqs	2014-05-06 16:22:20.903528054 +0200
++++ openssl-1.0.1g/crypto/modes/modes_lcl.h	2014-05-06 16:22:21.435540353 +0200
+@@ -112,6 +112,7 @@ struct gcm128_context {
  	unsigned int mres, ares;
  	block128_f block;
  	void *key;
@@ -1186,9 +1186,9 @@ diff -up openssl-1.0.1e/crypto/modes/modes_lcl.h.fips-reqs openssl-1.0.1e/crypto
  };
  
  struct xts128_context {
-diff -up openssl-1.0.1e/crypto/rand/md_rand.c.fips-reqs openssl-1.0.1e/crypto/rand/md_rand.c
---- openssl-1.0.1e/crypto/rand/md_rand.c.fips-reqs	2013-12-18 12:17:09.763636936 +0100
-+++ openssl-1.0.1e/crypto/rand/md_rand.c	2013-12-18 12:17:09.800637730 +0100
+diff -up openssl-1.0.1g/crypto/rand/md_rand.c.fips-reqs openssl-1.0.1g/crypto/rand/md_rand.c
+--- openssl-1.0.1g/crypto/rand/md_rand.c.fips-reqs	2014-05-06 16:22:21.269536515 +0200
++++ openssl-1.0.1g/crypto/rand/md_rand.c	2014-05-06 16:26:53.776836535 +0200
 @@ -143,12 +143,6 @@ static long md_count[2]={0,0};
  static double entropy=0;
  static int initialized=0;
@@ -1209,9 +1209,9 @@ diff -up openssl-1.0.1e/crypto/rand/md_rand.c.fips-reqs openssl-1.0.1e/crypto/ra
 -	int do_not_lock;
 +	int locked;
  
- 	/*
- 	 * (Based on the rand(3) manpage)
-@@ -213,19 +207,8 @@ static void ssleay_rand_add(const void *
+ 	if (!num)
+ 		return;
+@@ -216,19 +210,8 @@ static void ssleay_rand_add(const void *
           * hash function.
  	 */
  
@@ -1232,7 +1232,7 @@ diff -up openssl-1.0.1e/crypto/rand/md_rand.c.fips-reqs openssl-1.0.1e/crypto/ra
  	st_idx=state_index;
  
  	/* use our own copies of the counters so that even
-@@ -257,7 +240,8 @@ static void ssleay_rand_add(const void *
+@@ -260,7 +243,8 @@ static void ssleay_rand_add(const void *
  
  	md_count[1] += (num / MD_DIGEST_LENGTH) + (num % MD_DIGEST_LENGTH > 0);
  
@@ -1242,7 +1242,7 @@ diff -up openssl-1.0.1e/crypto/rand/md_rand.c.fips-reqs openssl-1.0.1e/crypto/ra
  
  	EVP_MD_CTX_init(&m);
  	for (i=0; i<num; i+=MD_DIGEST_LENGTH)
-@@ -308,7 +292,7 @@ static void ssleay_rand_add(const void *
+@@ -311,7 +295,7 @@ static void ssleay_rand_add(const void *
  		}
  	EVP_MD_CTX_cleanup(&m);
  
@@ -1251,7 +1251,7 @@ diff -up openssl-1.0.1e/crypto/rand/md_rand.c.fips-reqs openssl-1.0.1e/crypto/ra
  	/* Don't just copy back local_md into md -- this could mean that
  	 * other thread's seeding remains without effect (except for
  	 * the incremented counter).  By XORing it we keep at least as
-@@ -319,7 +303,8 @@ static void ssleay_rand_add(const void *
+@@ -322,7 +306,8 @@ static void ssleay_rand_add(const void *
  		}
  	if (entropy < ENTROPY_NEEDED) /* stop counting when we have enough */
  	    entropy += add;
@@ -1261,7 +1261,7 @@ diff -up openssl-1.0.1e/crypto/rand/md_rand.c.fips-reqs openssl-1.0.1e/crypto/ra
  	
  #if !defined(OPENSSL_THREADS) && !defined(OPENSSL_SYS_WIN32)
  	assert(md_c[1] == md_count[1]);
-@@ -344,6 +329,7 @@ static int ssleay_rand_bytes(unsigned ch
+@@ -347,6 +332,7 @@ static int ssleay_rand_bytes(unsigned ch
  	pid_t curr_pid = getpid();
  #endif
  	int do_stir_pool = 0;
@@ -1269,12 +1269,16 @@ diff -up openssl-1.0.1e/crypto/rand/md_rand.c.fips-reqs openssl-1.0.1e/crypto/ra
  
  #ifdef PREDICT
  	if (rand_predictable)
-@@ -381,13 +367,7 @@ static int ssleay_rand_bytes(unsigned ch
+@@ -383,17 +369,8 @@ static int ssleay_rand_bytes(unsigned ch
+ 	 * are fed into the hash function and the results are kept in the
  	 * global 'md'.
  	 */
+-#ifdef OPENSSL_FIPS
+-	/* NB: in FIPS mode we are already under a lock */
+-	if (!FIPS_mode())
+-#endif
+-		CRYPTO_w_lock(CRYPTO_LOCK_RAND);
  
--	CRYPTO_w_lock(CRYPTO_LOCK_RAND);
--
 -	/* prevent ssleay_rand_bytes() from trying to obtain the lock again */
 -	CRYPTO_w_lock(CRYPTO_LOCK_RAND2);
 -	CRYPTO_THREADID_current(&locking_threadid);
@@ -1284,33 +1288,42 @@ diff -up openssl-1.0.1e/crypto/rand/md_rand.c.fips-reqs openssl-1.0.1e/crypto/ra
  
  	/* always poll for external entropy in FIPS mode, drbg provides the 
  	 * expansion
-@@ -461,9 +441,8 @@ static int ssleay_rand_bytes(unsigned ch
+@@ -467,12 +444,8 @@ static int ssleay_rand_bytes(unsigned ch
  
  	md_count[0] += 1;
  
 -	/* before unlocking, we must clear 'crypto_lock_rand' */
 -	crypto_lock_rand = 0;
--	CRYPTO_w_unlock(CRYPTO_LOCK_RAND);
+-#ifdef OPENSSL_FIPS
+-	if (!FIPS_mode())
+-#endif
+-		CRYPTO_w_unlock(CRYPTO_LOCK_RAND);
 +	if (locked)
 +		private_RAND_lock(0);
  
  	while (num > 0)
  		{
-@@ -515,10 +494,11 @@ static int ssleay_rand_bytes(unsigned ch
+@@ -524,16 +497,11 @@ static int ssleay_rand_bytes(unsigned ch
  	MD_Init(&m);
  	MD_Update(&m,(unsigned char *)&(md_c[0]),sizeof(md_c));
  	MD_Update(&m,local_md,MD_DIGEST_LENGTH);
--	CRYPTO_w_lock(CRYPTO_LOCK_RAND);
+-#ifdef OPENSSL_FIPS
+-	if (!FIPS_mode())
+-#endif
+-		CRYPTO_w_lock(CRYPTO_LOCK_RAND);
 +	locked = private_RAND_lock(1);
  	MD_Update(&m,md,MD_DIGEST_LENGTH);
  	MD_Final(&m,md);
--	CRYPTO_w_unlock(CRYPTO_LOCK_RAND);
+-#ifdef OPENSSL_FIPS
+-	if (!FIPS_mode())
+-#endif
+-		CRYPTO_w_unlock(CRYPTO_LOCK_RAND);
 +	if (locked)
 +		private_RAND_lock(0);
  
  	EVP_MD_CTX_cleanup(&m);
  	if (ok)
-@@ -548,32 +528,10 @@ static int ssleay_rand_pseudo_bytes(unsi
+@@ -563,32 +531,10 @@ static int ssleay_rand_pseudo_bytes(unsi
  
  static int ssleay_rand_status(void)
  	{
@@ -1345,7 +1358,7 @@ diff -up openssl-1.0.1e/crypto/rand/md_rand.c.fips-reqs openssl-1.0.1e/crypto/ra
  	
  	if (!initialized)
  		{
-@@ -583,13 +541,8 @@ static int ssleay_rand_status(void)
+@@ -598,13 +544,8 @@ static int ssleay_rand_status(void)
  
  	ret = entropy >= ENTROPY_NEEDED;
  
@@ -1361,9 +1374,9 @@ diff -up openssl-1.0.1e/crypto/rand/md_rand.c.fips-reqs openssl-1.0.1e/crypto/ra
  	
  	return ret;
  	}
-diff -up openssl-1.0.1e/crypto/rand/rand.h.fips-reqs openssl-1.0.1e/crypto/rand/rand.h
---- openssl-1.0.1e/crypto/rand/rand.h.fips-reqs	2013-12-18 12:17:09.764636958 +0100
-+++ openssl-1.0.1e/crypto/rand/rand.h	2013-12-18 12:17:09.800637730 +0100
+diff -up openssl-1.0.1g/crypto/rand/rand.h.fips-reqs openssl-1.0.1g/crypto/rand/rand.h
+--- openssl-1.0.1g/crypto/rand/rand.h.fips-reqs	2014-05-06 16:22:21.269536515 +0200
++++ openssl-1.0.1g/crypto/rand/rand.h	2014-05-06 16:22:21.435540353 +0200
 @@ -124,6 +124,8 @@ void RAND_set_fips_drbg_type(int type, i
  int RAND_init_fips(void);
  #endif
@@ -1373,9 +1386,9 @@ diff -up openssl-1.0.1e/crypto/rand/rand.h.fips-reqs openssl-1.0.1e/crypto/rand/
  /* BEGIN ERROR CODES */
  /* The following lines are auto generated by the script mkerr.pl. Any changes
   * made after this point may be overwritten when the script is next run.
-diff -up openssl-1.0.1e/crypto/rand/rand_lcl.h.fips-reqs openssl-1.0.1e/crypto/rand/rand_lcl.h
---- openssl-1.0.1e/crypto/rand/rand_lcl.h.fips-reqs	2013-12-18 12:17:09.507631447 +0100
-+++ openssl-1.0.1e/crypto/rand/rand_lcl.h	2013-12-18 12:17:09.800637730 +0100
+diff -up openssl-1.0.1g/crypto/rand/rand_lcl.h.fips-reqs openssl-1.0.1g/crypto/rand/rand_lcl.h
+--- openssl-1.0.1g/crypto/rand/rand_lcl.h.fips-reqs	2014-05-06 16:22:21.021530782 +0200
++++ openssl-1.0.1g/crypto/rand/rand_lcl.h	2014-05-06 16:22:21.435540353 +0200
 @@ -112,7 +112,7 @@
  #ifndef HEADER_RAND_LCL_H
  #define HEADER_RAND_LCL_H
@@ -1385,9 +1398,9 @@ diff -up openssl-1.0.1e/crypto/rand/rand_lcl.h.fips-reqs openssl-1.0.1e/crypto/r
  
  
  #if !defined(USE_MD5_RAND) && !defined(USE_SHA1_RAND) && !defined(USE_MDC2_RAND) && !defined(USE_MD2_RAND)
-diff -up openssl-1.0.1e/crypto/rand/rand_lib.c.fips-reqs openssl-1.0.1e/crypto/rand/rand_lib.c
---- openssl-1.0.1e/crypto/rand/rand_lib.c.fips-reqs	2013-02-11 16:26:04.000000000 +0100
-+++ openssl-1.0.1e/crypto/rand/rand_lib.c	2013-12-18 18:16:45.625850730 +0100
+diff -up openssl-1.0.1g/crypto/rand/rand_lib.c.fips-reqs openssl-1.0.1g/crypto/rand/rand_lib.c
+--- openssl-1.0.1g/crypto/rand/rand_lib.c.fips-reqs	2014-03-17 17:14:20.000000000 +0100
++++ openssl-1.0.1g/crypto/rand/rand_lib.c	2014-05-06 16:22:21.435540353 +0200
 @@ -181,6 +181,41 @@ int RAND_status(void)
  	return 0;
  	}
@@ -1447,9 +1460,9 @@ diff -up openssl-1.0.1e/crypto/rand/rand_lib.c.fips-reqs openssl-1.0.1e/crypto/r
  	return 1;
  	}
  
-diff -up openssl-1.0.1e/crypto/rsa/rsa_gen.c.fips-reqs openssl-1.0.1e/crypto/rsa/rsa_gen.c
---- openssl-1.0.1e/crypto/rsa/rsa_gen.c.fips-reqs	2013-12-18 12:17:09.764636958 +0100
-+++ openssl-1.0.1e/crypto/rsa/rsa_gen.c	2013-12-19 17:40:58.483154314 +0100
+diff -up openssl-1.0.1g/crypto/rsa/rsa_gen.c.fips-reqs openssl-1.0.1g/crypto/rsa/rsa_gen.c
+--- openssl-1.0.1g/crypto/rsa/rsa_gen.c.fips-reqs	2014-05-06 16:22:21.270536538 +0200
++++ openssl-1.0.1g/crypto/rsa/rsa_gen.c	2014-05-06 16:22:21.436540376 +0200
 @@ -1,5 +1,6 @@
  /* crypto/rsa/rsa_gen.c */
  /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
@@ -1717,9 +1730,9 @@ diff -up openssl-1.0.1e/crypto/rsa/rsa_gen.c.fips-reqs openssl-1.0.1e/crypto/rsa
  	ok=1;
  err:
  	if (ok == -1)
-diff -up openssl-1.0.1e/ssl/t1_enc.c.fips-reqs openssl-1.0.1e/ssl/t1_enc.c
---- openssl-1.0.1e/ssl/t1_enc.c.fips-reqs	2013-02-11 16:26:04.000000000 +0100
-+++ openssl-1.0.1e/ssl/t1_enc.c	2013-12-18 12:17:09.801637751 +0100
+diff -up openssl-1.0.1g/ssl/t1_enc.c.fips-reqs openssl-1.0.1g/ssl/t1_enc.c
+--- openssl-1.0.1g/ssl/t1_enc.c.fips-reqs	2014-03-17 17:14:20.000000000 +0100
++++ openssl-1.0.1g/ssl/t1_enc.c	2014-05-06 16:22:21.436540376 +0200
 @@ -291,6 +291,27 @@ static int tls1_PRF(long digest_mask,
  err:
  	return ret;

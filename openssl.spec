@@ -22,8 +22,8 @@
 
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
-Version: 1.0.1e
-Release: 44%{?dist}
+Version: 1.0.1g
+Release: 1%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -57,9 +57,9 @@ Patch33: openssl-1.0.0-beta4-ca-dir.patch
 Patch34: openssl-0.9.6-x509.patch
 Patch35: openssl-0.9.8j-version-add-engines.patch
 Patch36: openssl-1.0.0e-doc-noeof.patch
-Patch38: openssl-1.0.1-beta2-ssl-op-all.patch
+Patch38: openssl-1.0.1g-ssl-op-all.patch
 Patch39: openssl-1.0.1c-ipv6-apps.patch
-Patch40: openssl-1.0.1e-fips.patch
+Patch40: openssl-1.0.1g-fips.patch
 Patch45: openssl-1.0.1e-env-zlib.patch
 Patch47: openssl-1.0.0-beta5-readme-warning.patch
 Patch49: openssl-1.0.1a-algo-doc.patch
@@ -79,23 +79,16 @@ Patch72: openssl-1.0.1e-fips-ctor.patch
 Patch73: openssl-1.0.1e-ecc-suiteb.patch
 Patch74: openssl-1.0.1e-no-md5-verify.patch
 Patch75: openssl-1.0.1e-compat-symbols.patch
-Patch76: openssl-1.0.1e-new-fips-reqs.patch
+Patch76: openssl-1.0.1g-new-fips-reqs.patch
 Patch77: openssl-1.0.1e-weak-ciphers.patch
-Patch78: openssl-1.0.1e-3des-strength.patch
-Patch79: openssl-1.0.1e-req-keylen.patch
+Patch78: openssl-1.0.1g-3des-strength.patch
 Patch90: openssl-1.0.1e-enc-fail.patch
+Patch91: openssl-1.0.1e-ssl2-no-ec.patch
 # Backported fixes including security fixes
 Patch81: openssl-1.0.1-beta2-padlock64.patch
-Patch82: openssl-1.0.1e-backports.patch
-Patch83: openssl-1.0.1e-bad-mac.patch
 Patch84: openssl-1.0.1e-trusted-first.patch
 Patch85: openssl-1.0.1e-arm-use-elf-auxv-caps.patch
-Patch86: openssl-1.0.1e-cve-2013-6449.patch
-Patch87: openssl-1.0.1e-cve-2013-6450.patch
-Patch88: openssl-1.0.1e-cve-2013-4353.patch
 Patch89: openssl-1.0.1e-ephemeral-key-size.patch
-# upstream patch for CVE-2014-0160
-Patch100: openssl.git-96db902.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -203,6 +196,7 @@ cp %{SOURCE12} %{SOURCE13} crypto/ec/
 %patch68 -p1 -b .secure-getenv
 %patch69 -p1 -b .dh1024
 %patch70 -p1 -b .fips-ec
+%patch71 -p1 -b .manfix
 %patch72 -p1 -b .fips-ctor
 %patch73 -p1 -b .suiteb
 %patch74 -p1 -b .no-md5-verify
@@ -210,20 +204,13 @@ cp %{SOURCE12} %{SOURCE13} crypto/ec/
 %patch76 -p1 -b .fips-reqs
 %patch77 -p1 -b .weak-ciphers
 %patch78 -p1 -b .3des-strength
-%patch79 -p1 -b .keylen
 %patch90 -p1 -b .enc-fail
+%patch91 -p1 -b .ssl2noec
 
 %patch81 -p1 -b .padlock64
-%patch82 -p1 -b .backports
-%patch71 -p1 -b .manfix
-%patch83 -p1 -b .bad-mac
 %patch84 -p1 -b .trusted-first
 %patch85 -p1 -b .armcap
-%patch86 -p1 -b .hash-crash
-%patch87 -p1 -b .dtls1-mitm
-%patch88 -p1 -b .handshake-crash
 %patch89 -p1 -b .ephemeral
-%patch100 -p1 -b .CVE-2014-0160
 
 sed -i 's/SHLIB_VERSION_NUMBER "1.0.0"/SHLIB_VERSION_NUMBER "%{version}"/' crypto/opensslv.h
 
@@ -490,6 +477,11 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Wed May  7 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1g-1
+- new upstream release 1.0.1g
+- do not include ECC ciphersuites in SSLv2 client hello (#1090952)
+- fail on hmac integrity check if the .hmac file is empty
+
 * Mon Apr 07 2014 Dennis Gilmore <dennis@ausil.us> - 1.0.1e-44
 - pull in upstream patch for CVE-2014-0160
 - removed CHANGES file portion from patch for expediency
