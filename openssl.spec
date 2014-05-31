@@ -23,7 +23,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1g
-Release: 1%{?dist}
+Release: 2%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -418,11 +418,7 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 
 %files
 %defattr(-,root,root)
-%doc FAQ LICENSE CHANGES NEWS INSTALL README
-%doc doc/c-indentation.el doc/openssl.txt
-%doc doc/openssl_button.html doc/openssl_button.gif
-%doc doc/ssleay.txt
-%doc README.FIPS
+%doc FAQ LICENSE NEWS README README.FIPS
 %{_sysconfdir}/pki/tls/certs/make-dummy-cert
 %{_sysconfdir}/pki/tls/certs/renew-dummy-cert
 %{_sysconfdir}/pki/tls/certs/Makefile
@@ -456,6 +452,7 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 
 %files devel
 %defattr(-,root,root)
+%doc doc/c-indentation.el doc/openssl.txt CHANGES
 %{_prefix}/include/openssl
 %attr(0755,root,root) %{_libdir}/*.so
 %attr(0644,root,root) %{_mandir}/man3*/*
@@ -477,6 +474,10 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Sat May 31 2014 Peter Robinson <pbrobinson@fedoraproject.org> 1.0.1g-2
+- Drop obsolete and irrelevant docs
+- Move devel docs to appropriate package
+
 * Wed May  7 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1g-1
 - new upstream release 1.0.1g
 - do not include ECC ciphersuites in SSLv2 client hello (#1090952)
