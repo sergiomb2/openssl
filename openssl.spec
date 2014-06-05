@@ -22,8 +22,8 @@
 
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
-Version: 1.0.1g
-Release: 2%{?dist}
+Version: 1.0.1h
+Release: 1%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -57,8 +57,7 @@ Patch33: openssl-1.0.0-beta4-ca-dir.patch
 Patch34: openssl-0.9.6-x509.patch
 Patch35: openssl-0.9.8j-version-add-engines.patch
 Patch36: openssl-1.0.0e-doc-noeof.patch
-Patch38: openssl-1.0.1g-ssl-op-all.patch
-Patch39: openssl-1.0.1c-ipv6-apps.patch
+Patch39: openssl-1.0.1h-ipv6-apps.patch
 Patch40: openssl-1.0.1g-fips.patch
 Patch45: openssl-1.0.1e-env-zlib.patch
 Patch47: openssl-1.0.0-beta5-readme-warning.patch
@@ -74,7 +73,7 @@ Patch66: openssl-1.0.1-pkgconfig-krb5.patch
 Patch68: openssl-1.0.1e-secure-getenv.patch
 Patch69: openssl-1.0.1c-dh-1024.patch
 Patch70: openssl-1.0.1e-fips-ec.patch
-Patch71: openssl-1.0.1e-manfix.patch
+Patch71: openssl-1.0.1h-manfix.patch
 Patch72: openssl-1.0.1e-fips-ctor.patch
 Patch73: openssl-1.0.1e-ecc-suiteb.patch
 Patch74: openssl-1.0.1e-no-md5-verify.patch
@@ -179,7 +178,6 @@ cp %{SOURCE12} %{SOURCE13} crypto/ec/
 %patch34 -p1 -b .x509
 %patch35 -p1 -b .version-add-engines
 %patch36 -p1 -b .doc-noeof
-%patch38 -p1 -b .op-all
 %patch39 -p1 -b .ipv6-apps
 %patch40 -p1 -b .fips
 %patch45 -p1 -b .env-zlib
@@ -474,6 +472,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Thu Jun  5 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1h-1
+- new upstream release 1.0.1h
+
 * Sat May 31 2014 Peter Robinson <pbrobinson@fedoraproject.org> 1.0.1g-2
 - Drop obsolete and irrelevant docs
 - Move devel docs to appropriate package
