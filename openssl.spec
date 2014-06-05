@@ -21,7 +21,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1e
-Release: 37%{?dist}.1
+Release: 38%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -87,8 +87,13 @@ Patch85: openssl-1.0.1e-arm-use-elf-auxv-caps.patch
 Patch86: openssl-1.0.1e-cve-2013-6449.patch
 Patch87: openssl-1.0.1e-cve-2013-6450.patch
 Patch88: openssl-1.0.1e-cve-2013-4353.patch
-# CVE-2014-0160
-Patch100: openssl.git-96db902.patch
+Patch90: openssl-1.0.1e-cve-2014-0160.patch
+Patch91: openssl-1.0.1e-cve-2010-5298.patch
+Patch92: openssl-1.0.1e-cve-2014-0195.patch
+Patch93: openssl-1.0.1e-cve-2014-0198.patch
+Patch94: openssl-1.0.1e-cve-2014-0221.patch
+Patch95: openssl-1.0.1e-cve-2014-0224.patch
+Patch96: openssl-1.0.1e-cve-2014-3470.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -211,7 +216,13 @@ cp %{SOURCE12} %{SOURCE13} crypto/ec/
 %patch86 -p1 -b .hash-crash
 %patch87 -p1 -b .dtls1-mitm
 %patch88 -p1 -b .handshake-crash
-%patch100 -p1 -b .CVE-2014-0160
+%patch90 -p1 -b .heartbeat
+%patch91 -p1 -b .freelist
+%patch92 -p1 -b .dtls1-overflow
+%patch93 -p1 -b .null-deref
+%patch94 -p1 -b .dtls1-dos
+%patch95 -p1 -b .keying-mitm
+%patch96 -p1 -b .anon-ecdh-dos
 
 sed -i 's/SHLIB_VERSION_NUMBER "1.0.0"/SHLIB_VERSION_NUMBER "%{version}"/' crypto/opensslv.h
 
@@ -475,6 +486,14 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Thu Jun  5 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-38
+- fix CVE-2010-5298 - possible use of memory after free
+- fix CVE-2014-0195 - buffer overflow via invalid DTLS fragment
+- fix CVE-2014-0198 - possible NULL pointer dereference
+- fix CVE-2014-0221 - DoS from invalid DTLS handshake packet
+- fix CVE-2014-0224 - SSL/TLS MITM vulnerability
+- fix CVE-2014-3470 - client-side DoS when using anonymous ECDH
+
 * Mon Apr 07 2014 Dennis Gilmore <dennis@ausil.us> - 1.0.1e-37.1
 - pull in upstream patch for CVE-2014-0160
 - removed CHANGES file portion from patch for expediency
