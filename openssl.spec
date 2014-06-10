@@ -23,7 +23,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1h
-Release: 2%{?dist}
+Release: 3%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -85,6 +85,7 @@ Patch90: openssl-1.0.1e-enc-fail.patch
 Patch91: openssl-1.0.1e-ssl2-no-ec.patch
 # Backported fixes including security fixes
 Patch81: openssl-1.0.1-beta2-padlock64.patch
+Patch82: openssl-1.0.1h-session-resumption.patch
 Patch84: openssl-1.0.1e-trusted-first.patch
 Patch85: openssl-1.0.1e-arm-use-elf-auxv-caps.patch
 Patch89: openssl-1.0.1e-ephemeral-key-size.patch
@@ -206,6 +207,7 @@ cp %{SOURCE12} %{SOURCE13} crypto/ec/
 %patch91 -p1 -b .ssl2noec
 
 %patch81 -p1 -b .padlock64
+%patch82 -p1 -b .resumption
 %patch84 -p1 -b .trusted-first
 %patch85 -p1 -b .armcap
 %patch89 -p1 -b .ephemeral
@@ -472,6 +474,11 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Tue Jun 10 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1h-3
+- make FIPS mode keygen bit length restriction enforced only when
+  OPENSSL_ENFORCE_MODULUS_BITS is set
+- fix CVE-2014-0224 fix that broke EAP-FAST session resumption support
+
 * Sat Jun 07 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1:1.0.1h-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
 

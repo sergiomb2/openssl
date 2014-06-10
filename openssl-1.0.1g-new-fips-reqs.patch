@@ -80,11 +80,12 @@ diff -up openssl-1.0.1g/crypto/dh/dh_check.c.fips-reqs openssl-1.0.1g/crypto/dh/
 diff -up openssl-1.0.1g/crypto/dsa/dsa_gen.c.fips-reqs openssl-1.0.1g/crypto/dsa/dsa_gen.c
 --- openssl-1.0.1g/crypto/dsa/dsa_gen.c.fips-reqs	2014-05-06 16:22:21.254536168 +0200
 +++ openssl-1.0.1g/crypto/dsa/dsa_gen.c	2014-05-06 16:22:21.432540283 +0200
-@@ -159,7 +159,6 @@ int dsa_builtin_paramgen(DSA *ret, size_
+@@ -159,7 +159,7 @@ int dsa_builtin_paramgen(DSA *ret, size_
  	    }
  
  	if (FIPS_module_mode() &&
 -	    (bits != 1024 || qbits != 160) &&
++	    (getenv("OPENSSL_ENFORCE_MODULUS_BITS") || bits != 1024 || qbits != 160) &&
  	    (bits != 2048 || qbits != 224) &&
  	    (bits != 2048 || qbits != 256) &&
  	    (bits != 3072 || qbits != 256))
@@ -95,7 +96,7 @@ diff -up openssl-1.0.1g/crypto/dsa/dsa.h.fips-reqs openssl-1.0.1g/crypto/dsa/dsa
  #endif
  
  #define OPENSSL_DSA_FIPS_MIN_MODULUS_BITS 1024
-+#define OPENSSL_DSA_FIPS_MIN_MODULUS_BITS_GEN 2048
++#define OPENSSL_DSA_FIPS_MIN_MODULUS_BITS_GEN (getenv("OPENSSL_ENFORCE_MODULUS_BITS")?2048:1024)
  
  #define DSA_FLAG_CACHE_MONT_P	0x01
  #define DSA_FLAG_NO_EXP_CONSTTIME       0x02 /* new with 0.9.7h; the built-in DSA
@@ -1493,7 +1494,7 @@ diff -up openssl-1.0.1g/crypto/rsa/rsa_gen.c.fips-reqs openssl-1.0.1g/crypto/rsa
 +	    	return 0;
 +	    	}
 +
-+	if (bits != 2048 && bits != 3072)
++	if ((pbits & 0xFF) || (getenv("OPENSSL_ENFORCE_MODULUS_BITS") && bits != 2048 && bits != 3072))
 +		{
 +		FIPSerr(FIPS_F_RSA_BUILTIN_KEYGEN, FIPS_R_INVALID_KEY_LENGTH);
 +		return 0;
@@ -1693,7 +1694,7 @@ diff -up openssl-1.0.1g/crypto/rsa/rsa_gen.c.fips-reqs openssl-1.0.1g/crypto/rsa
  static int rsa_builtin_keygen(RSA *rsa, int bits, BIGNUM *e_value, BN_GENCB *cb)
  	{
  	BIGNUM *r0=NULL,*r1=NULL,*r2=NULL,*r3=NULL,*tmp;
-@@ -176,17 +393,7 @@ static int rsa_builtin_keygen(RSA *rsa,
+@@ -176,17 +393,12 @@ static int rsa_builtin_keygen(RSA *rsa,
  #ifdef OPENSSL_FIPS
  	if (FIPS_module_mode())
  		{
@@ -1703,16 +1704,16 @@ diff -up openssl-1.0.1g/crypto/rsa/rsa_gen.c.fips-reqs openssl-1.0.1g/crypto/rsa
 -	    	return 0;
 -	    	}
 -
--		if (bits < OPENSSL_RSA_FIPS_MIN_MODULUS_BITS)
--		    {
--		    FIPSerr(FIPS_F_RSA_BUILTIN_KEYGEN,FIPS_R_KEY_TOO_SHORT);
--		    return 0;
--		    }
+ 		if (bits < OPENSSL_RSA_FIPS_MIN_MODULUS_BITS)
+ 		    {
+ 		    FIPSerr(FIPS_F_RSA_BUILTIN_KEYGEN,FIPS_R_KEY_TOO_SHORT);
+ 		    return 0;
+ 		    }
 +		return FIPS_rsa_builtin_keygen(rsa, bits, e_value, cb);
  		}
  #endif
  
-@@ -301,17 +508,6 @@ static int rsa_builtin_keygen(RSA *rsa,
+@@ -301,17 +520,6 @@ static int rsa_builtin_keygen(RSA *rsa,
  		p = rsa->p;
  	if (!BN_mod_inverse(rsa->iqmp,rsa->q,p,ctx)) goto err;
  
