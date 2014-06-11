@@ -23,7 +23,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1h
-Release: 3%{?dist}
+Release: 4%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -83,6 +83,7 @@ Patch77: openssl-1.0.1e-weak-ciphers.patch
 Patch78: openssl-1.0.1g-3des-strength.patch
 Patch90: openssl-1.0.1e-enc-fail.patch
 Patch91: openssl-1.0.1e-ssl2-no-ec.patch
+Patch92: openssl-1.0.1h-system-cipherlist.patch
 # Backported fixes including security fixes
 Patch81: openssl-1.0.1-beta2-padlock64.patch
 Patch82: openssl-1.0.1h-session-resumption.patch
@@ -109,6 +110,7 @@ protocols.
 Summary: A general purpose cryptography library with TLS implementation
 Group: System Environment/Libraries
 Requires: ca-certificates >= 2008-5
+Requires: crypto-policies
 # Needed obsoletes due to the base/lib subpackage split
 Obsoletes: openssl < 1:1.0.1-0.3.beta3
 Obsoletes: openssl-fips < 1:1.0.1e-28
@@ -205,6 +207,7 @@ cp %{SOURCE12} %{SOURCE13} crypto/ec/
 %patch78 -p1 -b .3des-strength
 %patch90 -p1 -b .enc-fail
 %patch91 -p1 -b .ssl2noec
+%patch92 -p1 -b .system
 
 %patch81 -p1 -b .padlock64
 %patch82 -p1 -b .resumption
@@ -267,6 +270,7 @@ sslarch="linux-ppc64le"
 # RPM_OPT_FLAGS, so we can skip specifiying them here.
 ./Configure \
 	--prefix=%{_prefix} --openssldir=%{_sysconfdir}/pki/tls ${sslflags} \
+	--system-ciphers-file=%{_sysconfdir}/crypto-policies/back-ends/openssl.config \
 	zlib enable-camellia enable-seed enable-tlsext enable-rfc3779 \
 	enable-cms enable-md2 no-mdc2 no-rc5 no-ec2m no-gost no-srp \
 	--with-krb5-flavor=MIT --enginesdir=%{_libdir}/openssl/engines \
@@ -474,6 +478,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Wed Jun 11 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1h-4
+- use system profile for default cipher list
+
 * Tue Jun 10 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1h-3
 - make FIPS mode keygen bit length restriction enforced only when
   OPENSSL_ENFORCE_MODULUS_BITS is set
