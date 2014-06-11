@@ -85,7 +85,7 @@ diff -up openssl-1.0.1h/crypto/opensslconf.h.in.system openssl-1.0.1h/crypto/ope
 diff -up openssl-1.0.1h/ssl/ssl_ciph.c.system openssl-1.0.1h/ssl/ssl_ciph.c
 --- openssl-1.0.1h/ssl/ssl_ciph.c.system	2014-06-05 14:47:37.441311282 +0200
 +++ openssl-1.0.1h/ssl/ssl_ciph.c	2014-06-11 13:55:28.194381937 +0200
-@@ -1352,6 +1352,53 @@ static int ssl_cipher_process_rulestr(co
+@@ -1352,6 +1352,54 @@ static int ssl_cipher_process_rulestr(co
  	return(retval);
  	}
  
@@ -104,7 +104,8 @@ diff -up openssl-1.0.1h/ssl/ssl_ciph.c.system openssl-1.0.1h/ssl/ssl_ciph.c
 +		snprintf(buf, sizeof(buf), "%s", SSL_DEFAULT_CIPHER_LIST);
 +		}
 +
-+	fclose(fp);
++	if (fp)
++		fclose(fp);
 +
 +	slen = strlen(suffix);
 +	len = strlen(buf);
@@ -139,7 +140,7 @@ diff -up openssl-1.0.1h/ssl/ssl_ciph.c.system openssl-1.0.1h/ssl/ssl_ciph.c
  STACK_OF(SSL_CIPHER) *ssl_create_cipher_list(const SSL_METHOD *ssl_method,
  		STACK_OF(SSL_CIPHER) **cipher_list,
  		STACK_OF(SSL_CIPHER) **cipher_list_by_id,
-@@ -1359,16 +1406,29 @@ STACK_OF(SSL_CIPHER) *ssl_create_cipher_
+@@ -1359,16 +1407,29 @@ STACK_OF(SSL_CIPHER) *ssl_create_cipher_
  	{
  	int ok, num_of_ciphers, num_of_alias_max, num_of_group_aliases;
  	unsigned long disabled_mkey, disabled_auth, disabled_enc, disabled_mac, disabled_ssl;
@@ -171,7 +172,7 @@ diff -up openssl-1.0.1h/ssl/ssl_ciph.c.system openssl-1.0.1h/ssl/ssl_ciph.c
  
  	/*
  	 * To reduce the work to do we only want to process the compiled
-@@ -1389,7 +1449,7 @@ STACK_OF(SSL_CIPHER) *ssl_create_cipher_
+@@ -1389,7 +1450,7 @@ STACK_OF(SSL_CIPHER) *ssl_create_cipher_
  	if (co_list == NULL)
  		{
  		SSLerr(SSL_F_SSL_CREATE_CIPHER_LIST,ERR_R_MALLOC_FAILURE);
@@ -180,7 +181,7 @@ diff -up openssl-1.0.1h/ssl/ssl_ciph.c.system openssl-1.0.1h/ssl/ssl_ciph.c
  		}
  
  	ssl_cipher_collect_ciphers(ssl_method, num_of_ciphers,
-@@ -1431,8 +1491,7 @@ STACK_OF(SSL_CIPHER) *ssl_create_cipher_
+@@ -1431,8 +1492,7 @@ STACK_OF(SSL_CIPHER) *ssl_create_cipher_
  	 * in force within each class */
  	if (!ssl_cipher_strength_sort(&head, &tail))
  		{
@@ -190,7 +191,7 @@ diff -up openssl-1.0.1h/ssl/ssl_ciph.c.system openssl-1.0.1h/ssl/ssl_ciph.c
  		}
  
  	/* Now disable everything (maintaining the ordering!) */
-@@ -1452,9 +1511,8 @@ STACK_OF(SSL_CIPHER) *ssl_create_cipher_
+@@ -1452,9 +1512,8 @@ STACK_OF(SSL_CIPHER) *ssl_create_cipher_
  	ca_list = OPENSSL_malloc(sizeof(SSL_CIPHER *) * num_of_alias_max);
  	if (ca_list == NULL)
  		{
@@ -201,7 +202,7 @@ diff -up openssl-1.0.1h/ssl/ssl_ciph.c.system openssl-1.0.1h/ssl/ssl_ciph.c
  		}
  	ssl_cipher_collect_aliases(ca_list, num_of_group_aliases,
  	                           disabled_mkey, disabled_auth, disabled_enc,
-@@ -1482,8 +1540,7 @@ STACK_OF(SSL_CIPHER) *ssl_create_cipher_
+@@ -1482,8 +1541,7 @@ STACK_OF(SSL_CIPHER) *ssl_create_cipher_
  
  	if (!ok)
  		{	/* Rule processing failure */
@@ -211,7 +212,7 @@ diff -up openssl-1.0.1h/ssl/ssl_ciph.c.system openssl-1.0.1h/ssl/ssl_ciph.c
  		}
  	
  	/*
-@@ -1492,8 +1549,7 @@ STACK_OF(SSL_CIPHER) *ssl_create_cipher_
+@@ -1492,8 +1550,7 @@ STACK_OF(SSL_CIPHER) *ssl_create_cipher_
  	 */
  	if ((cipherstack = sk_SSL_CIPHER_new_null()) == NULL)
  		{
@@ -221,7 +222,7 @@ diff -up openssl-1.0.1h/ssl/ssl_ciph.c.system openssl-1.0.1h/ssl/ssl_ciph.c
  		}
  
  	/*
-@@ -1514,13 +1570,13 @@ STACK_OF(SSL_CIPHER) *ssl_create_cipher_
+@@ -1514,13 +1571,13 @@ STACK_OF(SSL_CIPHER) *ssl_create_cipher_
  #endif
  			}
  		}
@@ -237,7 +238,7 @@ diff -up openssl-1.0.1h/ssl/ssl_ciph.c.system openssl-1.0.1h/ssl/ssl_ciph.c
  		}
  	if (*cipher_list != NULL)
  		sk_SSL_CIPHER_free(*cipher_list);
-@@ -1531,6 +1587,12 @@ STACK_OF(SSL_CIPHER) *ssl_create_cipher_
+@@ -1531,6 +1588,12 @@ STACK_OF(SSL_CIPHER) *ssl_create_cipher_
  	(void)sk_SSL_CIPHER_set_cmp_func(*cipher_list_by_id,ssl_cipher_ptr_id_cmp);
  
  	sk_SSL_CIPHER_sort(*cipher_list_by_id);
