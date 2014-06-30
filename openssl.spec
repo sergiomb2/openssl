@@ -23,7 +23,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1h
-Release: 4%{?dist}
+Release: 5%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -84,6 +84,7 @@ Patch78: openssl-1.0.1g-3des-strength.patch
 Patch90: openssl-1.0.1e-enc-fail.patch
 Patch91: openssl-1.0.1e-ssl2-no-ec.patch
 Patch92: openssl-1.0.1h-system-cipherlist.patch
+Patch93: openssl-1.0.1h-disable-sslv2v3.patch
 # Backported fixes including security fixes
 Patch81: openssl-1.0.1-beta2-padlock64.patch
 Patch82: openssl-1.0.1h-session-resumption.patch
@@ -208,6 +209,7 @@ cp %{SOURCE12} %{SOURCE13} crypto/ec/
 %patch90 -p1 -b .enc-fail
 %patch91 -p1 -b .ssl2noec
 %patch92 -p1 -b .system
+%patch93 -p1 -b .v2v3
 
 %patch81 -p1 -b .padlock64
 %patch82 -p1 -b .resumption
@@ -478,6 +480,10 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Mon Jun 30 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1h-5
+- disable SSLv2 and SSLv3 protocols by default (can be enabled
+  via appropriate SSL_CTX_clear_options() call)
+
 * Wed Jun 11 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1h-4
 - use system profile for default cipher list
 
