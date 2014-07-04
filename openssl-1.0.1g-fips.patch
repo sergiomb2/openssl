@@ -983,7 +983,7 @@ diff -up openssl-1.0.1g/crypto/dsa/dsa_key.c.fips openssl-1.0.1g/crypto/dsa/dsa_
 +
 +	EVP_PKEY_set1_DSA(pk, dsa);
 +
-+	if (fips_pkey_signature_test(pk, tbs, 0, NULL, 0, NULL, 0, NULL))
++	if (fips_pkey_signature_test(pk, tbs, -1, NULL, 0, NULL, 0, NULL))
 +		ret = 1;
 +
 +	err:
