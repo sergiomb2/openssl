@@ -23,7 +23,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1h
-Release: 5%{?dist}
+Release: 6%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -424,7 +424,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 
 %files
 %defattr(-,root,root)
-%doc FAQ LICENSE NEWS README README.FIPS
+%{!?_licensedir:%global license %%doc}
+%license LICENSE
+%doc FAQ NEWS README README.FIPS
 %{_sysconfdir}/pki/tls/certs/make-dummy-cert
 %{_sysconfdir}/pki/tls/certs/renew-dummy-cert
 %{_sysconfdir}/pki/tls/certs/Makefile
@@ -442,7 +444,8 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 
 %files libs
 %defattr(-,root,root)
-%doc LICENSE
+%{!?_licensedir:%global license %%doc}
+%license LICENSE
 %dir %{_sysconfdir}/pki/tls
 %dir %{_sysconfdir}/pki/tls/certs
 %dir %{_sysconfdir}/pki/tls/misc
@@ -480,6 +483,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Fri Jul 18 2014 Tom Callaway <spot@fedoraproject.org> 1.0.1h-6
+- fix license handling
+
 * Mon Jun 30 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1h-5
 - disable SSLv2 and SSLv3 protocols by default (can be enabled
   via appropriate SSL_CTX_clear_options() call)
