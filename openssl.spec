@@ -22,8 +22,8 @@
 
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
-Version: 1.0.1h
-Release: 6%{?dist}
+Version: 1.0.1i
+Release: 1%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -56,12 +56,11 @@ Patch24: openssl-1.0.1e-issuer-hash.patch
 Patch33: openssl-1.0.0-beta4-ca-dir.patch
 Patch34: openssl-0.9.6-x509.patch
 Patch35: openssl-0.9.8j-version-add-engines.patch
-Patch36: openssl-1.0.0e-doc-noeof.patch
 Patch39: openssl-1.0.1h-ipv6-apps.patch
 Patch40: openssl-1.0.1g-fips.patch
 Patch45: openssl-1.0.1e-env-zlib.patch
 Patch47: openssl-1.0.0-beta5-readme-warning.patch
-Patch49: openssl-1.0.1a-algo-doc.patch
+Patch49: openssl-1.0.1i-algo-doc.patch
 Patch50: openssl-1.0.1-beta2-dtls1-abi.patch
 Patch51: openssl-1.0.1e-version.patch
 Patch56: openssl-1.0.0c-rsa-x931.patch
@@ -73,22 +72,19 @@ Patch66: openssl-1.0.1-pkgconfig-krb5.patch
 Patch68: openssl-1.0.1e-secure-getenv.patch
 Patch69: openssl-1.0.1c-dh-1024.patch
 Patch70: openssl-1.0.1e-fips-ec.patch
-Patch71: openssl-1.0.1h-manfix.patch
+Patch71: openssl-1.0.1i-manfix.patch
 Patch72: openssl-1.0.1e-fips-ctor.patch
 Patch73: openssl-1.0.1e-ecc-suiteb.patch
 Patch74: openssl-1.0.1e-no-md5-verify.patch
 Patch75: openssl-1.0.1e-compat-symbols.patch
-Patch76: openssl-1.0.1g-new-fips-reqs.patch
+Patch76: openssl-1.0.1i-new-fips-reqs.patch
 Patch77: openssl-1.0.1e-weak-ciphers.patch
-Patch78: openssl-1.0.1g-3des-strength.patch
 Patch90: openssl-1.0.1e-enc-fail.patch
-Patch91: openssl-1.0.1e-ssl2-no-ec.patch
 Patch92: openssl-1.0.1h-system-cipherlist.patch
 Patch93: openssl-1.0.1h-disable-sslv2v3.patch
 # Backported fixes including security fixes
 Patch81: openssl-1.0.1-beta2-padlock64.patch
-Patch82: openssl-1.0.1h-session-resumption.patch
-Patch84: openssl-1.0.1e-trusted-first.patch
+Patch84: openssl-1.0.1i-trusted-first.patch
 Patch85: openssl-1.0.1e-arm-use-elf-auxv-caps.patch
 Patch89: openssl-1.0.1e-ephemeral-key-size.patch
 
@@ -181,7 +177,6 @@ cp %{SOURCE12} %{SOURCE13} crypto/ec/
 %patch33 -p1 -b .ca-dir
 %patch34 -p1 -b .x509
 %patch35 -p1 -b .version-add-engines
-%patch36 -p1 -b .doc-noeof
 %patch39 -p1 -b .ipv6-apps
 %patch40 -p1 -b .fips
 %patch45 -p1 -b .env-zlib
@@ -205,14 +200,11 @@ cp %{SOURCE12} %{SOURCE13} crypto/ec/
 %patch75 -p1 -b .compat
 %patch76 -p1 -b .fips-reqs
 %patch77 -p1 -b .weak-ciphers
-%patch78 -p1 -b .3des-strength
 %patch90 -p1 -b .enc-fail
-%patch91 -p1 -b .ssl2noec
 %patch92 -p1 -b .system
 %patch93 -p1 -b .v2v3
 
 %patch81 -p1 -b .padlock64
-%patch82 -p1 -b .resumption
 %patch84 -p1 -b .trusted-first
 %patch85 -p1 -b .armcap
 %patch89 -p1 -b .ephemeral
@@ -483,6 +475,10 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Thu Aug  7 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1i-1
+- new upstream release fixing multiple moderate security issues
+- for now disable only SSLv2 by default
+
 * Fri Jul 18 2014 Tom Callaway <spot@fedoraproject.org> 1.0.1h-6
 - fix license handling
 
