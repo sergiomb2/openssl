@@ -21,7 +21,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1e
-Release: 38%{?dist}
+Release: 39%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -94,6 +94,13 @@ Patch93: openssl-1.0.1e-cve-2014-0198.patch
 Patch94: openssl-1.0.1e-cve-2014-0221.patch
 Patch95: openssl-1.0.1e-cve-2014-0224.patch
 Patch96: openssl-1.0.1e-cve-2014-3470.patch
+Patch100: openssl-1.0.1e-cve-2014-3505.patch
+Patch101: openssl-1.0.1e-cve-2014-3506.patch
+Patch102: openssl-1.0.1e-cve-2014-3507.patch
+Patch103: openssl-1.0.1e-cve-2014-3508.patch
+Patch104: openssl-1.0.1e-cve-2014-3509.patch
+Patch105: openssl-1.0.1e-cve-2014-3510.patch
+Patch106: openssl-1.0.1e-cve-2014-3511.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -223,6 +230,13 @@ cp %{SOURCE12} %{SOURCE13} crypto/ec/
 %patch94 -p1 -b .dtls1-dos
 %patch95 -p1 -b .keying-mitm
 %patch96 -p1 -b .anon-ecdh-dos
+%patch100 -p1 -b .dtls-doublefree
+%patch101 -p1 -b .dtls-sizechecks
+%patch102 -p1 -b .dtls-memleak
+%patch103 -p1 -b .oid-handling
+%patch104 -p1 -b .tlsext-race
+%patch105 -p1 -b .adh-dos
+%patch106 -p1 -b .frag-downgrade
 
 sed -i 's/SHLIB_VERSION_NUMBER "1.0.0"/SHLIB_VERSION_NUMBER "%{version}"/' crypto/opensslv.h
 
@@ -486,6 +500,15 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Fri Aug  8 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-39
+- fix CVE-2014-3505 - doublefree in DTLS packet processing
+- fix CVE-2014-3506 - avoid memory exhaustion in DTLS
+- fix CVE-2014-3507 - avoid memory leak in DTLS
+- fix CVE-2014-3508 - fix OID handling to avoid information leak
+- fix CVE-2014-3509 - fix race condition when parsing server hello
+- fix CVE-2014-3510 - fix DoS in anonymous (EC)DH handling in DTLS
+- fix CVE-2014-3511 - disallow protocol downgrade via fragmentation
+
 * Thu Jun  5 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-38
 - fix CVE-2010-5298 - possible use of memory after free
 - fix CVE-2014-0195 - buffer overflow via invalid DTLS fragment
