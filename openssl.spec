@@ -23,7 +23,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1i
-Release: 1%{?dist}
+Release: 2%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -40,7 +40,7 @@ Source11: README.FIPS
 Source12: ec_curve.c
 Source13: ectest.c
 # Build changes
-Patch1: openssl-1.0.1-beta2-rpmbuild.patch
+Patch1: openssl-1.0.1e-rpmbuild.patch
 Patch2: openssl-1.0.1e-defaults.patch
 Patch4: openssl-1.0.0-beta5-enginesdir.patch
 Patch5: openssl-0.9.8a-no-rpath.patch
@@ -48,7 +48,8 @@ Patch6: openssl-0.9.8b-test-use-localhost.patch
 Patch7: openssl-1.0.0-timezone.patch
 Patch8: openssl-1.0.1c-perlfind.patch
 Patch9: openssl-1.0.1c-aliasing.patch
-Patch10: openssl-1.0.1e-ppc64le-target.patch
+# This patch must be applied first
+Patch10: openssl-1.0.1i-ppc-asm-update.patch
 # Bug fixes
 Patch23: openssl-1.0.1c-default-paths.patch
 Patch24: openssl-1.0.1e-issuer-hash.patch
@@ -161,6 +162,7 @@ from other formats to the formats used by the OpenSSL toolkit.
 
 cp %{SOURCE12} %{SOURCE13} crypto/ec/
 
+%patch10 -p1 -b .ppc-asm
 %patch1 -p1 -b .rpmbuild
 %patch2 -p1 -b .defaults
 %patch4 -p1 -b .enginesdir %{?_rawbuild}
@@ -169,7 +171,6 @@ cp %{SOURCE12} %{SOURCE13} crypto/ec/
 %patch7 -p1 -b .timezone
 %patch8 -p1 -b .perlfind %{?_rawbuild}
 %patch9 -p1 -b .aliasing
-%patch10 -p1 -b .ppc64le
 
 %patch23 -p1 -b .default-paths
 %patch24 -p1 -b .issuer-hash
@@ -475,6 +476,10 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Wed Aug 13 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1i-2
+- drop RSA X9.31 from RSA FIPS selftests
+- add Power 8 optimalizations
+
 * Thu Aug  7 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1i-1
 - new upstream release fixing multiple moderate security issues
 - for now disable only SSLv2 by default
