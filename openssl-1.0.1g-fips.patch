@@ -18112,7 +18112,7 @@ diff -up openssl-1.0.1g/crypto/fips/fips_sha_selftest.c.fips openssl-1.0.1g/cryp
 diff -up openssl-1.0.1g/crypto/fips/fips_standalone_hmac.c.fips openssl-1.0.1g/crypto/fips/fips_standalone_hmac.c
 --- openssl-1.0.1g/crypto/fips/fips_standalone_hmac.c.fips	2014-05-06 16:29:50.551923340 +0200
 +++ openssl-1.0.1g/crypto/fips/fips_standalone_hmac.c	2014-05-06 16:29:50.551923340 +0200
-@@ -0,0 +1,180 @@
+@@ -0,0 +1,236 @@
 +/* ====================================================================
 + * Copyright (c) 2003 The OpenSSL Project.  All rights reserved.
 + *
@@ -18172,17 +18172,73 @@ diff -up openssl-1.0.1g/crypto/fips/fips_standalone_hmac.c.fips openssl-1.0.1g/c
 +#ifndef FIPSCANISTER_O
 +int FIPS_selftest_failed() { return 0; }
 +void FIPS_selftest_check() {}
-+void OPENSSL_cleanse(void *p,size_t len) {}
 +#endif
++
++#ifdef OPENSSL_FIPS
++int bn_mul_mont_fpu64(BN_ULONG *rp, const BN_ULONG *ap, const BN_ULONG *bp, const BN_ULONG *np, const BN_ULONG *n0, int num) { return 0; };
++int bn_mul_mont_int(BN_ULONG *rp, const BN_ULONG *ap, const BN_ULONG *bp, const BN_ULONG *np, const BN_ULONG *n0, int num) { return 0; };
 +
 +#if	defined(__i386)   || defined(__i386__)   || defined(_M_IX86) || \
 +	defined(__INTEL__) || \
 +	defined(__x86_64) || defined(__x86_64__) || defined(_M_AMD64) || defined(_M_X64)
 +
 +unsigned int  OPENSSL_ia32cap_P[2];
++unsigned long *OPENSSL_ia32cap_loc(void)
++{   if (sizeof(long)==4)
++	/*
++	 * If 32-bit application pulls address of OPENSSL_ia32cap_P[0]
++	 * clear second element to maintain the illusion that vector
++	 * is 32-bit.
++	 */
++	OPENSSL_ia32cap_P[1]=0;
++    return (unsigned long *)OPENSSL_ia32cap_P;
++}
++
++#if defined(OPENSSL_CPUID_OBJ) && !defined(OPENSSL_NO_ASM) && !defined(I386_ONLY)
++#define OPENSSL_CPUID_SETUP
++#if defined(_WIN32)
++typedef unsigned __int64 IA32CAP;
++#else
++typedef unsigned long long IA32CAP;
++#endif
++void OPENSSL_cpuid_setup(void)
++{ static int trigger=0;
++  IA32CAP OPENSSL_ia32_cpuid(void);
++  IA32CAP vec;
++  char *env;
++
++    if (trigger)	return;
++
++    trigger=1;
++    if ((env=getenv("OPENSSL_ia32cap"))) {
++	int off = (env[0]=='~')?1:0;
++#if defined(_WIN32)
++	if (!sscanf(env+off,"%I64i",&vec)) vec = strtoul(env+off,NULL,0);
++#else
++	if (!sscanf(env+off,"%lli",(long long *)&vec)) vec = strtoul(env+off,NULL,0);
++#endif
++	if (off) vec = OPENSSL_ia32_cpuid()&~vec;
++    }
++    else
++	vec = OPENSSL_ia32_cpuid();
++
++    /*
++     * |(1<<10) sets a reserved bit to signal that variable
++     * was initialized already... This is to avoid interference
++     * with cpuid snippets in ELF .init segment.
++     */
++    OPENSSL_ia32cap_P[0] = (unsigned int)vec|(1<<10);
++    OPENSSL_ia32cap_P[1] = (unsigned int)(vec>>32);
++}
 +#endif
 +
-+#ifdef OPENSSL_FIPS
++#else
++unsigned long *OPENSSL_ia32cap_loc(void) { return NULL; }
++#endif
++int OPENSSL_NONPIC_relocated = 0;
++#if !defined(OPENSSL_CPUID_SETUP) && !defined(OPENSSL_CPUID_OBJ)
++void OPENSSL_cpuid_setup(void) {}
++#endif
 +
 +static void hmac_init(SHA256_CTX *md_ctx,SHA256_CTX *o_ctx,
 +		      const char *key)
@@ -18888,7 +18944,7 @@ diff -up openssl-1.0.1g/crypto/fips/fips_test_suite.c.fips openssl-1.0.1g/crypto
 diff -up openssl-1.0.1g/crypto/fips/Makefile.fips openssl-1.0.1g/crypto/fips/Makefile
 --- openssl-1.0.1g/crypto/fips/Makefile.fips	2014-05-06 16:29:50.552923363 +0200
 +++ openssl-1.0.1g/crypto/fips/Makefile	2014-05-06 16:29:50.552923363 +0200
-@@ -0,0 +1,340 @@
+@@ -0,0 +1,341 @@
 +#
 +# OpenSSL/crypto/fips/Makefile
 +#
@@ -18981,6 +19037,7 @@ diff -up openssl-1.0.1g/crypto/fips/Makefile.fips openssl-1.0.1g/crypto/fips/Mak
 +
 +$(EXE): $(PROGRAM).o
 +	FIPS_SHA_ASM=""; for i in $(SHA1_ASM_OBJ) sha256.o; do FIPS_SHA_ASM="$$FIPS_SHA_ASM ../sha/$$i" ; done; \
++	for i in $(CPUID_OBJ); do FIPS_SHA_ASM="$$FIPS_SHA_ASM ../$$i" ; done; \
 +	$(CC) -o $@ $(CFLAGS) $(PROGRAM).o $$FIPS_SHA_ASM
 +
 +# DO NOT DELETE THIS LINE -- make depend depends on it.
