@@ -23,7 +23,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1i
-Release: 3%{?dist}
+Release: 4%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -84,6 +84,7 @@ Patch90: openssl-1.0.1e-enc-fail.patch
 Patch92: openssl-1.0.1h-system-cipherlist.patch
 Patch93: openssl-1.0.1h-disable-sslv2v3.patch
 # Backported fixes including security fixes
+Patch80: openssl-1.0.1i-evp-wrap.patch
 Patch81: openssl-1.0.1-beta2-padlock64.patch
 Patch84: openssl-1.0.1i-trusted-first.patch
 Patch85: openssl-1.0.1e-arm-use-elf-auxv-caps.patch
@@ -205,6 +206,7 @@ cp %{SOURCE12} %{SOURCE13} crypto/ec/
 %patch92 -p1 -b .system
 %patch93 -p1 -b .v2v3
 
+%patch80 -p1 -b .wrap
 %patch81 -p1 -b .padlock64
 %patch84 -p1 -b .trusted-first
 %patch85 -p1 -b .armcap
@@ -476,6 +478,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Mon Sep  8 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1i-4
+- add support for RFC 5649
+
 * Sun Aug 17 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1:1.0.1i-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_21_22_Mass_Rebuild
 
