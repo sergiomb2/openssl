@@ -23,7 +23,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1i
-Release: 4%{?dist}
+Release: 5%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -89,6 +89,7 @@ Patch81: openssl-1.0.1-beta2-padlock64.patch
 Patch84: openssl-1.0.1i-trusted-first.patch
 Patch85: openssl-1.0.1e-arm-use-elf-auxv-caps.patch
 Patch89: openssl-1.0.1e-ephemeral-key-size.patch
+Patch94: openssl-1.0.1i-copy-algo.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -211,6 +212,7 @@ cp %{SOURCE12} %{SOURCE13} crypto/ec/
 %patch84 -p1 -b .trusted-first
 %patch85 -p1 -b .armcap
 %patch89 -p1 -b .ephemeral
+%patch94 -p1 -b .copy-algo
 
 sed -i 's/SHLIB_VERSION_NUMBER "1.0.0"/SHLIB_VERSION_NUMBER "%{version}"/' crypto/opensslv.h
 
@@ -478,6 +480,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Fri Oct 10 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1i-5
+- copy negotiated digests when switching certs by SNI (#1150032)
+
 * Mon Sep  8 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1i-4
 - add support for RFC 5649
 
