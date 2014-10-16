@@ -21,7 +21,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1e
-Release: 39%{?dist}
+Release: 40%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -87,6 +87,7 @@ Patch85: openssl-1.0.1e-arm-use-elf-auxv-caps.patch
 Patch86: openssl-1.0.1e-cve-2013-6449.patch
 Patch87: openssl-1.0.1e-cve-2013-6450.patch
 Patch88: openssl-1.0.1e-cve-2013-4353.patch
+Patch89: openssl-1.0.1e-ephemeral-key-size.patch
 Patch90: openssl-1.0.1e-cve-2014-0160.patch
 Patch91: openssl-1.0.1e-cve-2010-5298.patch
 Patch92: openssl-1.0.1e-cve-2014-0195.patch
@@ -101,6 +102,9 @@ Patch103: openssl-1.0.1e-cve-2014-3508.patch
 Patch104: openssl-1.0.1e-cve-2014-3509.patch
 Patch105: openssl-1.0.1e-cve-2014-3510.patch
 Patch106: openssl-1.0.1e-cve-2014-3511.patch
+Patch110: openssl-1.0.1e-cve-2014-3567.patch
+Patch111: openssl-1.0.1e-cve-2014-3513.patch
+Patch112: openssl-1.0.1e-fallback-scsv.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -223,6 +227,7 @@ cp %{SOURCE12} %{SOURCE13} crypto/ec/
 %patch86 -p1 -b .hash-crash
 %patch87 -p1 -b .dtls1-mitm
 %patch88 -p1 -b .handshake-crash
+%patch89 -p1 -b .ephemeral
 %patch90 -p1 -b .heartbeat
 %patch91 -p1 -b .freelist
 %patch92 -p1 -b .dtls1-overflow
@@ -237,6 +242,9 @@ cp %{SOURCE12} %{SOURCE13} crypto/ec/
 %patch104 -p1 -b .tlsext-race
 %patch105 -p1 -b .adh-dos
 %patch106 -p1 -b .frag-downgrade
+%patch110 -p1 -b .ticket-leak
+%patch111 -p1 -b .srtp-leak
+%patch112 -p1 -b .fallback-scsv
 
 sed -i 's/SHLIB_VERSION_NUMBER "1.0.0"/SHLIB_VERSION_NUMBER "%{version}"/' crypto/opensslv.h
 
@@ -500,6 +508,14 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Thu Oct 16 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-40
+- fix CVE-2014-3567 - memory leak when handling session tickets
+- fix CVE-2014-3513 - memory leak in srtp support
+- add support for fallback SCSV to partially mitigate CVE-2014-3566
+  (padding attack on SSL3)
+- print ephemeral key size negotiated in TLS handshake (#1057715)
+
+
 * Fri Aug  8 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-39
 - fix CVE-2014-3505 - doublefree in DTLS packet processing
 - fix CVE-2014-3506 - avoid memory exhaustion in DTLS
