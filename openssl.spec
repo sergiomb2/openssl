@@ -22,8 +22,8 @@
 
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
-Version: 1.0.1i
-Release: 5%{?dist}
+Version: 1.0.1j
+Release: 1%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -58,7 +58,7 @@ Patch33: openssl-1.0.0-beta4-ca-dir.patch
 Patch34: openssl-0.9.6-x509.patch
 Patch35: openssl-0.9.8j-version-add-engines.patch
 Patch39: openssl-1.0.1h-ipv6-apps.patch
-Patch40: openssl-1.0.1g-fips.patch
+Patch40: openssl-1.0.1j-fips.patch
 Patch45: openssl-1.0.1e-env-zlib.patch
 Patch47: openssl-1.0.0-beta5-readme-warning.patch
 Patch49: openssl-1.0.1i-algo-doc.patch
@@ -72,7 +72,7 @@ Patch65: openssl-1.0.0e-chil-fixes.patch
 Patch66: openssl-1.0.1-pkgconfig-krb5.patch
 Patch68: openssl-1.0.1e-secure-getenv.patch
 Patch69: openssl-1.0.1c-dh-1024.patch
-Patch70: openssl-1.0.1e-fips-ec.patch
+Patch70: openssl-1.0.1j-fips-ec.patch
 Patch71: openssl-1.0.1i-manfix.patch
 Patch72: openssl-1.0.1e-fips-ctor.patch
 Patch73: openssl-1.0.1e-ecc-suiteb.patch
@@ -84,12 +84,11 @@ Patch90: openssl-1.0.1e-enc-fail.patch
 Patch92: openssl-1.0.1h-system-cipherlist.patch
 Patch93: openssl-1.0.1h-disable-sslv2v3.patch
 # Backported fixes including security fixes
-Patch80: openssl-1.0.1i-evp-wrap.patch
+Patch80: openssl-1.0.1j-evp-wrap.patch
 Patch81: openssl-1.0.1-beta2-padlock64.patch
 Patch84: openssl-1.0.1i-trusted-first.patch
 Patch85: openssl-1.0.1e-arm-use-elf-auxv-caps.patch
-Patch89: openssl-1.0.1e-ephemeral-key-size.patch
-Patch94: openssl-1.0.1i-copy-algo.patch
+Patch89: openssl-1.0.1j-ephemeral-key-size.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -212,7 +211,6 @@ cp %{SOURCE12} %{SOURCE13} crypto/ec/
 %patch84 -p1 -b .trusted-first
 %patch85 -p1 -b .armcap
 %patch89 -p1 -b .ephemeral
-%patch94 -p1 -b .copy-algo
 
 sed -i 's/SHLIB_VERSION_NUMBER "1.0.0"/SHLIB_VERSION_NUMBER "%{version}"/' crypto/opensslv.h
 
@@ -480,6 +478,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Thu Oct 16 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1j-1
+- new upstream release fixing multiple security issues
+
 * Fri Oct 10 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1i-5
 - copy negotiated digests when switching certs by SNI (#1150032)
 
