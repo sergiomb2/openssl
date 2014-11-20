@@ -23,7 +23,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1j
-Release: 2%{?dist}
+Release: 3%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -478,6 +478,11 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Wed Nov 20 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1j-3
+- disable SSLv3 by default again (mail servers and possibly
+  LDAP servers should probably allow it explicitly for legacy
+  clients)
+
 * Tue Oct 21 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1j-2
 - update the FIPS RSA keygen to be FIPS 186-4 compliant
 
