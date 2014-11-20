@@ -478,7 +478,7 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
-* Wed Nov 20 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1j-3
+* Thu Nov 20 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1j-3
 - disable SSLv3 by default again (mail servers and possibly
   LDAP servers should probably allow it explicitly for legacy
   clients)
