@@ -22,8 +22,8 @@
 
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
-Version: 1.0.1j
-Release: 3%{?dist}
+Version: 1.0.1k
+Release: 1%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -58,11 +58,11 @@ Patch33: openssl-1.0.0-beta4-ca-dir.patch
 Patch34: openssl-0.9.6-x509.patch
 Patch35: openssl-0.9.8j-version-add-engines.patch
 Patch39: openssl-1.0.1h-ipv6-apps.patch
-Patch40: openssl-1.0.1j-fips.patch
+Patch40: openssl-1.0.1k-fips.patch
 Patch45: openssl-1.0.1e-env-zlib.patch
 Patch47: openssl-1.0.0-beta5-readme-warning.patch
 Patch49: openssl-1.0.1i-algo-doc.patch
-Patch50: openssl-1.0.1-beta2-dtls1-abi.patch
+Patch50: openssl-1.0.1k-dtls1-abi.patch
 Patch51: openssl-1.0.1e-version.patch
 Patch56: openssl-1.0.0c-rsa-x931.patch
 Patch58: openssl-1.0.1-beta2-fips-md5-allow.patch
@@ -75,7 +75,7 @@ Patch69: openssl-1.0.1c-dh-1024.patch
 Patch70: openssl-1.0.1j-fips-ec.patch
 Patch71: openssl-1.0.1i-manfix.patch
 Patch72: openssl-1.0.1e-fips-ctor.patch
-Patch73: openssl-1.0.1e-ecc-suiteb.patch
+Patch73: openssl-1.0.1k-ecc-suiteb.patch
 Patch74: openssl-1.0.1e-no-md5-verify.patch
 Patch75: openssl-1.0.1e-compat-symbols.patch
 Patch76: openssl-1.0.1i-new-fips-reqs.patch
@@ -85,10 +85,10 @@ Patch92: openssl-1.0.1h-system-cipherlist.patch
 Patch93: openssl-1.0.1h-disable-sslv2v3.patch
 # Backported fixes including security fixes
 Patch80: openssl-1.0.1j-evp-wrap.patch
-Patch81: openssl-1.0.1-beta2-padlock64.patch
-Patch84: openssl-1.0.1i-trusted-first.patch
+Patch81: openssl-1.0.1k-padlock64.patch
+Patch84: openssl-1.0.1k-trusted-first.patch
 Patch85: openssl-1.0.1e-arm-use-elf-auxv-caps.patch
-Patch89: openssl-1.0.1j-ephemeral-key-size.patch
+Patch89: openssl-1.0.1k-ephemeral-key-size.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -478,6 +478,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Fri Jan  9 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.1k-1
+- new upstream release fixing multiple security issues
+
 * Thu Nov 20 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1j-3
 - disable SSLv3 by default again (mail servers and possibly
   LDAP servers should probably allow it explicitly for legacy
