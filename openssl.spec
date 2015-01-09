@@ -481,11 +481,6 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 * Fri Jan  9 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.1k-1
 - new upstream release fixing multiple security issues
 
-* Thu Nov 20 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1j-3
-- disable SSLv3 by default again (mail servers and possibly
-  LDAP servers should probably allow it explicitly for legacy
-  clients)
-
 * Tue Oct 21 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1j-2
 - update the FIPS RSA keygen to be FIPS 186-4 compliant
 
