@@ -21,7 +21,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1e
-Release: 40%{?dist}
+Release: 41%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -78,6 +78,7 @@ Patch74: openssl-1.0.1e-no-md5-verify.patch
 Patch75: openssl-1.0.1e-compat-symbols.patch
 Patch76: openssl-1.0.1e-new-fips-reqs.patch
 Patch77: openssl-1.0.1e-weak-ciphers.patch
+Patch41: openssl-1.0.1e-ssl2-no-ec.patch
 # Backported fixes including security fixes
 Patch81: openssl-1.0.1-beta2-padlock64.patch
 Patch82: openssl-1.0.1e-backports.patch
@@ -95,6 +96,7 @@ Patch93: openssl-1.0.1e-cve-2014-0198.patch
 Patch94: openssl-1.0.1e-cve-2014-0221.patch
 Patch95: openssl-1.0.1e-cve-2014-0224.patch
 Patch96: openssl-1.0.1e-cve-2014-3470.patch
+Patch97: openssl-1.0.1e-dtls-ecc-ext.patch
 Patch100: openssl-1.0.1e-cve-2014-3505.patch
 Patch101: openssl-1.0.1e-cve-2014-3506.patch
 Patch102: openssl-1.0.1e-cve-2014-3507.patch
@@ -105,6 +107,14 @@ Patch106: openssl-1.0.1e-cve-2014-3511.patch
 Patch110: openssl-1.0.1e-cve-2014-3567.patch
 Patch111: openssl-1.0.1e-cve-2014-3513.patch
 Patch112: openssl-1.0.1e-fallback-scsv.patch
+Patch113: openssl-1.0.1e-copy-algo.patch
+Patch114: openssl-1.0.1e-cve-2014-3570.patch
+Patch115: openssl-1.0.1e-cve-2014-3571.patch
+Patch116: openssl-1.0.1e-cve-2014-3572.patch
+Patch117: openssl-1.0.1e-cve-2014-8275.patch
+Patch118: openssl-1.0.1e-cve-2015-0204.patch
+Patch119: openssl-1.0.1e-cve-2015-0205.patch
+Patch120: openssl-1.0.1e-cve-2015-0206.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -217,6 +227,7 @@ cp %{SOURCE12} %{SOURCE13} crypto/ec/
 %patch75 -p1 -b .compat
 %patch76 -p1 -b .fips-reqs
 %patch77 -p1 -b .weak-ciphers
+%patch41 -p1 -b .ssl2-noec
 
 %patch81 -p1 -b .padlock64
 %patch82 -p1 -b .backports
@@ -235,6 +246,7 @@ cp %{SOURCE12} %{SOURCE13} crypto/ec/
 %patch94 -p1 -b .dtls1-dos
 %patch95 -p1 -b .keying-mitm
 %patch96 -p1 -b .anon-ecdh-dos
+%patch97 -p1 -b .dtls-ecc-ext
 %patch100 -p1 -b .dtls-doublefree
 %patch101 -p1 -b .dtls-sizechecks
 %patch102 -p1 -b .dtls-memleak
@@ -245,6 +257,14 @@ cp %{SOURCE12} %{SOURCE13} crypto/ec/
 %patch110 -p1 -b .ticket-leak
 %patch111 -p1 -b .srtp-leak
 %patch112 -p1 -b .fallback-scsv
+%patch113 -p1 -b .copy-algo
+%patch114 -p1 -b .bn-sqr
+%patch115 -p1 -b .dtls1-reads
+%patch116 -p1 -b .ecdh-downgrade
+%patch117 -p1 -b .cert-fingerprint
+%patch118 -p1 -b .rsa-ephemeral
+%patch119 -p1 -b .dh-unauthenticated
+%patch120 -p1 -b .dtls-rec-leak
 
 sed -i 's/SHLIB_VERSION_NUMBER "1.0.0"/SHLIB_VERSION_NUMBER "%{version}"/' crypto/opensslv.h
 
@@ -508,6 +528,19 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Tue Jan 13 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-41
+- fix CVE-2014-3570 - incorrect computation in BN_sqr()
+- fix CVE-2014-3571 - possible crash in dtls1_get_record()
+- fix CVE-2014-3572 - possible downgrade of ECDH ciphersuite to non-PFS state
+- fix CVE-2014-8275 - various certificate fingerprint issues
+- fix CVE-2015-0204 - remove support for RSA ephemeral keys for non-export
+  ciphersuites and on server
+- fix CVE-2015-0205 - do not allow unauthenticated client DH certificate
+- fix CVE-2015-0206 - possible memory leak when buffering DTLS records
+- add ECC TLS extensions to DTLS (#1119803)
+- do not send ECC ciphersuites in SSLv2 client hello (#1090955)
+- copy digest algorithm when handling SNI context switch
+
 * Thu Oct 16 2014 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-40
 - fix CVE-2014-3567 - memory leak when handling session tickets
 - fix CVE-2014-3513 - memory leak in srtp support
