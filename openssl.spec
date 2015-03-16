@@ -23,7 +23,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1k
-Release: 4%{?dist}
+Release: 5%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -480,6 +480,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Mon Mar 16 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.1k-5
+- fix bug in the CRYPTO_128_unwrap()
+
 * Fri Feb 27 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.1k-4
 - fix bug in the RFC 5649 support (#1185878)
 
