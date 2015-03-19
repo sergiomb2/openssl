@@ -21,7 +21,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1e
-Release: 41%{?dist}
+Release: 42%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -115,6 +115,13 @@ Patch117: openssl-1.0.1e-cve-2014-8275.patch
 Patch118: openssl-1.0.1e-cve-2015-0204.patch
 Patch119: openssl-1.0.1e-cve-2015-0205.patch
 Patch120: openssl-1.0.1e-cve-2015-0206.patch
+Patch122: openssl-1.0.1e-cve-2015-0209.patch
+Patch123: openssl-1.0.1e-cve-2015-0286.patch
+Patch124: openssl-1.0.1e-cve-2015-0287.patch
+Patch125: openssl-1.0.1e-cve-2015-0288.patch
+Patch126: openssl-1.0.1e-cve-2015-0289.patch
+Patch127: openssl-1.0.1e-cve-2015-0292.patch
+Patch128: openssl-1.0.1e-cve-2015-0293.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -265,6 +272,13 @@ cp %{SOURCE12} %{SOURCE13} crypto/ec/
 %patch118 -p1 -b .rsa-ephemeral
 %patch119 -p1 -b .dh-unauthenticated
 %patch120 -p1 -b .dtls-rec-leak
+%patch122 -p1 -b .use-after-free
+%patch123 -p1 -b .bool-cmp
+%patch124 -p1 -b .item-reuse
+%patch125 -p1 -b .req-null-deref
+%patch126 -p1 -b .pkcs7-null-deref
+%patch127 -p1 -b .b64-underflow
+%patch128 -p1 -b .ssl2-assert
 
 sed -i 's/SHLIB_VERSION_NUMBER "1.0.0"/SHLIB_VERSION_NUMBER "%{version}"/' crypto/opensslv.h
 
@@ -528,6 +542,14 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Thu Mar 19 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-42
+- fix CVE-2015-0209 - potential use after free in d2i_ECPrivateKey()
+- fix CVE-2015-0286 - improper handling of ASN.1 boolean comparison
+- fix CVE-2015-0287 - ASN.1 structure reuse decoding memory corruption
+- fix CVE-2015-0289 - NULL dereference decoding invalid PKCS#7 data
+- fix CVE-2015-0292 - integer underflow in base64 decoder
+- fix CVE-2015-0293 - triggerable assert in SSLv2 server
+
 * Tue Jan 13 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-41
 - fix CVE-2014-3570 - incorrect computation in BN_sqr()
 - fix CVE-2014-3571 - possible crash in dtls1_get_record()
