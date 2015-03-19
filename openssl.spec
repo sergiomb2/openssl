@@ -23,7 +23,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1k
-Release: 5%{?dist}
+Release: 6%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -90,6 +90,12 @@ Patch84: openssl-1.0.1k-trusted-first.patch
 Patch85: openssl-1.0.1e-arm-use-elf-auxv-caps.patch
 Patch86: openssl-1.0.1k-ephemeral-key-size.patch
 Patch87: openssl-1.0.1e-cc-reqs.patch
+Patch101: openssl-1.0.1k-cve-2015-0209.patch
+Patch102: openssl-1.0.1e-cve-2015-0286.patch
+Patch103: openssl-1.0.1e-cve-2015-0287.patch
+Patch104: openssl-1.0.1e-cve-2015-0288.patch
+Patch105: openssl-1.0.1k-cve-2015-0289.patch
+Patch106: openssl-1.0.1e-cve-2015-0293.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -213,6 +219,12 @@ cp %{SOURCE12} %{SOURCE13} crypto/ec/
 %patch85 -p1 -b .armcap
 %patch86 -p1 -b .ephemeral
 %patch87 -p1 -b .cc-reqs
+%patch101 -p1 -b .use-after-free
+%patch102 -p1 -b .bool-cmp
+%patch103 -p1 -b .item-reuse
+%patch104 -p1 -b .req-null-deref
+%patch105 -p1 -b .pkcs7-null-deref
+%patch106 -p1 -b .ssl2-assert
 
 sed -i 's/SHLIB_VERSION_NUMBER "1.0.0"/SHLIB_VERSION_NUMBER "%{version}"/' crypto/opensslv.h
 
@@ -480,6 +492,13 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Thu Mar 19 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.1k-6
+- fix CVE-2015-0209 - potential use after free in d2i_ECPrivateKey()
+- fix CVE-2015-0286 - improper handling of ASN.1 boolean comparison
+- fix CVE-2015-0287 - ASN.1 structure reuse decoding memory corruption
+- fix CVE-2015-0289 - NULL dereference decoding invalid PKCS#7 data
+- fix CVE-2015-0293 - triggerable assert in SSLv2 server
+
 * Mon Mar 16 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.1k-5
 - fix bug in the CRYPTO_128_unwrap()
 
