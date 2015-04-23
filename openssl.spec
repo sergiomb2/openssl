@@ -22,8 +22,8 @@
 
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
-Version: 1.0.1k
-Release: 7%{?dist}
+Version: 1.0.2a
+Release: 1%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -40,62 +40,52 @@ Source11: README.FIPS
 Source12: ec_curve.c
 Source13: ectest.c
 # Build changes
-Patch1: openssl-1.0.1e-rpmbuild.patch
-Patch2: openssl-1.0.1e-defaults.patch
-Patch4: openssl-1.0.0-beta5-enginesdir.patch
-Patch5: openssl-0.9.8a-no-rpath.patch
-Patch6: openssl-0.9.8b-test-use-localhost.patch
+Patch1: openssl-1.0.2a-rpmbuild.patch
+Patch2: openssl-1.0.2a-defaults.patch
+Patch4: openssl-1.0.2a-enginesdir.patch
+Patch5: openssl-1.0.2a-no-rpath.patch
+Patch6: openssl-1.0.2a-test-use-localhost.patch
 Patch7: openssl-1.0.0-timezone.patch
 Patch8: openssl-1.0.1c-perlfind.patch
 Patch9: openssl-1.0.1c-aliasing.patch
-# This patch must be applied first
-Patch10: openssl-1.0.1i-ppc-asm-update.patch
 # Bug fixes
-Patch23: openssl-1.0.1c-default-paths.patch
-Patch24: openssl-1.0.1e-issuer-hash.patch
+Patch23: openssl-1.0.2a-default-paths.patch
+Patch24: openssl-1.0.2a-issuer-hash.patch
 # Functionality changes
 Patch33: openssl-1.0.0-beta4-ca-dir.patch
-Patch34: openssl-0.9.6-x509.patch
-Patch35: openssl-0.9.8j-version-add-engines.patch
-Patch39: openssl-1.0.1h-ipv6-apps.patch
-Patch40: openssl-1.0.1k-fips.patch
-Patch45: openssl-1.0.1e-env-zlib.patch
-Patch47: openssl-1.0.0-beta5-readme-warning.patch
+Patch34: openssl-1.0.2a-x509.patch
+Patch35: openssl-1.0.2a-version-add-engines.patch
+Patch39: openssl-1.0.2a-ipv6-apps.patch
+Patch40: openssl-1.0.2a-fips.patch
+Patch45: openssl-1.0.2a-env-zlib.patch
+Patch47: openssl-1.0.2a-readme-warning.patch
 Patch49: openssl-1.0.1i-algo-doc.patch
-Patch50: openssl-1.0.1k-dtls1-abi.patch
-Patch51: openssl-1.0.1e-version.patch
-Patch56: openssl-1.0.0c-rsa-x931.patch
-Patch58: openssl-1.0.1-beta2-fips-md5-allow.patch
-Patch60: openssl-1.0.0d-apps-dgst.patch
-Patch63: openssl-1.0.0d-xmpp-starttls.patch
-Patch65: openssl-1.0.0e-chil-fixes.patch
-Patch66: openssl-1.0.1-pkgconfig-krb5.patch
-Patch68: openssl-1.0.1e-secure-getenv.patch
-Patch69: openssl-1.0.1c-dh-1024.patch
-Patch70: openssl-1.0.1j-fips-ec.patch
-Patch71: openssl-1.0.1i-manfix.patch
-Patch72: openssl-1.0.1e-fips-ctor.patch
-Patch73: openssl-1.0.1k-ecc-suiteb.patch
-Patch74: openssl-1.0.1e-no-md5-verify.patch
-Patch75: openssl-1.0.1e-compat-symbols.patch
-Patch76: openssl-1.0.1i-new-fips-reqs.patch
-Patch77: openssl-1.0.1e-weak-ciphers.patch
-Patch90: openssl-1.0.1e-enc-fail.patch
-Patch92: openssl-1.0.1h-system-cipherlist.patch
-Patch93: openssl-1.0.1h-disable-sslv2v3.patch
+Patch50: openssl-1.0.2a-dtls1-abi.patch
+Patch51: openssl-1.0.2a-version.patch
+Patch56: openssl-1.0.2a-rsa-x931.patch
+Patch58: openssl-1.0.2a-fips-md5-allow.patch
+Patch60: openssl-1.0.2a-apps-dgst.patch
+Patch63: openssl-1.0.2a-xmpp-starttls.patch
+Patch65: openssl-1.0.2a-chil-fixes.patch
+Patch66: openssl-1.0.2a-pkgconfig-krb5.patch
+Patch68: openssl-1.0.2a-secure-getenv.patch
+Patch69: openssl-1.0.2a-dh-1024.patch
+Patch70: openssl-1.0.2a-fips-ec.patch
+Patch71: openssl-1.0.2a-manfix.patch
+Patch72: openssl-1.0.2a-fips-ctor.patch
+Patch73: openssl-1.0.2a-ecc-suiteb.patch
+Patch74: openssl-1.0.2a-no-md5-verify.patch
+Patch75: openssl-1.0.2a-compat-symbols.patch
+Patch76: openssl-1.0.2a-new-fips-reqs.patch
+Patch77: openssl-1.0.2a-weak-ciphers.patch
+Patch90: openssl-1.0.2a-enc-fail.patch
+Patch92: openssl-1.0.2a-system-cipherlist.patch
+Patch93: openssl-1.0.2a-disable-sslv2v3.patch
 # Backported fixes including security fixes
-Patch80: openssl-1.0.1j-evp-wrap.patch
-Patch81: openssl-1.0.1k-padlock64.patch
-Patch84: openssl-1.0.1k-trusted-first.patch
-Patch85: openssl-1.0.1e-arm-use-elf-auxv-caps.patch
-Patch86: openssl-1.0.1k-ephemeral-key-size.patch
-Patch87: openssl-1.0.1e-cc-reqs.patch
-Patch101: openssl-1.0.1k-cve-2015-0209.patch
-Patch102: openssl-1.0.1e-cve-2015-0286.patch
-Patch103: openssl-1.0.1e-cve-2015-0287.patch
-Patch104: openssl-1.0.1e-cve-2015-0288.patch
-Patch105: openssl-1.0.1k-cve-2015-0289.patch
-Patch106: openssl-1.0.1e-cve-2015-0293.patch
+Patch80: openssl-1.0.2a-wrap-pad.patch
+Patch81: openssl-1.0.2a-padlock64.patch
+Patch84: openssl-1.0.2a-trusted-first-doc.patch
+Patch87: openssl-1.0.2a-cc-reqs.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -170,7 +160,6 @@ from other formats to the formats used by the OpenSSL toolkit.
 
 cp %{SOURCE12} %{SOURCE13} crypto/ec/
 
-%patch10 -p1 -b .ppc-asm
 %patch1 -p1 -b .rpmbuild
 %patch2 -p1 -b .defaults
 %patch4 -p1 -b .enginesdir %{?_rawbuild}
@@ -216,15 +205,7 @@ cp %{SOURCE12} %{SOURCE13} crypto/ec/
 %patch80 -p1 -b .wrap
 %patch81 -p1 -b .padlock64
 %patch84 -p1 -b .trusted-first
-%patch85 -p1 -b .armcap
-%patch86 -p1 -b .ephemeral
 %patch87 -p1 -b .cc-reqs
-%patch101 -p1 -b .use-after-free
-%patch102 -p1 -b .bool-cmp
-%patch103 -p1 -b .item-reuse
-%patch104 -p1 -b .req-null-deref
-%patch105 -p1 -b .pkcs7-null-deref
-%patch106 -p1 -b .ssl2-assert
 
 sed -i 's/SHLIB_VERSION_NUMBER "1.0.0"/SHLIB_VERSION_NUMBER "%{version}"/' crypto/opensslv.h
 
@@ -492,6 +473,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Thu Apr 23 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.2a-1
+- rebase to 1.0.2 branch
+
 * Thu Apr  9 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.1k-7
 - drop the AES-GCM restriction of 2^32 operations because the IV is
   always 96 bits (32 bit fixed field + 64 bit invocation field)
