@@ -23,7 +23,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.2a
-Release: 1%{?dist}
+Release: 2%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -78,14 +78,15 @@ Patch74: openssl-1.0.2a-no-md5-verify.patch
 Patch75: openssl-1.0.2a-compat-symbols.patch
 Patch76: openssl-1.0.2a-new-fips-reqs.patch
 Patch77: openssl-1.0.2a-weak-ciphers.patch
+Patch78: openssl-1.0.2a-cc-reqs.patch
 Patch90: openssl-1.0.2a-enc-fail.patch
 Patch92: openssl-1.0.2a-system-cipherlist.patch
 Patch93: openssl-1.0.2a-disable-sslv2v3.patch
 # Backported fixes including security fixes
 Patch80: openssl-1.0.2a-wrap-pad.patch
 Patch81: openssl-1.0.2a-padlock64.patch
-Patch84: openssl-1.0.2a-trusted-first-doc.patch
-Patch87: openssl-1.0.2a-cc-reqs.patch
+Patch82: openssl-1.0.2a-trusted-first-doc.patch
+Patch83: openssl-1.0.2a-alt-chains.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -198,14 +199,15 @@ cp %{SOURCE12} %{SOURCE13} crypto/ec/
 %patch75 -p1 -b .compat
 %patch76 -p1 -b .fips-reqs
 %patch77 -p1 -b .weak-ciphers
+%patch78 -p1 -b .cc-reqs
 %patch90 -p1 -b .enc-fail
 %patch92 -p1 -b .system
 %patch93 -p1 -b .v2v3
 
 %patch80 -p1 -b .wrap
 %patch81 -p1 -b .padlock64
-%patch84 -p1 -b .trusted-first
-%patch87 -p1 -b .cc-reqs
+%patch82 -p1 -b .trusted-first
+%patch83 -p1 -b .alt-chains
 
 sed -i 's/SHLIB_VERSION_NUMBER "1.0.0"/SHLIB_VERSION_NUMBER "%{version}"/' crypto/opensslv.h
 
@@ -473,6 +475,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Tue Apr 28 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.2a-2
+- add alternative certificate chain discovery support from upstream
+
 * Thu Apr 23 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.2a-1
 - rebase to 1.0.2 branch
 
