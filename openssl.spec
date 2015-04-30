@@ -23,7 +23,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1k
-Release: 7%{?dist}
+Release: 8%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -96,6 +96,7 @@ Patch103: openssl-1.0.1e-cve-2015-0287.patch
 Patch104: openssl-1.0.1e-cve-2015-0288.patch
 Patch105: openssl-1.0.1k-cve-2015-0289.patch
 Patch106: openssl-1.0.1e-cve-2015-0293.patch
+Patch107: openssl-1.0.1k-alt-chains.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -225,6 +226,7 @@ cp %{SOURCE12} %{SOURCE13} crypto/ec/
 %patch104 -p1 -b .req-null-deref
 %patch105 -p1 -b .pkcs7-null-deref
 %patch106 -p1 -b .ssl2-assert
+%patch107 -p1 -b .alt-chains
 
 sed -i 's/SHLIB_VERSION_NUMBER "1.0.0"/SHLIB_VERSION_NUMBER "%{version}"/' crypto/opensslv.h
 
@@ -492,6 +494,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Thu Apr 30 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.1k-8
+- try to find alternative cert chains (#1166614)
+
 * Thu Apr  9 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.1k-7
 - drop the AES-GCM restriction of 2^32 operations because the IV is
   always 96 bits (32 bit fixed field + 64 bit invocation field)
