@@ -23,7 +23,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.2a
-Release: 2%{?dist}
+Release: 3%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -475,6 +475,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Thu May  7 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.2a-3
+- fix some 64 bit build targets
+
 * Tue Apr 28 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.2a-2
 - add alternative certificate chain discovery support from upstream
 
