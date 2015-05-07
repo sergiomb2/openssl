@@ -23,7 +23,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.2a
-Release: 3%{?dist}
+Release: 4%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -247,6 +247,9 @@ sslarch="linux64-s390x"
 %endif
 %ifarch %{arm}
 sslarch=linux-armv4
+%endif
+%ifarch aarch64
+sslarch=linux-aarch64
 %endif
 %ifarch sh3 sh4
 sslarch=linux-generic32
@@ -475,6 +478,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Thu May  7 2015 Peter Robinson <pbrobinson@fedoraproject.org> 1.0.2a-4
+- Add aarch64 sslarch details
+
 * Thu May  7 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.2a-3
 - fix some 64 bit build targets
 
