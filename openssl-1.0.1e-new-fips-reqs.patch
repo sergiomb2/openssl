@@ -470,42 +470,6 @@ diff -up openssl-1.0.1e/crypto/fips/Makefile.fips-reqs openssl-1.0.1e/crypto/fip
  
  LIBCRYPTO=-L.. -lcrypto
  
-diff -up openssl-1.0.1e/crypto/modes/gcm128.c.fips-reqs openssl-1.0.1e/crypto/modes/gcm128.c
---- openssl-1.0.1e/crypto/modes/gcm128.c.fips-reqs	2013-02-11 16:26:04.000000000 +0100
-+++ openssl-1.0.1e/crypto/modes/gcm128.c	2013-12-18 12:17:09.800637730 +0100
-@@ -898,6 +898,10 @@ int CRYPTO_gcm128_encrypt(GCM128_CONTEXT
- # endif
- #endif
- 
-+	ctx->totlen += len;
-+	if (ctx->totlen>(U64(1)<<36) || (sizeof(len)==8 && ctx->totlen<len))
-+		return -1;
-+
- #if 0
- 	n = (unsigned int)mlen%16; /* alternative to ctx->mres */
- #endif
-@@ -1200,6 +1204,10 @@ int CRYPTO_gcm128_encrypt_ctr32(GCM128_C
- # endif
- #endif
- 
-+	ctx->totlen += len;
-+	if (ctx->totlen>(U64(1)<<36) || (sizeof(len)==8 && ctx->totlen<len))
-+		return -1;
-+
- 	mlen += len;
- 	if (mlen>((U64(1)<<36)-32) || (sizeof(len)==8 && mlen<len))
- 		return -1;
-diff -up openssl-1.0.1e/crypto/modes/modes_lcl.h.fips-reqs openssl-1.0.1e/crypto/modes/modes_lcl.h
---- openssl-1.0.1e/crypto/modes/modes_lcl.h.fips-reqs	2013-12-18 12:17:09.388628895 +0100
-+++ openssl-1.0.1e/crypto/modes/modes_lcl.h	2013-12-18 12:17:09.800637730 +0100
-@@ -115,6 +115,7 @@ struct gcm128_context {
- 	unsigned int mres, ares;
- 	block128_f block;
- 	void *key;
-+	u64 totlen;
- };
- 
- struct xts128_context {
 diff -up openssl-1.0.1e/crypto/rand/md_rand.c.fips-reqs openssl-1.0.1e/crypto/rand/md_rand.c
 --- openssl-1.0.1e/crypto/rand/md_rand.c.fips-reqs	2013-12-18 12:17:09.763636936 +0100
 +++ openssl-1.0.1e/crypto/rand/md_rand.c	2013-12-18 12:17:09.800637730 +0100
@@ -739,10 +703,10 @@ diff -up openssl-1.0.1e/crypto/rand/rand_lib.c.fips-reqs openssl-1.0.1e/crypto/r
 +	if (do_lock)
 +		{
 +		CRYPTO_w_lock(CRYPTO_LOCK_RAND);
-+		crypto_lock_rand = 1;
 +		CRYPTO_w_lock(CRYPTO_LOCK_RAND2);
 +		CRYPTO_THREADID_current(&locking_threadid);
 +		CRYPTO_w_unlock(CRYPTO_LOCK_RAND2);
++		crypto_lock_rand = 1;
 +		}
 +	return do_lock;
 +	}

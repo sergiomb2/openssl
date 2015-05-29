@@ -21,7 +21,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1e
-Release: 42%{?dist}
+Release: 43%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -122,6 +122,7 @@ Patch125: openssl-1.0.1e-cve-2015-0288.patch
 Patch126: openssl-1.0.1e-cve-2015-0289.patch
 Patch127: openssl-1.0.1e-cve-2015-0292.patch
 Patch128: openssl-1.0.1e-cve-2015-0293.patch
+Patch129: openssl-1.0.1e-cve-2015-4000.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -279,6 +280,7 @@ cp %{SOURCE12} %{SOURCE13} crypto/ec/
 %patch126 -p1 -b .pkcs7-null-deref
 %patch127 -p1 -b .b64-underflow
 %patch128 -p1 -b .ssl2-assert
+%patch129 -p1 -b .logjam
 
 sed -i 's/SHLIB_VERSION_NUMBER "1.0.0"/SHLIB_VERSION_NUMBER "%{version}"/' crypto/opensslv.h
 
@@ -542,6 +544,13 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Fri May 29 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-43
+- fix CVE-2015-4000 - prevent the logjam attack on client - restrict
+  the DH key size to at least 768 bits (limit will be increased in future)
+- drop the AES-GCM restriction of 2^32 operations because the IV is
+  always 96 bits (32 bit fixed field + 64 bit invocation field)
+- fix regression in RAND locking (#1225994)
+
 * Thu Mar 19 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-42
 - fix CVE-2015-0209 - potential use after free in d2i_ECPrivateKey()
 - fix CVE-2015-0286 - improper handling of ASN.1 boolean comparison
