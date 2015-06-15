@@ -22,8 +22,8 @@
 
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
-Version: 1.0.2a
-Release: 4%{?dist}
+Version: 1.0.2c
+Release: 1%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -40,7 +40,7 @@ Source11: README.FIPS
 Source12: ec_curve.c
 Source13: ectest.c
 # Build changes
-Patch1: openssl-1.0.2a-rpmbuild.patch
+Patch1: openssl-1.0.2c-rpmbuild.patch
 Patch2: openssl-1.0.2a-defaults.patch
 Patch4: openssl-1.0.2a-enginesdir.patch
 Patch5: openssl-1.0.2a-no-rpath.patch
@@ -49,14 +49,14 @@ Patch7: openssl-1.0.0-timezone.patch
 Patch8: openssl-1.0.1c-perlfind.patch
 Patch9: openssl-1.0.1c-aliasing.patch
 # Bug fixes
-Patch23: openssl-1.0.2a-default-paths.patch
+Patch23: openssl-1.0.2c-default-paths.patch
 Patch24: openssl-1.0.2a-issuer-hash.patch
 # Functionality changes
 Patch33: openssl-1.0.0-beta4-ca-dir.patch
 Patch34: openssl-1.0.2a-x509.patch
 Patch35: openssl-1.0.2a-version-add-engines.patch
 Patch39: openssl-1.0.2a-ipv6-apps.patch
-Patch40: openssl-1.0.2a-fips.patch
+Patch40: openssl-1.0.2c-fips.patch
 Patch45: openssl-1.0.2a-env-zlib.patch
 Patch47: openssl-1.0.2a-readme-warning.patch
 Patch49: openssl-1.0.1i-algo-doc.patch
@@ -69,11 +69,10 @@ Patch63: openssl-1.0.2a-xmpp-starttls.patch
 Patch65: openssl-1.0.2a-chil-fixes.patch
 Patch66: openssl-1.0.2a-pkgconfig-krb5.patch
 Patch68: openssl-1.0.2a-secure-getenv.patch
-Patch69: openssl-1.0.2a-dh-1024.patch
 Patch70: openssl-1.0.2a-fips-ec.patch
 Patch71: openssl-1.0.2a-manfix.patch
 Patch72: openssl-1.0.2a-fips-ctor.patch
-Patch73: openssl-1.0.2a-ecc-suiteb.patch
+Patch73: openssl-1.0.2c-ecc-suiteb.patch
 Patch74: openssl-1.0.2a-no-md5-verify.patch
 Patch75: openssl-1.0.2a-compat-symbols.patch
 Patch76: openssl-1.0.2a-new-fips-reqs.patch
@@ -85,8 +84,7 @@ Patch93: openssl-1.0.2a-disable-sslv2v3.patch
 # Backported fixes including security fixes
 Patch80: openssl-1.0.2a-wrap-pad.patch
 Patch81: openssl-1.0.2a-padlock64.patch
-Patch82: openssl-1.0.2a-trusted-first-doc.patch
-Patch83: openssl-1.0.2a-alt-chains.patch
+Patch82: openssl-1.0.2c-trusted-first-doc.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -190,7 +188,6 @@ cp %{SOURCE12} %{SOURCE13} crypto/ec/
 %patch65 -p1 -b .chil
 %patch66 -p1 -b .krb5
 %patch68 -p1 -b .secure-getenv
-%patch69 -p1 -b .dh1024
 %patch70 -p1 -b .fips-ec
 %patch71 -p1 -b .manfix
 %patch72 -p1 -b .fips-ctor
@@ -207,7 +204,6 @@ cp %{SOURCE12} %{SOURCE13} crypto/ec/
 %patch80 -p1 -b .wrap
 %patch81 -p1 -b .padlock64
 %patch82 -p1 -b .trusted-first
-%patch83 -p1 -b .alt-chains
 
 sed -i 's/SHLIB_VERSION_NUMBER "1.0.0"/SHLIB_VERSION_NUMBER "%{version}"/' crypto/opensslv.h
 
@@ -478,6 +474,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Mon Jun 15 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.2c-1
+- minor upstream release 1.0.2c fixing multiple security issues
+
 * Thu May  7 2015 Peter Robinson <pbrobinson@fedoraproject.org> 1.0.2a-4
 - Add aarch64 sslarch details
 

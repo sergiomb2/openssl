@@ -1,6 +1,6 @@
-diff -up openssl-1.0.2a/apps/speed.c.suiteb openssl-1.0.2a/apps/speed.c
---- openssl-1.0.2a/apps/speed.c.suiteb	2015-04-21 17:46:15.452321183 +0200
-+++ openssl-1.0.2a/apps/speed.c	2015-04-22 14:52:45.362272296 +0200
+diff -up openssl-1.0.2c/apps/speed.c.suiteb openssl-1.0.2c/apps/speed.c
+--- openssl-1.0.2c/apps/speed.c.suiteb	2015-06-15 17:37:06.285083685 +0200
++++ openssl-1.0.2c/apps/speed.c	2015-06-15 17:37:06.335084836 +0200
 @@ -996,78 +996,26 @@ int MAIN(int argc, char **argv)
          } else
  # endif
@@ -122,52 +122,48 @@ diff -up openssl-1.0.2a/apps/speed.c.suiteb openssl-1.0.2a/apps/speed.c
              ecdh_doit[i] = 1;
  # endif
      }
-diff -up openssl-1.0.2a/ssl/t1_lib.c.suiteb openssl-1.0.2a/ssl/t1_lib.c
---- openssl-1.0.2a/ssl/t1_lib.c.suiteb	2015-04-21 17:46:15.506322451 +0200
-+++ openssl-1.0.2a/ssl/t1_lib.c	2015-04-22 15:03:32.464591096 +0200
-@@ -266,41 +266,30 @@ static const unsigned char eccurves_defa
-     0, 13,                      /* sect571k1 (13) */
- # endif
+diff -up openssl-1.0.2c/ssl/t1_lib.c.suiteb openssl-1.0.2c/ssl/t1_lib.c
+--- openssl-1.0.2c/ssl/t1_lib.c.suiteb	2015-06-12 16:51:27.000000000 +0200
++++ openssl-1.0.2c/ssl/t1_lib.c	2015-06-15 17:44:03.578681271 +0200
+@@ -268,11 +268,7 @@ static const unsigned char eccurves_auto
+     0, 23,                      /* secp256r1 (23) */
+     /* Other >= 256-bit prime curves. */
      0, 25,                      /* secp521r1 (25) */
 -    0, 28,                      /* brainpool512r1 (28) */
- # ifndef OPENSSL_NO_EC2M
-     0, 11,                      /* sect409k1 (11) */
-     0, 12,                      /* sect409r1 (12) */
- # endif
 -    0, 27,                      /* brainpoolP384r1 (27) */
      0, 24,                      /* secp384r1 (24) */
- # ifndef OPENSSL_NO_EC2M
-     0, 9,                       /* sect283k1 (9) */
-     0, 10,                      /* sect283r1 (10) */
- # endif
 -    0, 26,                      /* brainpoolP256r1 (26) */
 -    0, 22,                      /* secp256k1 (22) */
-     0, 23,                      /* secp256r1 (23) */
  # ifndef OPENSSL_NO_EC2M
-     0, 8,                       /* sect239k1 (8) */
-     0, 6,                       /* sect233k1 (6) */
-     0, 7,                       /* sect233r1 (7) */
- # endif
+     /* >= 256-bit binary curves. */
+     0, 14,                      /* sect571r1 (14) */
+@@ -289,11 +285,7 @@ static const unsigned char eccurves_all[
+     0, 23,                      /* secp256r1 (23) */
+     /* Other >= 256-bit prime curves. */
+     0, 25,                      /* secp521r1 (25) */
+-    0, 28,                      /* brainpool512r1 (28) */
+-    0, 27,                      /* brainpoolP384r1 (27) */
+     0, 24,                      /* secp384r1 (24) */
+-    0, 26,                      /* brainpoolP256r1 (26) */
+-    0, 22,                      /* secp256k1 (22) */
+ # ifndef OPENSSL_NO_EC2M
+     /* >= 256-bit binary curves. */
+     0, 14,                      /* sect571r1 (14) */
+@@ -307,13 +299,6 @@ static const unsigned char eccurves_all[
+      * Remaining curves disabled by default but still permitted if set
+      * via an explicit callback or parameters.
+      */
 -    0, 20,                      /* secp224k1 (20) */
 -    0, 21,                      /* secp224r1 (21) */
- # ifndef OPENSSL_NO_EC2M
-     0, 4,                       /* sect193r1 (4) */
-     0, 5,                       /* sect193r2 (5) */
- # endif
 -    0, 18,                      /* secp192k1 (18) */
 -    0, 19,                      /* secp192r1 (19) */
- # ifndef OPENSSL_NO_EC2M
-     0, 1,                       /* sect163k1 (1) */
-     0, 2,                       /* sect163r1 (2) */
-     0, 3,                       /* sect163r2 (3) */
- # endif
 -    0, 15,                      /* secp160k1 (15) */
 -    0, 16,                      /* secp160r1 (16) */
 -    0, 17,                      /* secp160r2 (17) */
- };
- 
- static const unsigned char suiteb_curves[] = {
-@@ -325,29 +314,21 @@ static const unsigned char fips_curves_d
+ # ifndef OPENSSL_NO_EC2M
+     0, 8,                       /* sect239k1 (8) */
+     0, 6,                       /* sect233k1 (6) */
+@@ -348,29 +333,21 @@ static const unsigned char fips_curves_d
      0, 9,                       /* sect283k1 (9) */
      0, 10,                      /* sect283r1 (10) */
  #  endif

@@ -386,7 +386,7 @@ static void prime_field_tests(void)
         ABORT;
     if (!EC_POINT_set_compressed_coordinates_GFp(group, P, x, 1, ctx))
         ABORT;
-    if (!EC_POINT_is_on_curve(group, P, ctx))
+    if (EC_POINT_is_on_curve(group, P, ctx) <= 0)
         ABORT;
     if (!BN_hex2bn(&z, "FFFFFFFF00000000FFFFFFFFFFFFFFFFBCE6FAADA7179E"
                    "84F3B9CAC2FC632551"))
@@ -442,7 +442,7 @@ static void prime_field_tests(void)
         ABORT;
     if (!EC_POINT_set_compressed_coordinates_GFp(group, P, x, 1, ctx))
         ABORT;
-    if (!EC_POINT_is_on_curve(group, P, ctx))
+    if (EC_POINT_is_on_curve(group, P, ctx) <= 0)
         ABORT;
     if (!BN_hex2bn(&z, "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
                    "FFC7634D81F4372DDF581A0DB248B0A77AECEC196ACCC52973"))
@@ -501,7 +501,7 @@ static void prime_field_tests(void)
         ABORT;
     if (!EC_POINT_set_compressed_coordinates_GFp(group, P, x, 0, ctx))
         ABORT;
-    if (!EC_POINT_is_on_curve(group, P, ctx))
+    if (EC_POINT_is_on_curve(group, P, ctx) <= 0)
         ABORT;
     if (!BN_hex2bn(&z, "1FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
                    "FFFFFFFFFFFFFFFFFFFFA51868783BF2F966B7FCC0148F709A5D03BB5"
@@ -545,7 +545,7 @@ static void prime_field_tests(void)
         ABORT;
     if (!EC_POINT_dbl(group, P, P, ctx))
         ABORT;
-    if (!EC_POINT_is_on_curve(group, P, ctx))
+    if (EC_POINT_is_on_curve(group, P, ctx) <= 0)
         ABORT;
     if (!EC_POINT_invert(group, Q, ctx))
         ABORT;                  /* P = -2Q */
