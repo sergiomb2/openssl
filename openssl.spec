@@ -21,7 +21,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1e
-Release: 43%{?dist}
+Release: 44%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -123,6 +123,11 @@ Patch126: openssl-1.0.1e-cve-2015-0289.patch
 Patch127: openssl-1.0.1e-cve-2015-0292.patch
 Patch128: openssl-1.0.1e-cve-2015-0293.patch
 Patch129: openssl-1.0.1e-cve-2015-4000.patch
+Patch130: openssl-1.0.1e-cve-2014-8176.patch
+Patch131: openssl-1.0.1e-cve-2015-1789.patch
+Patch132: openssl-1.0.1e-cve-2015-1790.patch
+Patch133: openssl-1.0.1e-cve-2015-1791.patch
+Patch134: openssl-1.0.1e-cve-2015-1792.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -281,6 +286,11 @@ cp %{SOURCE12} %{SOURCE13} crypto/ec/
 %patch127 -p1 -b .b64-underflow
 %patch128 -p1 -b .ssl2-assert
 %patch129 -p1 -b .logjam
+%patch130 -p1 -b .appdata-free
+%patch131 -p1 -b .oob-read
+%patch132 -p1 -b .missing-content
+%patch133 -p1 -b .ticket-race
+%patch134 -p1 -b .unknown-hash
 
 sed -i 's/SHLIB_VERSION_NUMBER "1.0.0"/SHLIB_VERSION_NUMBER "%{version}"/' crypto/opensslv.h
 
@@ -544,6 +554,14 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Mon Jun 15 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-44
+- fix CVE-2014-8176 - invalid free in DTLS buffering code
+- fix CVE-2015-1789 - out-of-bounds read in X509_cmp_time
+- fix CVE-2015-1790 - PKCS7 crash with missing EncryptedContent
+- fix CVE-2015-1791 - race condition handling NewSessionTicket
+- fix CVE-2015-1792 - CMS verify infinite loop with unknown hash function
+- add missing parts of CVE-2015-0209 fix for corectness although unexploitable
+
 * Fri May 29 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-43
 - fix CVE-2015-4000 - prevent the logjam attack on client - restrict
   the DH key size to at least 768 bits (limit will be increased in future)
