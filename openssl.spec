@@ -21,7 +21,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1e
-Release: 44%{?dist}
+Release: 45%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -554,6 +554,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Tue Jun 23 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-45
+- fix the CVE-2015-1791 fix (partially broken renegotiation)
+
 * Mon Jun 15 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.1e-44
 - fix CVE-2014-8176 - invalid free in DTLS buffering code
 - fix CVE-2015-1789 - out-of-bounds read in X509_cmp_time
