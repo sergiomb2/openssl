@@ -22,8 +22,8 @@
 
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
-Version: 1.0.2c
-Release: 3%{?dist}
+Version: 1.0.2d
+Release: 1%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -70,7 +70,7 @@ Patch65: openssl-1.0.2a-chil-fixes.patch
 Patch66: openssl-1.0.2a-pkgconfig-krb5.patch
 Patch68: openssl-1.0.2a-secure-getenv.patch
 Patch70: openssl-1.0.2a-fips-ec.patch
-Patch71: openssl-1.0.2a-manfix.patch
+Patch71: openssl-1.0.2d-manfix.patch
 Patch72: openssl-1.0.2a-fips-ctor.patch
 Patch73: openssl-1.0.2c-ecc-suiteb.patch
 Patch74: openssl-1.0.2a-no-md5-verify.patch
@@ -474,6 +474,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Thu Jul  9 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.2d-1
+- minor upstream release 1.0.2d fixing a high severity security issue
+
 * Tue Jul  7 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.2c-3
 - fix the aarch64 build
 
