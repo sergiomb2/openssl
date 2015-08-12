@@ -93,6 +93,7 @@ URL: http://www.openssl.org/
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildRequires: coreutils, krb5-devel, perl, sed, zlib-devel, /usr/bin/cmp
 BuildRequires: /usr/bin/rename
+BuildRequires: /usr/bin/pod2man
 Requires: coreutils, make
 Requires: %{name}-libs%{?_isa} = %{epoch}:%{version}-%{release}
 
