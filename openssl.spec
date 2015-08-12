@@ -23,7 +23,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.2d
-Release: 1%{?dist}
+Release: 2%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -81,6 +81,7 @@ Patch78: openssl-1.0.2a-cc-reqs.patch
 Patch90: openssl-1.0.2a-enc-fail.patch
 Patch92: openssl-1.0.2a-system-cipherlist.patch
 Patch93: openssl-1.0.2a-disable-sslv2v3.patch
+Patch94: openssl-1.0.2d-secp256k1.patch
 # Backported fixes including security fixes
 Patch80: openssl-1.0.2a-wrap-pad.patch
 Patch81: openssl-1.0.2a-padlock64.patch
@@ -200,6 +201,7 @@ cp %{SOURCE12} %{SOURCE13} crypto/ec/
 %patch90 -p1 -b .enc-fail
 %patch92 -p1 -b .system
 %patch93 -p1 -b .v2v3
+%patch94 -p1 -b .secp256k1
 
 %patch80 -p1 -b .wrap
 %patch81 -p1 -b .padlock64
@@ -474,6 +476,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Wed Aug 12 2015 Tom Callaway <spot@fedoraproject.org> 1.0.2d-2
+- re-enable secp256k1 (bz1021898)
+
 * Thu Jul  9 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.2d-1
 - minor upstream release 1.0.2d fixing a high severity security issue
 
