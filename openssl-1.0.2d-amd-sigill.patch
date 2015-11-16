@@ -1,0 +1,17 @@
+diff -up openssl-1.0.2d/crypto/aes/asm/aesni-sha256-x86_64.pl.sigill openssl-1.0.2d/crypto/aes/asm/aesni-sha256-x86_64.pl
+--- openssl-1.0.2d/crypto/aes/asm/aesni-sha256-x86_64.pl.sigill	2015-07-09 16:51:25.000000000 +0200
++++ openssl-1.0.2d/crypto/aes/asm/aesni-sha256-x86_64.pl	2015-11-16 17:43:52.554826505 +0100
+@@ -139,11 +139,8 @@ $code.=<<___ if ($avx>1);
+ 	je	${func}_avx2
+ ___
+ $code.=<<___;
+-	and	\$`1<<30`,%eax			# mask "Intel CPU" bit
+-	and	\$`1<<28|1<<9`,%r10d		# mask AVX+SSSE3 bits
+-	or	%eax,%r10d
+-	cmp	\$`1<<28|1<<9|1<<30`,%r10d
+-	je	${func}_avx
++	and	\$`1<<28`,%r10d			# check for AVX
++	jnz	${func}_avx
+ 	ud2
+ ___
+ 						}

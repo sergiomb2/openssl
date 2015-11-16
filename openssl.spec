@@ -23,7 +23,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.2d
-Release: 2%{?dist}
+Release: 3%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -86,6 +86,7 @@ Patch94: openssl-1.0.2d-secp256k1.patch
 Patch80: openssl-1.0.2a-wrap-pad.patch
 Patch81: openssl-1.0.2a-padlock64.patch
 Patch82: openssl-1.0.2c-trusted-first-doc.patch
+Patch83: openssl-1.0.2d-amd-sigill.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -207,6 +208,7 @@ cp %{SOURCE12} %{SOURCE13} crypto/ec/
 %patch80 -p1 -b .wrap
 %patch81 -p1 -b .padlock64
 %patch82 -p1 -b .trusted-first
+%patch83 -p1 -b .sigill
 
 sed -i 's/SHLIB_VERSION_NUMBER "1.0.0"/SHLIB_VERSION_NUMBER "%{version}"/' crypto/opensslv.h
 
@@ -477,6 +479,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Mon Nov 16 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.2d-3
+- fix sigill on some AMD CPUs (#1278194)
+
 * Wed Aug 12 2015 Tom Callaway <spot@fedoraproject.org> 1.0.2d-2
 - re-enable secp256k1 (bz1021898)
 
