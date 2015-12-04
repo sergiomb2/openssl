@@ -22,8 +22,8 @@
 
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
-Version: 1.0.2d
-Release: 3%{?dist}
+Version: 1.0.2e
+Release: 1%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -40,7 +40,7 @@ Source11: README.FIPS
 Source12: ec_curve.c
 Source13: ectest.c
 # Build changes
-Patch1: openssl-1.0.2c-rpmbuild.patch
+Patch1: openssl-1.0.2e-rpmbuild.patch
 Patch2: openssl-1.0.2a-defaults.patch
 Patch4: openssl-1.0.2a-enginesdir.patch
 Patch5: openssl-1.0.2a-no-rpath.patch
@@ -56,7 +56,7 @@ Patch33: openssl-1.0.0-beta4-ca-dir.patch
 Patch34: openssl-1.0.2a-x509.patch
 Patch35: openssl-1.0.2a-version-add-engines.patch
 Patch39: openssl-1.0.2a-ipv6-apps.patch
-Patch40: openssl-1.0.2c-fips.patch
+Patch40: openssl-1.0.2e-fips.patch
 Patch45: openssl-1.0.2a-env-zlib.patch
 Patch47: openssl-1.0.2a-readme-warning.patch
 Patch49: openssl-1.0.1i-algo-doc.patch
@@ -83,10 +83,9 @@ Patch92: openssl-1.0.2a-system-cipherlist.patch
 Patch93: openssl-1.0.2a-disable-sslv2v3.patch
 Patch94: openssl-1.0.2d-secp256k1.patch
 # Backported fixes including security fixes
-Patch80: openssl-1.0.2a-wrap-pad.patch
+Patch80: openssl-1.0.2e-wrap-pad.patch
 Patch81: openssl-1.0.2a-padlock64.patch
 Patch82: openssl-1.0.2c-trusted-first-doc.patch
-Patch83: openssl-1.0.2d-amd-sigill.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -208,7 +207,6 @@ cp %{SOURCE12} %{SOURCE13} crypto/ec/
 %patch80 -p1 -b .wrap
 %patch81 -p1 -b .padlock64
 %patch82 -p1 -b .trusted-first
-%patch83 -p1 -b .sigill
 
 sed -i 's/SHLIB_VERSION_NUMBER "1.0.0"/SHLIB_VERSION_NUMBER "%{version}"/' crypto/opensslv.h
 
@@ -270,7 +268,8 @@ sslarch="linux-ppc64le"
 	--prefix=%{_prefix} --openssldir=%{_sysconfdir}/pki/tls ${sslflags} \
 	--system-ciphers-file=%{_sysconfdir}/crypto-policies/back-ends/openssl.config \
 	zlib enable-camellia enable-seed enable-tlsext enable-rfc3779 \
-	enable-cms enable-md2 no-mdc2 no-rc5 no-ec2m no-gost no-srp \
+	enable-cms enable-md2 enable-ec_nistp_64_gcc_128 \
+	no-mdc2 no-rc5 no-ec2m no-gost no-srp \
 	--with-krb5-flavor=MIT --enginesdir=%{_libdir}/openssl/engines \
 	--with-krb5-dir=/usr shared  ${sslarch} %{?!nofips:fips}
 
@@ -287,6 +286,11 @@ make rehash
 
 # Overwrite FIPS README
 cp -f %{SOURCE11} .
+
+# Clean up the .pc files
+for i in libcrypto.pc libssl.pc openssl.pc ; do
+  sed -i '/^Libs.private:/{s/-L[^ ]* //;s/-Wl[^ ]* //}' $i
+done
 
 %check
 # Verify that what was compiled actually works.
@@ -479,6 +483,12 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Fri Dec  4 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.2e-1
+- minor upstream release 1.0.2e fixing moderate severity security issues
+- enable fast assembler implementation for NIST P-256 and P-521
+  elliptic curves (#1164210)
+- filter out unwanted link options from the .pc files (#1257836)
+
 * Mon Nov 16 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.2d-3
 - fix sigill on some AMD CPUs (#1278194)
 

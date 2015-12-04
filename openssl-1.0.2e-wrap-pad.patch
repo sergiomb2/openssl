@@ -1,6 +1,6 @@
-diff -up openssl-1.0.2a/crypto/evp/c_allc.c.wrap openssl-1.0.2a/crypto/evp/c_allc.c
---- openssl-1.0.2a/crypto/evp/c_allc.c.wrap	2015-04-22 15:41:32.147488107 +0200
-+++ openssl-1.0.2a/crypto/evp/c_allc.c	2015-04-22 15:47:25.486946239 +0200
+diff -up openssl-1.0.2e/crypto/evp/c_allc.c.wrap openssl-1.0.2e/crypto/evp/c_allc.c
+--- openssl-1.0.2e/crypto/evp/c_allc.c.wrap	2015-12-04 13:33:42.118550036 +0100
++++ openssl-1.0.2e/crypto/evp/c_allc.c	2015-12-04 13:33:42.190551722 +0100
 @@ -179,6 +179,7 @@ void OpenSSL_add_all_ciphers(void)
      EVP_add_cipher(EVP_aes_128_xts());
      EVP_add_cipher(EVP_aes_128_ccm());
@@ -57,9 +57,9 @@ diff -up openssl-1.0.2a/crypto/evp/c_allc.c.wrap openssl-1.0.2a/crypto/evp/c_all
          EVP_add_cipher_alias(SN_aes_256_cbc, "AES256");
          EVP_add_cipher_alias(SN_aes_256_cbc, "aes256");
  # endif
-diff -up openssl-1.0.2a/crypto/evp/e_aes.c.wrap openssl-1.0.2a/crypto/evp/e_aes.c
---- openssl-1.0.2a/crypto/evp/e_aes.c.wrap	2015-04-22 15:41:32.148488131 +0200
-+++ openssl-1.0.2a/crypto/evp/e_aes.c	2015-04-22 15:52:21.809039506 +0200
+diff -up openssl-1.0.2e/crypto/evp/e_aes.c.wrap openssl-1.0.2e/crypto/evp/e_aes.c
+--- openssl-1.0.2e/crypto/evp/e_aes.c.wrap	2015-12-04 13:33:42.119550059 +0100
++++ openssl-1.0.2e/crypto/evp/e_aes.c	2015-12-04 13:33:42.190551722 +0100
 @@ -1,5 +1,5 @@
  /* ====================================================================
 - * Copyright (c) 2001-2011 The OpenSSL Project.  All rights reserved.
@@ -67,7 +67,7 @@ diff -up openssl-1.0.2a/crypto/evp/e_aes.c.wrap openssl-1.0.2a/crypto/evp/e_aes.
   *
   * Redistribution and use in source and binary forms, with or without
   * modification, are permitted provided that the following conditions
-@@ -1952,7 +1952,7 @@ static int aes_wrap_init_key(EVP_CIPHER_
+@@ -1953,7 +1953,7 @@ static int aes_wrap_init_key(EVP_CIPHER_
              wctx->iv = NULL;
      }
      if (iv) {
@@ -76,7 +76,7 @@ diff -up openssl-1.0.2a/crypto/evp/e_aes.c.wrap openssl-1.0.2a/crypto/evp/e_aes.
          wctx->iv = ctx->iv;
      }
      return 1;
-@@ -1963,30 +1963,57 @@ static int aes_wrap_cipher(EVP_CIPHER_CT
+@@ -1964,30 +1964,57 @@ static int aes_wrap_cipher(EVP_CIPHER_CT
  {
      EVP_AES_WRAP_CTX *wctx = ctx->cipher_data;
      size_t rv;
@@ -142,7 +142,7 @@ diff -up openssl-1.0.2a/crypto/evp/e_aes.c.wrap openssl-1.0.2a/crypto/evp/e_aes.
                  | EVP_CIPH_CUSTOM_IV | EVP_CIPH_FLAG_CUSTOM_CIPHER \
                  | EVP_CIPH_ALWAYS_CALL_INIT | EVP_CIPH_FLAG_DEFAULT_ASN1)
  
-@@ -2031,3 +2058,45 @@ const EVP_CIPHER *EVP_aes_256_wrap(void)
+@@ -2032,3 +2059,45 @@ const EVP_CIPHER *EVP_aes_256_wrap(void)
  {
      return &aes_256_wrap;
  }
@@ -188,10 +188,10 @@ diff -up openssl-1.0.2a/crypto/evp/e_aes.c.wrap openssl-1.0.2a/crypto/evp/e_aes.
 +{
 +    return &aes_256_wrap_pad;
 +}
-diff -up openssl-1.0.2a/crypto/evp/e_des3.c.wrap openssl-1.0.2a/crypto/evp/e_des3.c
---- openssl-1.0.2a/crypto/evp/e_des3.c.wrap	2015-04-22 15:41:40.301683300 +0200
-+++ openssl-1.0.2a/crypto/evp/e_des3.c	2015-04-22 15:53:39.529899964 +0200
-@@ -473,7 +473,7 @@ static const EVP_CIPHER des3_wrap = {
+diff -up openssl-1.0.2e/crypto/evp/e_des3.c.wrap openssl-1.0.2e/crypto/evp/e_des3.c
+--- openssl-1.0.2e/crypto/evp/e_des3.c.wrap	2015-12-04 13:33:42.119550059 +0100
++++ openssl-1.0.2e/crypto/evp/e_des3.c	2015-12-04 13:33:42.191551745 +0100
+@@ -474,7 +474,7 @@ static const EVP_CIPHER des3_wrap = {
      NID_id_smime_alg_CMS3DESwrap,
      8, 24, 0,
      EVP_CIPH_WRAP_MODE | EVP_CIPH_CUSTOM_IV | EVP_CIPH_FLAG_CUSTOM_CIPHER
@@ -200,10 +200,10 @@ diff -up openssl-1.0.2a/crypto/evp/e_des3.c.wrap openssl-1.0.2a/crypto/evp/e_des
      des_ede3_init_key, des_ede3_wrap_cipher,
      NULL,
      sizeof(DES_EDE_KEY),
-diff -up openssl-1.0.2a/crypto/evp/evp.h.wrap openssl-1.0.2a/crypto/evp/evp.h
---- openssl-1.0.2a/crypto/evp/evp.h.wrap	2015-04-22 19:30:57.000000000 +0200
-+++ openssl-1.0.2a/crypto/evp/evp.h	2015-04-22 19:51:06.352832516 +0200
-@@ -832,6 +832,7 @@ const EVP_CIPHER *EVP_aes_128_ccm(void);
+diff -up openssl-1.0.2e/crypto/evp/evp.h.wrap openssl-1.0.2e/crypto/evp/evp.h
+--- openssl-1.0.2e/crypto/evp/evp.h.wrap	2015-12-04 13:33:42.120550083 +0100
++++ openssl-1.0.2e/crypto/evp/evp.h	2015-12-04 13:33:42.191551745 +0100
+@@ -834,6 +834,7 @@ const EVP_CIPHER *EVP_aes_128_ccm(void);
  const EVP_CIPHER *EVP_aes_128_gcm(void);
  const EVP_CIPHER *EVP_aes_128_xts(void);
  const EVP_CIPHER *EVP_aes_128_wrap(void);
@@ -211,7 +211,7 @@ diff -up openssl-1.0.2a/crypto/evp/evp.h.wrap openssl-1.0.2a/crypto/evp/evp.h
  const EVP_CIPHER *EVP_aes_192_ecb(void);
  const EVP_CIPHER *EVP_aes_192_cbc(void);
  const EVP_CIPHER *EVP_aes_192_cfb1(void);
-@@ -843,6 +844,7 @@ const EVP_CIPHER *EVP_aes_192_ctr(void);
+@@ -845,6 +846,7 @@ const EVP_CIPHER *EVP_aes_192_ctr(void);
  const EVP_CIPHER *EVP_aes_192_ccm(void);
  const EVP_CIPHER *EVP_aes_192_gcm(void);
  const EVP_CIPHER *EVP_aes_192_wrap(void);
@@ -219,7 +219,7 @@ diff -up openssl-1.0.2a/crypto/evp/evp.h.wrap openssl-1.0.2a/crypto/evp/evp.h
  const EVP_CIPHER *EVP_aes_256_ecb(void);
  const EVP_CIPHER *EVP_aes_256_cbc(void);
  const EVP_CIPHER *EVP_aes_256_cfb1(void);
-@@ -855,6 +857,7 @@ const EVP_CIPHER *EVP_aes_256_ccm(void);
+@@ -857,6 +859,7 @@ const EVP_CIPHER *EVP_aes_256_ccm(void);
  const EVP_CIPHER *EVP_aes_256_gcm(void);
  const EVP_CIPHER *EVP_aes_256_xts(void);
  const EVP_CIPHER *EVP_aes_256_wrap(void);
@@ -227,9 +227,9 @@ diff -up openssl-1.0.2a/crypto/evp/evp.h.wrap openssl-1.0.2a/crypto/evp/evp.h
  #  if !defined(OPENSSL_NO_SHA) && !defined(OPENSSL_NO_SHA1)
  const EVP_CIPHER *EVP_aes_128_cbc_hmac_sha1(void);
  const EVP_CIPHER *EVP_aes_256_cbc_hmac_sha1(void);
-diff -up openssl-1.0.2a/crypto/evp/evptests.txt.wrap openssl-1.0.2a/crypto/evp/evptests.txt
---- openssl-1.0.2a/crypto/evp/evptests.txt.wrap	2015-04-22 15:41:47.194848307 +0200
-+++ openssl-1.0.2a/crypto/evp/evptests.txt	2015-04-22 16:01:08.174540977 +0200
+diff -up openssl-1.0.2e/crypto/evp/evptests.txt.wrap openssl-1.0.2e/crypto/evp/evptests.txt
+--- openssl-1.0.2e/crypto/evp/evptests.txt.wrap	2015-12-03 15:04:23.000000000 +0100
++++ openssl-1.0.2e/crypto/evp/evptests.txt	2015-12-04 13:33:42.191551745 +0100
 @@ -399,3 +399,7 @@ id-aes256-wrap:000102030405060708090A0B0
  id-aes192-wrap:000102030405060708090A0B0C0D0E0F1011121314151617::00112233445566778899AABBCCDDEEFF0001020304050607:031D33264E15D33268F24EC260743EDCE1C6C7DDEE725A936BA814915C6762D2
  id-aes256-wrap:000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F::00112233445566778899AABBCCDDEEFF0001020304050607:A8F9BC1612C68B3FF6E6F4FBE30E71E4769C8B80A32CB8958CD5D17D6B254DA1
@@ -238,9 +238,9 @@ diff -up openssl-1.0.2a/crypto/evp/evptests.txt.wrap openssl-1.0.2a/crypto/evp/e
 +id-aes192-wrap-pad:5840df6e29b02af1ab493b705bf16ea1ae8338f4dcc176a8::c37b7e6492584340bed12207808941155068f738:138bdeaa9b8fa7fc61f97742e72248ee5ae6ae5360d1ae6a5f54f373fa543b6a
 +id-aes192-wrap-pad:5840df6e29b02af1ab493b705bf16ea1ae8338f4dcc176a8::466f7250617369:afbeb0f07dfbf5419200f2ccb50bb24f
 +
-diff -up openssl-1.0.2a/crypto/modes/modes.h.wrap openssl-1.0.2a/crypto/modes/modes.h
---- openssl-1.0.2a/crypto/modes/modes.h.wrap	2015-04-22 15:41:49.228896997 +0200
-+++ openssl-1.0.2a/crypto/modes/modes.h	2015-04-22 16:03:40.724152855 +0200
+diff -up openssl-1.0.2e/crypto/modes/modes.h.wrap openssl-1.0.2e/crypto/modes/modes.h
+--- openssl-1.0.2e/crypto/modes/modes.h.wrap	2015-12-04 13:33:41.770541886 +0100
++++ openssl-1.0.2e/crypto/modes/modes.h	2015-12-04 13:33:42.191551745 +0100
 @@ -157,6 +157,12 @@ size_t CRYPTO_128_unwrap(void *key, cons
                           unsigned char *out,
                           const unsigned char *in, size_t inlen,
@@ -254,9 +254,9 @@ diff -up openssl-1.0.2a/crypto/modes/modes.h.wrap openssl-1.0.2a/crypto/modes/mo
  
  #ifdef  __cplusplus
  }
-diff -up openssl-1.0.2a/crypto/modes/wrap128.c.wrap openssl-1.0.2a/crypto/modes/wrap128.c
---- openssl-1.0.2a/crypto/modes/wrap128.c.wrap	2015-03-19 14:30:36.000000000 +0100
-+++ openssl-1.0.2a/crypto/modes/wrap128.c	2015-04-22 16:06:16.798848197 +0200
+diff -up openssl-1.0.2e/crypto/modes/wrap128.c.wrap openssl-1.0.2e/crypto/modes/wrap128.c
+--- openssl-1.0.2e/crypto/modes/wrap128.c.wrap	2015-12-03 15:04:23.000000000 +0100
++++ openssl-1.0.2e/crypto/modes/wrap128.c	2015-12-04 13:37:51.486366984 +0100
 @@ -2,6 +2,7 @@
  /*
   * Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
@@ -312,7 +312,7 @@ diff -up openssl-1.0.2a/crypto/modes/wrap128.c.wrap openssl-1.0.2a/crypto/modes/
  size_t CRYPTO_128_wrap(void *key, const unsigned char *iv,
                         unsigned char *out,
                         const unsigned char *in, size_t inlen,
-@@ -72,11 +98,11 @@ size_t CRYPTO_128_wrap(void *key, const
+@@ -72,7 +98,7 @@ size_t CRYPTO_128_wrap(void *key, const
  {
      unsigned char *A, B[16], *R;
      size_t i, j, t;
@@ -321,11 +321,6 @@ diff -up openssl-1.0.2a/crypto/modes/wrap128.c.wrap openssl-1.0.2a/crypto/modes/
          return 0;
      A = B;
      t = 1;
--    memcpy(out + 8, in, inlen);
-+    memmove(out + 8, in, inlen);
-     if (!iv)
-         iv = default_iv;
- 
 @@ -100,7 +126,23 @@ size_t CRYPTO_128_wrap(void *key, const
      return inlen + 8;
  }
@@ -351,15 +346,6 @@ diff -up openssl-1.0.2a/crypto/modes/wrap128.c.wrap openssl-1.0.2a/crypto/modes/
                           unsigned char *out,
                           const unsigned char *in, size_t inlen,
                           block128_f block)
-@@ -113,7 +155,7 @@ size_t CRYPTO_128_unwrap(void *key, cons
-     A = B;
-     t = 6 * (inlen >> 3);
-     memcpy(A, in, 8);
--    memcpy(out, in + 8, inlen);
-+    memmove(out, in + 8, inlen);
-     for (j = 0; j < 6; j++) {
-         R = out + inlen - 8;
-         for (i = 0; i < inlen; i += 8, t--, R -= 8) {
 @@ -128,11 +170,190 @@ size_t CRYPTO_128_unwrap(void *key, cons
              memcpy(R, B + 8, 8);
          }
