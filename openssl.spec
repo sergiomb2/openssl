@@ -23,7 +23,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.1k
-Release: 12%{?dist}
+Release: 13%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -103,6 +103,9 @@ Patch109: openssl-1.0.1e-cve-2015-1789.patch
 Patch110: openssl-1.0.1e-cve-2015-1790.patch
 Patch111: openssl-1.0.1k-cve-2015-1791.patch
 Patch112: openssl-1.0.1e-cve-2015-1792.patch
+Patch113: openssl-1.0.1e-cve-2015-3194.patch
+Patch114: openssl-1.0.1e-cve-2015-3195.patch
+Patch115: openssl-1.0.1k-cve-2015-3196.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -239,6 +242,9 @@ cp %{SOURCE12} %{SOURCE13} crypto/ec/
 %patch110 -p1 -b .missing-content
 %patch111 -p1 -b .ticket-race
 %patch112 -p1 -b .unknown-hash
+%patch113 -p1 -b .pss-check
+%patch114 -p1 -b .combine-leak
+%patch115 -p1 -b .psk-identity
 
 sed -i 's/SHLIB_VERSION_NUMBER "1.0.0"/SHLIB_VERSION_NUMBER "%{version}"/' crypto/opensslv.h
 
@@ -314,6 +320,11 @@ make rehash
 
 # Overwrite FIPS README
 cp -f %{SOURCE11} .
+
+# Clean up the .pc files
+for i in libcrypto.pc libssl.pc openssl.pc ; do
+  sed -i '/^Libs.private:/{s/-L[^ ]* //;s/-Wl[^ ]* //}' $i
+done
 
 %check
 # Verify that what was compiled actually works.
@@ -506,6 +517,12 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Fri Dec  4 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.1k-13
+- fix CVE-2015-3194 - certificate verify crash with missing PSS parameter
+- fix CVE-2015-3195 - X509_ATTRIBUTE memory leak
+- fix CVE-2015-3196 - race condition when handling PSK identity hint
+- filter out unwanted link options from the .pc files (#1257836)
+
 * Thu Aug 13 2015 Tom Callaway <spot@fedoraproject.org> 1.0.1k-12
 - enable secp256k1 (bz1021898)
 
