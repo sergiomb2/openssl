@@ -227,6 +227,9 @@ if ! echo %{_target} | grep -q i686 ; then
 	sslflags="no-asm 386"
 fi
 %endif
+%ifarch x86_64
+sslflags=enable-ec_nistp_64_gcc_128
+%endif
 %ifarch sparcv9
 sslarch=linux-sparcv9
 sslflags=no-asm
@@ -243,21 +246,25 @@ sslarch="linux-generic32 -DB_ENDIAN"
 %endif
 %ifarch s390x
 sslarch="linux64-s390x"
+sslflags=enable-ec_nistp_64_gcc_128
 %endif
 %ifarch %{arm}
 sslarch=linux-armv4
 %endif
 %ifarch aarch64
 sslarch=linux-aarch64
+sslflags=enable-ec_nistp_64_gcc_128
 %endif
 %ifarch sh3 sh4
 sslarch=linux-generic32
 %endif
 %ifarch ppc64 ppc64p7
 sslarch=linux-ppc64
+sslflags=enable-ec_nistp_64_gcc_128
 %endif
 %ifarch ppc64le
 sslarch="linux-ppc64le"
+sslflags=enable-ec_nistp_64_gcc_128
 %endif
 
 # ia64, x86_64, ppc are OK by default
@@ -268,7 +275,7 @@ sslarch="linux-ppc64le"
 	--prefix=%{_prefix} --openssldir=%{_sysconfdir}/pki/tls ${sslflags} \
 	--system-ciphers-file=%{_sysconfdir}/crypto-policies/back-ends/openssl.config \
 	zlib enable-camellia enable-seed enable-tlsext enable-rfc3779 \
-	enable-cms enable-md2 enable-ec_nistp_64_gcc_128 \
+	enable-cms enable-md2 \
 	no-mdc2 no-rc5 no-ec2m no-gost no-srp \
 	--with-krb5-flavor=MIT --enginesdir=%{_libdir}/openssl/engines \
 	--with-krb5-dir=/usr shared  ${sslarch} %{?!nofips:fips}
@@ -488,6 +495,7 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 - enable fast assembler implementation for NIST P-256 and P-521
   elliptic curves (#1164210)
 - filter out unwanted link options from the .pc files (#1257836)
+- do not set serial to 0 in Makefile.certificate (#1135719)
 
 * Mon Nov 16 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.2d-3
 - fix sigill on some AMD CPUs (#1278194)
