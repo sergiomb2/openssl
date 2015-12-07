@@ -23,7 +23,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.2e
-Release: 1%{?dist}
+Release: 2%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -246,7 +246,6 @@ sslarch="linux-generic32 -DB_ENDIAN"
 %endif
 %ifarch s390x
 sslarch="linux64-s390x"
-sslflags=enable-ec_nistp_64_gcc_128
 %endif
 %ifarch %{arm}
 sslarch=linux-armv4
@@ -260,7 +259,6 @@ sslarch=linux-generic32
 %endif
 %ifarch ppc64 ppc64p7
 sslarch=linux-ppc64
-sslflags=enable-ec_nistp_64_gcc_128
 %endif
 %ifarch ppc64le
 sslarch="linux-ppc64le"
@@ -490,6 +488,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Mon Dec  7 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.2e-2
+- the fast nistp implementation works only on little endian architectures
+
 * Fri Dec  4 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.2e-1
 - minor upstream release 1.0.2e fixing moderate severity security issues
 - enable fast assembler implementation for NIST P-256 and P-521
