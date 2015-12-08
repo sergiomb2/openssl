@@ -23,7 +23,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.0.2e
-Release: 2%{?dist}
+Release: 3%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -82,6 +82,7 @@ Patch90: openssl-1.0.2a-enc-fail.patch
 Patch92: openssl-1.0.2a-system-cipherlist.patch
 Patch93: openssl-1.0.2a-disable-sslv2v3.patch
 Patch94: openssl-1.0.2d-secp256k1.patch
+Patch95: openssl-1.0.2e-remove-nistp224.patch
 # Backported fixes including security fixes
 Patch80: openssl-1.0.2e-wrap-pad.patch
 Patch81: openssl-1.0.2a-padlock64.patch
@@ -203,6 +204,7 @@ cp %{SOURCE12} %{SOURCE13} crypto/ec/
 %patch92 -p1 -b .system
 %patch93 -p1 -b .v2v3
 %patch94 -p1 -b .secp256k1
+%patch95 -p1 -b .nistp224
 
 %patch80 -p1 -b .wrap
 %patch81 -p1 -b .padlock64
@@ -488,6 +490,9 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Tue Dec  8 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.2e-3
+- remove unimplemented EC method from header (#1289599)
+
 * Mon Dec  7 2015 Tomáš Mráz <tmraz@redhat.com> 1.0.2e-2
 - the fast nistp implementation works only on little endian architectures
 
