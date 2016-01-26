@@ -1,0 +1,14 @@
+diff -up openssl-1.0.2a/version.map.fips-ec openssl-1.0.2a/version.map
+--- openssl-1.0.2a/version.map.fips-ec	2015-04-22 19:00:19.704884111 +0200
++++ openssl-1.0.2a/version.map	2015-04-22 19:00:19.724884583 +0200
+@@ -6,6 +6,10 @@ OPENSSL_1.0.1 {
+ 	    _original*;
+ 	    _current*;
+ };
++OPENSSL_1.0.1_EC {
++    global:
++            EC*;
++};
+ OPENSSL_1.0.2 {
+     global:
+ 	    SSLeay;
