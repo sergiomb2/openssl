@@ -19,12 +19,12 @@
 %define multilib_arches %{ix86} ia64 %{mips} ppc %{power64} s390 s390x sparcv9 sparc64 x86_64
 
 %global _performance_build 1
-%global  fips_version 2.0.13
+%global  fips_version 2.0.14
 
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
-Version: 1.0.2j
-Release: 2%{?dist}
+Version: 1.0.2k
+Release: 1%{?dist}
 Epoch: 2
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -32,6 +32,7 @@ Epoch: 2
 Source:  http://ftp.openssl.org/source/openssl-%{version}.tar.gz
 #Source1: hobble-openssl
 Source2: Makefile.certificate
+Source5: README.legacy-settings
 Source3: http://ftp.openssl.org/source/openssl-fips-%{fips_version}.tar.gz
 Source6: make-dummy-cert
 Source7: renew-dummy-cert
@@ -58,6 +59,7 @@ Patch33: openssl-1.0.0-beta4-ca-dir.patch
 Patch34: openssl-1.0.2a-x509.patch
 Patch35: openssl-1.0.2a-version-add-engines.patch
 Patch39: openssl-1.0.2a-ipv6-apps.patch
+Patch43: openssl-1.0.2j-krb5keytab.patch
 Patch45: openssl-1.0.2a-env-zlib.patch
 Patch49: openssl-1.0.1i-algo-doc.patch
 Patch50: openssl-1.0.2a-dtls1-abi.patch
@@ -69,7 +71,8 @@ Patch66: openssl-1.0.2h-pkgconfig.patch
 Patch68: openssl-1.0.2i-secure-getenv.patch
 Patch70: openssl-1.0.2e-fips-ec.patch
 Patch71: openssl-1.0.2g-manfix.patch
-Patch74: openssl-1.0.2a-no-md5-verify.patch
+Patch74: openssl-1.0.2j-deprecate-algos.patch
+Patch77: openssl-1.0.2j-downgrade-strength.patch
 Patch90: openssl-1.0.2i-enc-fail.patch
 Patch92: openssl-1.0.2a-system-cipherlist.patch
 Patch93: openssl-1.0.2g-disable-sslv2v3.patch
@@ -77,6 +80,7 @@ Patch96: openssl-1.0.2e-speed-doc.patch
 # Backported fixes including security fixes
 Patch81: openssl-1.0.2a-padlock64.patch
 Patch82: openssl-1.0.2i-trusted-first-doc.patch
+Patch83: openssl-1.0.2k-backports.patch
 
 License: OpenSSL
 Group: System Environment/Libraries
@@ -163,6 +167,7 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch34 -p1 -b .x509
 %patch35 -p1 -b .version-add-engines
 %patch39 -p1 -b .ipv6-apps
+%patch43 -p1 -b .krb5keytab
 %patch45 -p1 -b .env-zlib
 %patch49 -p1 -b .algo-doc
 %patch50 -p1 -b .dtls1-abi
@@ -174,7 +179,8 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch68 -p1 -b .secure-getenv
 %patch70 -p1 -b .fips-ec
 %patch71 -p1 -b .manfix
-%patch74 -p1 -b .no-md5-verify
+#patch74 -p1 -b .deprecate-algos
+%patch77 -p1 -b .strength
 %patch90 -p1 -b .enc-fail
 %patch92 -p1 -b .system
 %patch93 -p1 -b .v2v3
@@ -182,6 +188,7 @@ from other formats to the formats used by the OpenSSL toolkit.
 
 %patch81 -p1 -b .padlock64
 %patch82 -p1 -b .trusted-first
+%patch83 -p1 -b .backports
 
 sed -i 's/SHLIB_VERSION_NUMBER "1.0.0"/SHLIB_VERSION_NUMBER "%{version}"/' crypto/opensslv.h
 
@@ -291,6 +298,8 @@ make rehash
 
 # Overwrite FIPS README
 #cp -f %{SOURCE11} .
+# Copy README.legacy-settings
+cp -f %{SOURCE5} .
 
 # Clean up the .pc files
 for i in libcrypto.pc libssl.pc openssl.pc ; do
@@ -435,6 +444,7 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %files
 %license LICENSE
 %doc FAQ NEWS README openssl-fips-%{fips_version}/README.FIPS
+%doc README.legacy-settings
 %{_sysconfdir}/pki/tls/certs/make-dummy-cert
 %{_sysconfdir}/pki/tls/certs/renew-dummy-cert
 %{_sysconfdir}/pki/tls/certs/Makefile
@@ -496,6 +506,13 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/fipscanister.*
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Mon Feb  6 2017 Tomáš Mráz <tmraz@redhat.com> 1.0.2k-1
+- minor upstream release 1.0.2k fixing security issues
+- deprecate and disable verification of insecure hash algorithms
+- add support for /etc/pki/tls/legacy-settings also for minimum DH length
+  accepted by SSL client
+- compare the encrypt and tweak key in XTS as required by FIPS
+
 * Fri Oct 07 2016 Richard W.M. Jones <rjones@redhat.com> - 1:1.0.2j-2
 - Add flags for riscv64.
 
