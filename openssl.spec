@@ -179,7 +179,7 @@ from other formats to the formats used by the OpenSSL toolkit.
 %patch68 -p1 -b .secure-getenv
 %patch70 -p1 -b .fips-ec
 %patch71 -p1 -b .manfix
-#patch74 -p1 -b .deprecate-algos
+%patch74 -p1 -b .deprecate-algos
 %patch77 -p1 -b .strength
 %patch90 -p1 -b .enc-fail
 %patch92 -p1 -b .system
